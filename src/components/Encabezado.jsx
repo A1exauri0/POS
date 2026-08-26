@@ -5,7 +5,6 @@ import {
   IconClock,
   IconLockOpen,
   IconLock,
-  IconKeyboard,
 } from '@tabler/icons-react';
 import { formatearHora } from '../utils/formateadores';
 import { useCaja } from '../contexts/CajaContext';
@@ -34,20 +33,6 @@ export const Encabezado = () => {
           </h1>
           <p className="text-xs text-slate-400">Sistema Rápido de Mostrador</p>
         </div>
-      </div>
-
-      {/* Atajos de teclado rapidos informativos */}
-      <div className="hidden lg:flex items-center gap-2 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700/60 text-xs">
-        <IconKeyboard size={15} className="text-indigo-400" />
-        <span className="text-slate-300 font-medium">Atajos:</span>
-        <span className="bg-slate-700 px-1.5 py-0.5 rounded text-amber-300 font-mono font-semibold">F2</span>
-        <span className="text-slate-400">Cobrar</span>
-        <span className="text-slate-600">|</span>
-        <span className="bg-slate-700 px-1.5 py-0.5 rounded text-cyan-300 font-mono font-semibold">F4</span>
-        <span className="text-slate-400">Buscar</span>
-        <span className="text-slate-600">|</span>
-        <span className="bg-slate-700 px-1.5 py-0.5 rounded text-rose-300 font-mono font-semibold">ESC</span>
-        <span className="text-slate-400">Cerrar</span>
       </div>
 
       {/* Estado de Caja y Reloj */}
