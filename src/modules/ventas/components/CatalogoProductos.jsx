@@ -1,10 +1,17 @@
+import { useState, useEffect } from 'react';
 import { Badge, Tooltip } from '@mantine/core';
 import { IconPlus, IconAlertTriangle } from '@tabler/icons-react';
 import { formatearMoneda } from '../../../utils/formateadores';
 import { useVenta } from '../../../contexts/VentaContext';
+import { obtenerCategorias } from '../../../services/productoServicio';
 
 export const CatalogoProductos = ({ productos }) => {
   const { agregarProducto } = useVenta();
+  const [categorias, setCategorias] = useState(() => obtenerCategorias());
+
+  useEffect(() => {
+    setCategorias(obtenerCategorias());
+  }, [productos]);
 
   if (productos.length === 0) {
     return (
@@ -17,11 +24,14 @@ export const CatalogoProductos = ({ productos }) => {
   }
 
   return (
-    <div className="flex-1 overflow-y-auto pr-1">
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+    // Se agrega pt-3 y pb-3 para que las cards superiores no se corten ni se oculten al hacer hover
+    <div className="flex-1 overflow-y-auto px-1.5 pt-3 pb-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3.5">
         {productos.map((producto) => {
           const sinStock = producto.stock <= 0;
           const stockBajo = producto.stock > 0 && producto.stock <= 10;
+          const catObj = categorias.find((c) => c.nombre === producto.categoria);
+          const colorCat = catObj?.color || 'blue';
 
           return (
             <button
@@ -32,18 +42,23 @@ export const CatalogoProductos = ({ productos }) => {
               className={`group relative flex flex-col justify-between p-3.5 rounded-xl border text-left transition-all duration-150 cursor-pointer select-none ${
                 sinStock
                   ? 'bg-slate-100/70 border-slate-200 opacity-60 cursor-not-allowed'
-                  : 'bg-white border-slate-200 hover:border-indigo-400 hover:shadow-md hover:-translate-y-0.5 active:scale-98'
+                  : 'bg-white border-slate-200/90 hover:border-indigo-400 hover:shadow-md hover:-translate-y-1 active:scale-98'
               }`}
             >
-              {/* Badge de categoria y stock */}
+              {/* Badge de categoria (con su color real) y stock */}
               <div className="flex items-center justify-between gap-1 mb-2">
-                <span className="text-[11px] font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md truncate max-w-[95px]">
-                  {producto.categoria}
-                </span>
-
                 <Badge
                   size="xs"
                   variant="light"
+                  color={colorCat}
+                  className="font-semibold truncate max-w-[105px]"
+                >
+                  {producto.categoria}
+                </Badge>
+
+                <Badge
+                  size="xs"
+                  variant="filled"
                   color={sinStock ? 'red' : stockBajo ? 'orange' : 'teal'}
                 >
                   {sinStock ? 'Agotado' : `Stock: ${producto.stock}`}

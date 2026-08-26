@@ -1,17 +1,41 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { TextInput, NumberInput, Button, Switch, Textarea } from '@mantine/core';
 import { IconSettings, IconDeviceFloppy, IconCheck } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
+import configuracionInicial from '../../data/configuracion.json';
 
 export const PantallaConfiguracion = () => {
-  const [nombreNegocio, setNombreNegocio] = useState('Mi Abarrotes y Tienda POS');
-  const [rfc, setRfc] = useState('XAXX010101000');
-  const [direccion, setDireccion] = useState('Av. Principal #123, Col. Centro');
-  const [telefono, setTelefono] = useState('55 1234 5678');
-  const [ivaPorcentaje, setIvaPorcentaje] = useState(16);
-  const [mensajePieTicket, setMensajePieTicket] = useState('¡Gracias por su compra! Vuelva pronto.');
+  const [config, setConfig] = useState(() => {
+    const guardada = localStorage.getItem('pos_configuracion');
+    if (!guardada) {
+      localStorage.setItem('pos_configuracion', JSON.stringify(configuracionInicial));
+      return configuracionInicial;
+    }
+    try {
+      return JSON.parse(guardada);
+    } catch {
+      return configuracionInicial;
+    }
+  });
+
+  const [nombreNegocio, setNombreNegocio] = useState(config.nombreNegocio);
+  const [rfc, setRfc] = useState(config.rfc);
+  const [direccion, setDireccion] = useState(config.direccion);
+  const [telefono, setTelefono] = useState(config.telefono);
+  const [ivaPorcentaje, setIvaPorcentaje] = useState(config.ivaPorcentaje);
+  const [mensajePieTicket, setMensajePieTicket] = useState(config.mensajePieTicket);
 
   const guardarConfig = () => {
+    const nuevosDatos = {
+      nombreNegocio,
+      rfc,
+      direccion,
+      telefono,
+      ivaPorcentaje,
+      mensajePieTicket,
+    };
+    setConfig(nuevosDatos);
+    localStorage.setItem('pos_configuracion', JSON.stringify(nuevosDatos));
     notifications.show({
       title: 'Configuración Guardada',
       message: 'Los parámetros del sistema se han actualizado correctamente.',

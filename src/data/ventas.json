@@ -1,0 +1,48 @@
+[
+  {
+    "id": "TKT-892014",
+    "fecha": "2026-08-26T11:30:00.000Z",
+    "cliente": {
+      "id": "gral",
+      "nombre": "Público General",
+      "rfc": "XAXX010101000",
+      "telefono": "Sin teléfono"
+    },
+    "articulos": [
+      {
+        "id": "prod-001",
+        "codigo": "7501055300075",
+        "nombre": "Coca Cola Original 600ml",
+        "precio": 19.5,
+        "cantidad": 2,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 39.0
+      },
+      {
+        "id": "prod-003",
+        "codigo": "7501000111209",
+        "nombre": "Papas Sabritas Sal 45g",
+        "precio": 22.0,
+        "cantidad": 1,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 22.0
+      }
+    ],
+    "totales": {
+      "subtotal": 61.0,
+      "descuento": 0,
+      "subtotalNeto": 52.59,
+      "impuestos": 8.41,
+      "total": 61.0,
+      "totalArticulos": 3
+    },
+    "pago": {
+      "metodo": "efectivo",
+      "montoRecibido": 100.0,
+      "cambio": 39.0,
+      "referencia": ""
+    }
+  }
+]

@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { notifications } from '@mantine/notifications';
 import { IconCheck, IconAlertCircle } from '@tabler/icons-react';
 import { obtenerProductos, guardarProductos } from '../services/productoServicio';
+import ventasIniciales from '../data/ventas.json';
 
 const VentaContext = createContext(null);
 
@@ -23,7 +24,15 @@ export const VentaProvider = ({ children }) => {
   // Historial de ventas completadas
   const [historialVentas, setHistorialVentas] = useState(() => {
     const ventasGuardadas = localStorage.getItem('pos_historial_ventas');
-    return ventasGuardadas ? JSON.parse(ventasGuardadas) : [];
+    if (!ventasGuardadas) {
+      localStorage.setItem('pos_historial_ventas', JSON.stringify(ventasIniciales));
+      return ventasIniciales;
+    }
+    try {
+      return JSON.parse(ventasGuardadas);
+    } catch {
+      return ventasIniciales;
+    }
   });
 
   // Guardar historial en local storage

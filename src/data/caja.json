@@ -1,0 +1,18 @@
+{
+  "cajaAbierta": true,
+  "turnoActual": {
+    "id": "TURNO-001",
+    "cajero": "Cajero Principal",
+    "fechaApertura": "2026-08-26T08:00:00.000Z",
+    "fondoInicial": 500.0,
+    "movimientos": [
+      {
+        "id": "MOV-001",
+        "tipo": "entrada",
+        "monto": 200.0,
+        "concepto": "Fondo extra para cambio",
+        "fecha": "2026-08-26T09:15:00.000Z"
+      }
+    ]
+  }
+}

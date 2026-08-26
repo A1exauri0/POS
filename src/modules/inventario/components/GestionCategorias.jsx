@@ -18,8 +18,8 @@ import {
   IconTrash,
   IconCategory,
   IconSearch,
-  IconAlertTriangle,
   IconPackage,
+  IconPalette,
 } from '@tabler/icons-react';
 import {
   obtenerCategorias,
@@ -74,7 +74,31 @@ export const GestionCategorias = ({ onActualizacionCategorias }) => {
     setModalAbierto(true);
   };
 
-  // Guardar creacion o edicion
+  // Cambio rapido de color directamente desde el listado
+  const cambiarColorDirecto = (catId, nuevoColor) => {
+    if (!nuevoColor) return;
+
+    const listaActualizada = categorias.map((c) =>
+      c.id === catId ? { ...c, color: nuevoColor } : c
+    );
+
+    setCategorias(listaActualizada);
+    guardarCategorias(listaActualizada);
+
+    if (onActualizacionCategorias) {
+      onActualizacionCategorias(listaActualizada);
+    }
+
+    const catModificada = listaActualizada.find((c) => c.id === catId);
+    notifications.show({
+      title: 'Color Actualizado',
+      message: `El color de "${catModificada?.nombre}" cambió correctamente`,
+      color: nuevoColor,
+      autoClose: 2000,
+    });
+  };
+
+  // Guardar creacion o edicion completa
   const guardarCategoria = () => {
     const nombreLimpio = formNombre.trim();
     if (!nombreLimpio) {
@@ -222,7 +246,7 @@ export const GestionCategorias = ({ onActualizacionCategorias }) => {
           <Table.Thead className="bg-slate-50 text-slate-700 font-bold text-xs uppercase tracking-wider">
             <Table.Tr>
               <Table.Th>Categoría</Table.Th>
-              <Table.Th>Color / Etiqueta</Table.Th>
+              <Table.Th>Cambiar Color / Etiqueta</Table.Th>
               <Table.Th>Descripción</Table.Th>
               <Table.Th>Productos Asignados</Table.Th>
               <Table.Th className="text-right">Acciones</Table.Th>
@@ -247,14 +271,30 @@ export const GestionCategorias = ({ onActualizacionCategorias }) => {
                         <span>{cat.nombre}</span>
                       </div>
                     </Table.Td>
+
+                    {/* Selector interactivo directo de color en el listado */}
                     <Table.Td>
-                      <Badge variant="filled" color={cat.color || 'blue'} size="sm">
-                        {cat.nombre}
-                      </Badge>
+                      <Select
+                        size="xs"
+                        className="w-40"
+                        leftSection={<IconPalette size={14} />}
+                        value={cat.color || 'blue'}
+                        data={COLORES_DISPONIBLES}
+                        onChange={(nuevoColor) => cambiarColorDirecto(cat.id, nuevoColor)}
+                        renderOption={({ option }) => (
+                          <Group gap="xs">
+                            <Badge color={option.value} size="xs" variant="filled">
+                              {option.label}
+                            </Badge>
+                          </Group>
+                        )}
+                      />
                     </Table.Td>
+
                     <Table.Td className="text-slate-500 text-xs max-w-xs truncate">
                       {cat.descripcion || 'Sin descripción'}
                     </Table.Td>
+
                     <Table.Td>
                       <Badge
                         variant="light"
@@ -265,9 +305,10 @@ export const GestionCategorias = ({ onActualizacionCategorias }) => {
                         {totalProds} {totalProds === 1 ? 'producto' : 'productos'}
                       </Badge>
                     </Table.Td>
+
                     <Table.Td className="text-right">
                       <Group gap="xs" justify="flex-end">
-                        <Tooltip label="Editar categoría">
+                        <Tooltip label="Editar datos de categoría">
                           <ActionIcon
                             variant="subtle"
                             color="indigo"

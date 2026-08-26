@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { notifications } from '@mantine/notifications';
 import { IconCheck, IconCash } from '@tabler/icons-react';
+import datosCajaInicial from '../data/caja.json';
 
 const CajaContext = createContext(null);
 
@@ -8,20 +9,20 @@ export const CajaProvider = ({ children }) => {
   // Estado de la caja
   const [cajaAbierta, setCajaAbierta] = useState(() => {
     const estado = localStorage.getItem('pos_caja_abierta');
-    return estado ? JSON.parse(estado) : true; // Abierta por defecto para pruebas
+    return estado !== null ? JSON.parse(estado) : datosCajaInicial.cajaAbierta;
   });
 
   const [turnoActual, setTurnoActual] = useState(() => {
     const guardado = localStorage.getItem('pos_turno_actual');
-    return guardado
-      ? JSON.parse(guardado)
-      : {
-          id: 'TURNO-001',
-          cajero: 'Cajero Principal',
-          fechaApertura: new Date().toISOString(),
-          fondoInicial: 500.0,
-          movimientos: [],
-        };
+    if (!guardado) {
+      localStorage.setItem('pos_turno_actual', JSON.stringify(datosCajaInicial.turnoActual));
+      return datosCajaInicial.turnoActual;
+    }
+    try {
+      return JSON.parse(guardado);
+    } catch {
+      return datosCajaInicial.turnoActual;
+    }
   });
 
   useEffect(() => {

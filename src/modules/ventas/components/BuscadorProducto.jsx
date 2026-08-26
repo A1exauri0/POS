@@ -13,14 +13,11 @@ export const BuscadorProducto = ({
 }) => {
   const { agregarProducto } = useVenta();
   const [mensajeError, setMensajeError] = useState('');
-  const [listaCategorias, setListaCategorias] = useState(() => [
-    'Todos',
-    ...obtenerCategorias().map((c) => c.nombre),
-  ]);
+  const [categorias, setCategorias] = useState(() => obtenerCategorias());
 
-  // Recargar categorias al montar
+  // Recargar categorias al montar y mantener sincronia
   useEffect(() => {
-    setListaCategorias(['Todos', ...obtenerCategorias().map((c) => c.nombre)]);
+    setCategorias(obtenerCategorias());
   }, []);
 
   // Manejar busqueda o escaneo directo por Enter
@@ -88,23 +85,35 @@ export const BuscadorProducto = ({
         />
       </div>
 
-      {/* Filtros de Categorias Rapidas */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-        {listaCategorias.map((categoria) => {
-          const seleccionada = categoriaSeleccionada === categoria;
+      {/* Filtros de Categorias Rapidas con colores coincidentes */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+        {/* Opcion Todos */}
+        <Badge
+          size="lg"
+          variant={categoriaSeleccionada === 'Todos' ? 'filled' : 'light'}
+          color="dark"
+          radius="md"
+          className="cursor-pointer transition-all duration-150 select-none hover:scale-105 active:scale-95 shrink-0 uppercase tracking-wider text-[11px] py-1 px-3"
+          onClick={() => setCategoriaSeleccionada('Todos')}
+        >
+          Todos
+        </Badge>
+
+        {/* Categorias del sistema con su color asignado */}
+        {categorias.map((cat) => {
+          const seleccionada = categoriaSeleccionada === cat.nombre;
           return (
-            <button
-              key={categoria}
-              type="button"
-              onClick={() => setCategoriaSeleccionada(categoria)}
-              className={`px-3 py-1 text-xs font-semibold rounded-lg transition-all shrink-0 cursor-pointer ${
-                seleccionada
-                  ? 'bg-indigo-600 text-white shadow-xs'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-800'
-              }`}
+            <Badge
+              key={cat.id || cat.nombre}
+              size="lg"
+              variant={seleccionada ? 'filled' : 'light'}
+              color={cat.color || 'blue'}
+              radius="md"
+              className="cursor-pointer transition-all duration-150 select-none hover:scale-105 active:scale-95 shrink-0 text-xs py-1 px-3"
+              onClick={() => setCategoriaSeleccionada(cat.nombre)}
             >
-              {categoria}
-            </button>
+              {cat.nombre}
+            </Badge>
           );
         })}
       </div>
