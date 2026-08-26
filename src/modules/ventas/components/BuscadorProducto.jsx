@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { TextInput, ActionIcon, Badge } from '@mantine/core';
 import { IconBarcode, IconSearch, IconX } from '@tabler/icons-react';
-import { CATEGORIAS_PRODUCTOS, buscarProductoPorCodigoONombre } from '../../../services/productoServicio';
+import { obtenerCategorias, buscarProductoPorCodigoONombre } from '../../../services/productoServicio';
 import { useVenta } from '../../../contexts/VentaContext';
 
 export const BuscadorProducto = ({
@@ -13,6 +13,15 @@ export const BuscadorProducto = ({
 }) => {
   const { agregarProducto } = useVenta();
   const [mensajeError, setMensajeError] = useState('');
+  const [listaCategorias, setListaCategorias] = useState(() => [
+    'Todos',
+    ...obtenerCategorias().map((c) => c.nombre),
+  ]);
+
+  // Recargar categorias al montar
+  useEffect(() => {
+    setListaCategorias(['Todos', ...obtenerCategorias().map((c) => c.nombre)]);
+  }, []);
 
   // Manejar busqueda o escaneo directo por Enter
   const manejarKeyDown = (e) => {
@@ -81,7 +90,7 @@ export const BuscadorProducto = ({
 
       {/* Filtros de Categorias Rapidas */}
       <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-        {CATEGORIAS_PRODUCTOS.map((categoria) => {
+        {listaCategorias.map((categoria) => {
           const seleccionada = categoriaSeleccionada === categoria;
           return (
             <button

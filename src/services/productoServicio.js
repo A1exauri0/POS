@@ -1,14 +1,75 @@
 // Servicio de datos y catalogo de productos para el POS
 
+// Categorias base predefinidas en el sistema
+export const CATEGORIAS_BASE = [
+  {
+    id: 'cat-1',
+    nombre: 'Bebidas',
+    color: 'blue',
+    descripcion: 'Refrescos, aguas purificadas, jugos y bebidas energéticas',
+  },
+  {
+    id: 'cat-2',
+    nombre: 'Abarrotes',
+    color: 'teal',
+    descripcion: 'Granos, aceites, pastas, azúcar, harina y abarrotes generales',
+  },
+  {
+    id: 'cat-3',
+    nombre: 'Snacks',
+    color: 'yellow',
+    descripcion: 'Papas, galletas, botanas saladas y dulces',
+  },
+  {
+    id: 'cat-4',
+    nombre: 'Lácteos',
+    color: 'indigo',
+    descripcion: 'Leches, quesos, cremas, mantequillas y yogures',
+  },
+  {
+    id: 'cat-5',
+    nombre: 'Panadería',
+    color: 'orange',
+    descripcion: 'Pan de caja, bolillos, pan dulce y repostería',
+  },
+  {
+    id: 'cat-6',
+    nombre: 'Limpieza',
+    color: 'cyan',
+    descripcion: 'Detergentes, suavizantes, cloro, jabones y desinfectantes',
+  },
+  {
+    id: 'cat-7',
+    nombre: 'Cuidado Personal',
+    color: 'pink',
+    descripcion: 'Shampoo, jabones de tocador, pasta dental y desodorantes',
+  },
+];
+
+// Obtener lista de categorias desde localStorage o cargar las iniciales
+export const obtenerCategorias = () => {
+  const guardadas = localStorage.getItem('pos_categorias');
+  if (!guardadas) {
+    localStorage.setItem('pos_categorias', JSON.stringify(CATEGORIAS_BASE));
+    return CATEGORIAS_BASE;
+  }
+  try {
+    return JSON.parse(guardadas);
+  } catch (error) {
+    console.error('Error al parsear categorias:', error);
+    return CATEGORIAS_BASE;
+  }
+};
+
+// Guardar categorias en localStorage
+export const guardarCategorias = (categorias) => {
+  localStorage.setItem('pos_categorias', JSON.stringify(categorias));
+};
+
+// Array auxiliar de nombres para compatibilidad hacia atras
 export const CATEGORIAS_PRODUCTOS = [
   'Todos',
-  'Bebidas',
-  'Abarrotes',
-  'Snacks',
-  'Lácteos',
-  'Panadería',
-  'Limpieza',
-  'Cuidado Personal',
+  ...obtenerCategorias().map((c) => c.nombre),
 ];
 
 export const PRODUCTOS_INICIALES = [
