@@ -14,8 +14,10 @@ export const VentaProvider = ({ children }) => {
   // Datos del cliente actual (Siempre Publico General por defecto)
   const [cliente, setCliente] = useState(() => obtenerClientePredeterminado());
 
-  // Modal de cobro activo
+  // Modal de cobro activo y modal de venta exitosa
   const [modalCobroAbierto, setModalCobroAbierto] = useState(false);
+  const [modalExitoAbierto, setModalExitoAbierto] = useState(false);
+  const [ultimaVentaRealizada, setUltimaVentaRealizada] = useState(null);
 
   // Historial de ventas completadas
   const [historialVentas, setHistorialVentas] = useState(() => {
@@ -178,17 +180,11 @@ export const VentaProvider = ({ children }) => {
     // Guardar en el historial
     setHistorialVentas((prev) => [nuevaVenta, ...prev]);
 
-    // Limpiar carrito y cerrar modal
+    // Limpiar carrito, cerrar modal de cobro y abrir modal de exito
     limpiarVenta();
     setModalCobroAbierto(false);
-
-    notifications.show({
-      title: '¡Venta Realizada con Éxito!',
-      message: `Folio: ${folioVenta} - Total: $${totales.total.toFixed(2)}`,
-      color: 'green',
-      icon: <IconCheck size={18} />,
-      autoClose: 3500,
-    });
+    setUltimaVentaRealizada(nuevaVenta);
+    setModalExitoAbierto(true);
 
     return nuevaVenta;
   };
@@ -202,6 +198,9 @@ export const VentaProvider = ({ children }) => {
         totales,
         modalCobroAbierto,
         setModalCobroAbierto,
+        modalExitoAbierto,
+        setModalExitoAbierto,
+        ultimaVentaRealizada,
         agregarProducto,
         cambiarCantidad,
         eliminarArticulo,

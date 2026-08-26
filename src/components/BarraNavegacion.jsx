@@ -43,9 +43,9 @@ export const BarraNavegacion = ({ vistaActiva, setVistaActiva }) => {
   ];
 
   return (
-    <aside className="w-16 bg-slate-900 border-r border-slate-800 flex flex-col items-center justify-between py-3 select-none shrink-0">
+    <aside className="w-18 bg-slate-900 border-r border-slate-800 flex flex-col items-center justify-between py-3.5 select-none shrink-0">
       {/* Botones de modulos principales */}
-      <div className="flex flex-col items-center gap-3 w-full">
+      <div className="flex flex-col items-center gap-3.5 w-full">
         {modulos.map((modulo) => {
           const Icono = modulo.icono;
           const estaActivo = vistaActiva === modulo.id;
@@ -61,13 +61,13 @@ export const BarraNavegacion = ({ vistaActiva, setVistaActiva }) => {
               <button
                 type="button"
                 onClick={() => setVistaActiva(modulo.id)}
-                className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-150 cursor-pointer ${
+                className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-150 cursor-pointer ${
                   estaActivo
                     ? `${modulo.color} shadow-lg shadow-indigo-500/20 scale-105`
                     : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800'
                 }`}
               >
-                <Icono size={22} stroke={1.8} />
+                <Icono size={24} stroke={1.8} />
               </button>
             </Tooltip>
           );

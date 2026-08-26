@@ -20,6 +20,7 @@ import {
 import { useCaja } from '../../contexts/CajaContext';
 import { useVenta } from '../../contexts/VentaContext';
 import { formatearMoneda, formatearFechaHora } from '../../utils/formateadores';
+import { ModalConfirmacion } from '../../components/ModalConfirmacion';
 
 export const PantallaCaja = () => {
   const { cajaAbierta, turnoActual, abrirCaja, cerrarCaja, registrarMovimiento } = useCaja();
@@ -27,6 +28,7 @@ export const PantallaCaja = () => {
 
   const [modalMovimientoAbierto, setModalMovimientoAbierto] = useState(false);
   const [modalAperturaAbierto, setModalAperturaAbierto] = useState(false);
+  const [modalCierreAbierto, setModalCierreAbierto] = useState(false);
   const [tipoMovimiento, setTipoMovimiento] = useState('salida');
   const [montoMovimiento, setMontoMovimiento] = useState(0);
   const [conceptoMovimiento, setConceptoMovimiento] = useState('');
@@ -92,11 +94,7 @@ export const PantallaCaja = () => {
                 color="red"
                 variant="filled"
                 leftSection={<IconLock size={18} />}
-                onClick={() => {
-                  if (window.confirm('¿Deseas cerrar el turno y realizar el corte de caja?')) {
-                    cerrarCaja();
-                  }
-                }}
+                onClick={() => setModalCierreAbierto(true)}
               >
                 Cerrar Caja (Corte)
               </Button>
@@ -266,6 +264,18 @@ export const PantallaCaja = () => {
           </Group>
         </div>
       </Modal>
+
+      {/* Modal de confirmacion para corte de caja */}
+      <ModalConfirmacion
+        abierto={modalCierreAbierto}
+        alCerrar={() => setModalCierreAbierto(false)}
+        alConfirmar={cerrarCaja}
+        titulo="¿Cerrar turno de caja?"
+        mensaje="Se realizará el corte del turno actual y se generará el balance final de caja."
+        textoConfirmar="Cerrar Caja"
+        color="red"
+        icono={IconLock}
+      />
     </div>
   );
 };

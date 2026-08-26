@@ -1,12 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import {
   Modal,
-  Tabs,
+  SegmentedControl,
   NumberInput,
   TextInput,
   Button,
   Group,
-  Text,
   Badge,
 } from '@mantine/core';
 import {
@@ -14,7 +13,8 @@ import {
   IconCreditCard,
   IconBuildingBank,
   IconCheck,
-  IconArrowRight,
+  IconReceipt,
+  IconCoins,
 } from '@tabler/icons-react';
 import { formatearMoneda } from '../../../utils/formateadores';
 import { useVenta } from '../../../contexts/VentaContext';
@@ -44,7 +44,7 @@ export const ModalCobro = () => {
       setTimeout(() => {
         inputRecibidoRef.current?.focus();
         inputRecibidoRef.current?.select();
-      }, 100);
+      }, 120);
     }
   }, [modalCobroAbierto, totales.total]);
 
@@ -75,142 +75,194 @@ export const ModalCobro = () => {
       opened={modalCobroAbierto}
       onClose={() => setModalCobroAbierto(false)}
       title={
-        <div className="flex items-center gap-2">
-          <span className="font-bold text-slate-800 text-lg">Cobro de Venta</span>
-          <Badge color="indigo" variant="light">
-            Cliente: {cliente.nombre}
-          </Badge>
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0 shadow-2xs">
+            <IconReceipt size={20} stroke={2} />
+          </div>
+          <div>
+            <h2 className="text-base font-extrabold text-slate-800 leading-tight">Cobro de Venta</h2>
+            <p className="text-xs text-slate-500 font-medium">Cliente: {cliente?.nombre || 'Público General'}</p>
+          </div>
         </div>
       }
-      size="lg"
+      size={540}
       centered
-      radius="lg"
-      overlayProps={{ backgroundOpacity: 0.55, blur: 3 }}
+      radius={24}
+      overlayProps={{ backgroundOpacity: 0.6, blur: 4 }}
+      classNames={{
+        header: 'border-b border-slate-100 pb-3 pt-1 px-5',
+        body: 'p-5 pt-3',
+        content: '!rounded-3xl shadow-2xl overflow-hidden border border-slate-100',
+      }}
     >
-      <div className="space-y-4 pt-1" onKeyDown={manejarKeyDown}>
-        {/* Banner de Total a Cobrar */}
-        <div className="bg-slate-900 text-white p-4 rounded-xl flex items-center justify-between shadow-inner">
+      <div className="space-y-4 select-none" onKeyDown={manejarKeyDown}>
+        {/* Banner Estilizado y Compacto de Total a Liquidar */}
+        <div className="bg-linear-to-r from-slate-900 via-slate-800 to-indigo-950 text-white px-4 py-3.5 rounded-2xl flex items-center justify-between shadow-md">
           <div>
-            <p className="text-xs text-slate-400 font-medium uppercase tracking-wider">
+            <span className="text-[10px] font-bold text-indigo-300 uppercase tracking-widest block">
               Total a Liquidar
-            </p>
-            <p className="text-3xl font-black text-emerald-400 font-mono tracking-tight">
+            </span>
+            <span className="text-3xl font-black text-emerald-400 font-mono tracking-tight block">
               {formatearMoneda(totales.total)}
-            </p>
+            </span>
           </div>
           <div className="text-right">
-            <p className="text-xs text-slate-400">Total de Artículos</p>
-            <p className="text-lg font-bold text-slate-200 font-mono">
-              {totales.totalArticulos}
-            </p>
+            <span className="text-xs text-slate-300 font-mono bg-white/10 px-3 py-1 rounded-xl inline-block border border-white/10">
+              {totales.totalArticulos} {totales.totalArticulos === 1 ? 'artículo' : 'artículos'}
+            </span>
           </div>
         </div>
 
-        {/* Metodos de Pago */}
-        <Tabs value={metodoPago} onChange={setMetodoPago} color="indigo" radius="md">
-          <Tabs.List grow>
-            <Tabs.Tab value="efectivo" leftSection={<IconCash size={18} />}>
-              Efectivo
-            </Tabs.Tab>
-            <Tabs.Tab value="tarjeta" leftSection={<IconCreditCard size={18} />}>
-              Tarjeta
-            </Tabs.Tab>
-            <Tabs.Tab value="transferencia" leftSection={<IconBuildingBank size={18} />}>
-              Transferencia
-            </Tabs.Tab>
-          </Tabs.List>
+        {/* Selector Moderno de Método de Pago */}
+        <SegmentedControl
+          value={metodoPago}
+          onChange={setMetodoPago}
+          fullWidth
+          size="md"
+          radius="xl"
+          color="indigo"
+          data={[
+            {
+              value: 'efectivo',
+              label: (
+                <div className="flex items-center justify-center gap-1.5 py-1 font-semibold text-xs sm:text-sm">
+                  <IconCash size={18} />
+                  <span>Efectivo</span>
+                </div>
+              ),
+            },
+            {
+              value: 'tarjeta',
+              label: (
+                <div className="flex items-center justify-center gap-1.5 py-1 font-semibold text-xs sm:text-sm">
+                  <IconCreditCard size={18} />
+                  <span>Tarjeta</span>
+                </div>
+              ),
+            },
+            {
+              value: 'transferencia',
+              label: (
+                <div className="flex items-center justify-center gap-1.5 py-1 font-semibold text-xs sm:text-sm">
+                  <IconBuildingBank size={18} />
+                  <span>Transferencia</span>
+                </div>
+              ),
+            },
+          ]}
+        />
 
-          {/* Tab: Pago en Efectivo */}
-          <Tabs.Panel value="efectivo" pt="md" className="space-y-4">
-            {/* Botones de Denominaciones Rapidas */}
-            <div>
-              <Text size="xs" fw={600} c="dimmed" mb={6}>
-                Denominaciones rápidas / Billetes:
-              </Text>
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  size="xs"
-                  variant="outline"
-                  color="indigo"
+        {/* Panel: Pago en Efectivo */}
+        {metodoPago === 'efectivo' && (
+          <div className="space-y-3.5">
+            {/* Billetes y Denominaciones Rápidas como píldoras redondeadas */}
+            <div className="space-y-1.5">
+              <span className="text-xs font-bold text-slate-500 flex items-center gap-1.5">
+                <IconCoins size={14} className="text-slate-400" /> Billetes sugeridos:
+              </span>
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
                   onClick={() => setMontoRecibido(totales.total)}
+                  className={`px-3.5 py-1.5 rounded-full border text-xs font-bold transition-all cursor-pointer shadow-2xs active:scale-95 ${
+                    montoRecibido === totales.total
+                      ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
+                      : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200'
+                  }`}
                 >
-                  Exacto (${totales.total.toFixed(2)})
-                </Button>
+                  Exacto ({formatearMoneda(totales.total)})
+                </button>
+
                 {DENOMINACIONES_RAPIDAS.map((monto) => (
-                  <Button
+                  <button
                     key={monto}
-                    size="xs"
-                    variant="default"
+                    type="button"
                     onClick={() => setMontoRecibido(monto)}
-                    disabled={monto < totales.total}
+                    className={`px-3 py-1.5 rounded-full border text-xs font-bold font-mono transition-all cursor-pointer shadow-2xs hover:scale-105 active:scale-95 ${
+                      montoRecibido === monto
+                        ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
+                        : 'bg-white hover:bg-slate-50 text-slate-700 border-slate-200'
+                    }`}
                   >
                     ${monto}
-                  </Button>
+                  </button>
                 ))}
               </div>
             </div>
 
-            {/* Input de Monto Recibido */}
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Text size="xs" fw={600} c="dimmed" mb={4}>
-                  Monto Recibido ($):
-                </Text>
+            {/* Grid Equilibrado: Monto Recibido y Cambio */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-stretch">
+              {/* Columna Izquierda: Input Monto Recibido */}
+              <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200 flex flex-col justify-between">
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
+                  Monto Recibido
+                </span>
                 <NumberInput
                   ref={inputRecibidoRef}
                   value={montoRecibido}
                   onChange={(val) => setMontoRecibido(typeof val === 'number' ? val : 0)}
                   min={0}
                   decimalScale={2}
-                  size="lg"
-                  radius="md"
+                  fixedDecimalScale
+                  hideControls
+                  size="md"
+                  radius="xl"
                   prefix="$ "
                   thousandSeparator=","
                   classNames={{
-                    input: 'font-mono font-bold text-xl text-slate-800',
+                    input:
+                      'font-mono font-black text-2xl text-slate-900 bg-white border-slate-300 h-13 shadow-inner',
                   }}
                 />
               </div>
 
-              {/* Recuadro de Cambio a Regresar */}
+              {/* Columna Derecha: Tarjeta de Cambio / Falta por Pagar */}
               <div
-                className={`p-3 rounded-xl border flex flex-col justify-center ${
+                className={`p-3 rounded-2xl border-2 flex flex-col justify-between transition-colors shadow-2xs ${
                   faltaDinero
                     ? 'bg-rose-50 border-rose-200 text-rose-800'
-                    : 'bg-emerald-50 border-emerald-200 text-emerald-900'
+                    : 'bg-emerald-50 border-emerald-300 text-emerald-900'
                 }`}
               >
-                <span className="text-xs font-semibold uppercase tracking-wider">
-                  {faltaDinero ? 'Falta por Pagar' : 'Cambio para el Cliente'}
+                <span className="text-[11px] font-extrabold uppercase tracking-wider block">
+                  {faltaDinero ? 'Falta por Pagar' : 'Cambio para Cliente'}
                 </span>
-                <span className="text-2xl font-black font-mono mt-0.5">
+                <span className="text-2xl sm:text-3xl font-black font-mono tracking-tight block py-0.5">
                   {faltaDinero
                     ? formatearMoneda(totales.total - (montoRecibido || 0))
                     : formatearMoneda(cambioCalculado)}
                 </span>
+                <span className="text-[10px] font-semibold opacity-75 block">
+                  {faltaDinero ? 'El importe recibido es menor' : 'Importe a devolver'}
+                </span>
               </div>
             </div>
-          </Tabs.Panel>
+          </div>
+        )}
 
-          {/* Tab: Pago con Tarjeta */}
-          <Tabs.Panel value="tarjeta" pt="md" className="space-y-3">
-            <p className="text-xs text-slate-500">
-              Procesa el pago en la terminal bancaria e ingresa los últimos 4 dígitos o número de autorización.
+        {/* Panel: Pago con Tarjeta */}
+        {metodoPago === 'tarjeta' && (
+          <div className="space-y-3 p-4 bg-slate-50 rounded-2xl border border-slate-200">
+            <p className="text-xs text-slate-600 font-medium leading-relaxed">
+              Procesa el cobro por <strong className="text-slate-900">{formatearMoneda(totales.total)}</strong> en tu terminal bancaria e ingresa el número de autorización.
             </p>
             <TextInput
               label="Número de Autorización / Últimos 4 dígitos:"
-              placeholder="Ej. 4839 o AUT-8921"
+              placeholder="Ej. 4829 o AUT-9921"
               value={referenciaPago}
               onChange={(e) => setReferenciaPago(e.target.value)}
               size="md"
-              radius="md"
+              radius="lg"
+              autoFocus
             />
-          </Tabs.Panel>
+          </div>
+        )}
 
-          {/* Tab: Pago con Transferencia */}
-          <Tabs.Panel value="transferencia" pt="md" className="space-y-3">
-            <p className="text-xs text-slate-500">
-              Verifica la recepción de la transferencia SPEI / CoDi antes de confirmar.
+        {/* Panel: Pago con Transferencia */}
+        {metodoPago === 'transferencia' && (
+          <div className="space-y-3 p-4 bg-slate-50 rounded-2xl border border-slate-200">
+            <p className="text-xs text-slate-600 font-medium leading-relaxed">
+              Verifica el abono de <strong className="text-slate-900">{formatearMoneda(totales.total)}</strong> vía SPEI / CoDi antes de confirmar la venta.
             </p>
             <TextInput
               label="Clave de Rastreo / Folio SPEI:"
@@ -218,17 +270,18 @@ export const ModalCobro = () => {
               value={referenciaPago}
               onChange={(e) => setReferenciaPago(e.target.value)}
               size="md"
-              radius="md"
+              radius="lg"
+              autoFocus
             />
-          </Tabs.Panel>
-        </Tabs>
+          </div>
+        )}
 
-        {/* Botones de Confirmar o Cancelar */}
-        <Group justify="flex-end" gap="sm" pt="sm" className="border-t border-slate-200">
+        {/* Pie de Acciones */}
+        <Group justify="flex-end" gap="sm" pt="xs" className="border-t border-slate-100">
           <Button
-            variant="subtle"
-            color="gray"
+            variant="default"
             size="md"
+            radius="xl"
             onClick={() => setModalCobroAbierto(false)}
           >
             Cancelar (ESC)
@@ -237,10 +290,11 @@ export const ModalCobro = () => {
           <Button
             color="teal"
             size="md"
+            radius="xl"
             disabled={faltaDinero}
             onClick={manejarCobro}
             leftSection={<IconCheck size={18} />}
-            className="font-bold shadow-md"
+            className="font-extrabold shadow-md shadow-teal-600/20"
           >
             Completar Venta [Enter]
           </Button>

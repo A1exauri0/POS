@@ -32,7 +32,7 @@ export const PanelTicket = () => {
   const hayArticulos = articulos.length > 0;
 
   return (
-    <div className="w-80 md:w-96 bg-slate-900 text-white flex flex-col h-full border-l border-slate-800 shadow-xl select-none shrink-0">
+    <div className="w-96 lg:w-[410px] xl:w-[430px] bg-slate-900 text-white flex flex-col h-full border-l border-slate-800 shadow-xl select-none shrink-0">
       {/* Cabecera del Ticket y Dropdown de Cliente con Buscador */}
       <div className="p-3.5 border-b border-slate-800 bg-slate-900/90 space-y-2.5">
         <div className="flex items-center justify-between">

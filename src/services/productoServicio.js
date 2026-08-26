@@ -41,7 +41,15 @@ export const obtenerProductos = () => {
     return productosIniciales;
   }
   try {
-    return JSON.parse(productosGuardados);
+    const parseados = JSON.parse(productosGuardados);
+    // Asegurar que las imagenes sean siempre locales y no consulten internet
+    return parseados.map((p) => {
+      const coincidencia = productosIniciales.find((pi) => pi.id === p.id);
+      if (p.imagen === undefined || (p.imagen && p.imagen.startsWith('http'))) {
+        return { ...p, imagen: coincidencia?.imagen || '' };
+      }
+      return p;
+    });
   } catch (error) {
     console.error('Error al parsear productos:', error);
     return productosIniciales;

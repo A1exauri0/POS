@@ -7,7 +7,8 @@
     "precio": 19.5,
     "costo": 14.0,
     "stock": 48,
-    "unidad": "Pza"
+    "unidad": "Pza",
+    "imagen": "/images/productos/coca-cola.jpg"
   },
   {
     "id": "prod-002",
@@ -17,7 +18,8 @@
     "precio": 14.0,
     "costo": 8.5,
     "stock": 35,
-    "unidad": "Pza"
+    "unidad": "Pza",
+    "imagen": "/images/productos/bonafont.jpg"
   },
   {
     "id": "prod-003",
@@ -27,7 +29,8 @@
     "precio": 22.0,
     "costo": 16.0,
     "stock": 24,
-    "unidad": "Pza"
+    "unidad": "Pza",
+    "imagen": "/images/productos/sabritas.jpg"
   },
   {
     "id": "prod-004",
@@ -37,7 +40,8 @@
     "precio": 18.5,
     "costo": 13.2,
     "stock": 19,
-    "unidad": "Pza"
+    "unidad": "Pza",
+    "imagen": "/images/productos/chokis.jpg"
   },
   {
     "id": "prod-005",
@@ -47,7 +51,8 @@
     "precio": 28.5,
     "costo": 23.0,
     "stock": 15,
-    "unidad": "Pza"
+    "unidad": "Pza",
+    "imagen": "/images/productos/leche.jpg"
   },
   {
     "id": "prod-006",
@@ -57,7 +62,8 @@
     "precio": 47.0,
     "costo": 38.0,
     "stock": 12,
-    "unidad": "Pza"
+    "unidad": "Pza",
+    "imagen": "/images/productos/bimbo.jpg"
   },
   {
     "id": "prod-007",
@@ -67,7 +73,8 @@
     "precio": 34.0,
     "costo": 26.5,
     "stock": 40,
-    "unidad": "Pza"
+    "unidad": "Pza",
+    "imagen": ""
   },
   {
     "id": "prod-008",
@@ -77,7 +84,8 @@
     "precio": 39.5,
     "costo": 31.0,
     "stock": 28,
-    "unidad": "Pza"
+    "unidad": "Pza",
+    "imagen": ""
   },
   {
     "id": "prod-009",
@@ -87,7 +95,8 @@
     "precio": 42.0,
     "costo": 33.5,
     "stock": 18,
-    "unidad": "Pza"
+    "unidad": "Pza",
+    "imagen": ""
   },
   {
     "id": "prod-010",
@@ -97,7 +106,8 @@
     "precio": 45.0,
     "costo": 34.0,
     "stock": 14,
-    "unidad": "Pza"
+    "unidad": "Pza",
+    "imagen": ""
   },
   {
     "id": "prod-011",
@@ -107,7 +117,8 @@
     "precio": 21.0,
     "costo": 15.0,
     "stock": 30,
-    "unidad": "Pza"
+    "unidad": "Pza",
+    "imagen": ""
   },
   {
     "id": "prod-012",
@@ -117,6 +128,7 @@
     "precio": 68.0,
     "costo": 52.0,
     "stock": 9,
-    "unidad": "Pza"
+    "unidad": "Pza",
+    "imagen": "/images/productos/nescafe.jpg"
   }
 ]

@@ -2,7 +2,11 @@
 @import "@mantine/core/styles.css";
 @import "@mantine/notifications/styles.css";
 
-/* Estilos base del sistema POS */
+/* Estilos base del sistema POS con escala ampliada */
+html {
+  font-size: 17.5px;
+}
+
 html,
 body,
 #root {

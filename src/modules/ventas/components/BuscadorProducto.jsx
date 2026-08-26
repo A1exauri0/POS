@@ -1,6 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { TextInput, ActionIcon, Badge } from '@mantine/core';
-import { IconBarcode, IconSearch, IconX } from '@tabler/icons-react';
+import {
+  IconBarcode,
+  IconSearch,
+  IconX,
+  IconChevronLeft,
+  IconChevronRight,
+} from '@tabler/icons-react';
 import { obtenerCategorias, buscarProductoPorCodigoONombre } from '../../../services/productoServicio';
 import { useVenta } from '../../../contexts/VentaContext';
 
@@ -14,11 +20,20 @@ export const BuscadorProducto = ({
   const { agregarProducto } = useVenta();
   const [mensajeError, setMensajeError] = useState('');
   const [categorias, setCategorias] = useState(() => obtenerCategorias());
+  const contenedorCategoriasRef = useRef(null);
 
   // Recargar categorias al montar y mantener sincronia
   useEffect(() => {
     setCategorias(obtenerCategorias());
   }, []);
+
+  // Desplazar contenedor de categorias con flechas
+  const desplazarCategorias = (direccion) => {
+    if (contenedorCategoriasRef.current) {
+      const cantidad = direccion === 'izquierda' ? -180 : 180;
+      contenedorCategoriasRef.current.scrollBy({ left: cantidad, behavior: 'smooth' });
+    }
+  };
 
   // Manejar busqueda o escaneo directo por Enter
   const manejarKeyDown = (e) => {
@@ -85,37 +100,69 @@ export const BuscadorProducto = ({
         />
       </div>
 
-      {/* Filtros de Categorias Rapidas con colores coincidentes */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-        {/* Opcion Todos */}
-        <Badge
-          size="lg"
-          variant={categoriaSeleccionada === 'Todos' ? 'filled' : 'light'}
-          color="dark"
+      {/* Filtros de Categorias Rapidas con flechas de desplazamiento */}
+      <div className="flex items-center gap-1.5 w-full">
+        {/* Flecha Izquierda */}
+        <ActionIcon
+          variant="light"
+          color="gray"
+          size="md"
           radius="md"
-          className="cursor-pointer transition-all duration-150 select-none hover:scale-105 active:scale-95 shrink-0 uppercase tracking-wider text-[11px] py-1 px-3"
-          onClick={() => setCategoriaSeleccionada('Todos')}
+          onClick={() => desplazarCategorias('izquierda')}
+          className="shrink-0 hover:bg-slate-200 text-slate-600 cursor-pointer"
+          aria-label="Desplazar categorías hacia la izquierda"
         >
-          Todos
-        </Badge>
+          <IconChevronLeft size={18} />
+        </ActionIcon>
 
-        {/* Categorias del sistema con su color asignado */}
-        {categorias.map((cat) => {
-          const seleccionada = categoriaSeleccionada === cat.nombre;
-          return (
-            <Badge
-              key={cat.id || cat.nombre}
-              size="lg"
-              variant={seleccionada ? 'filled' : 'light'}
-              color={cat.color || 'blue'}
-              radius="md"
-              className="cursor-pointer transition-all duration-150 select-none hover:scale-105 active:scale-95 shrink-0 text-xs py-1 px-3"
-              onClick={() => setCategoriaSeleccionada(cat.nombre)}
-            >
-              {cat.nombre}
-            </Badge>
-          );
-        })}
+        {/* Contenedor desplazable de categorias */}
+        <div
+          ref={contenedorCategoriasRef}
+          className="flex-1 flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none scroll-smooth"
+        >
+          {/* Opcion Todos */}
+          <Badge
+            size="lg"
+            variant={categoriaSeleccionada === 'Todos' ? 'filled' : 'light'}
+            color="dark"
+            radius="md"
+            className="cursor-pointer transition-all duration-150 select-none hover:scale-105 active:scale-95 shrink-0 uppercase tracking-wider text-[11px] py-1 px-3"
+            onClick={() => setCategoriaSeleccionada('Todos')}
+          >
+            Todos
+          </Badge>
+
+          {/* Categorias del sistema con su color asignado */}
+          {categorias.map((cat) => {
+            const seleccionada = categoriaSeleccionada === cat.nombre;
+            return (
+              <Badge
+                key={cat.id || cat.nombre}
+                size="lg"
+                variant={seleccionada ? 'filled' : 'light'}
+                color={cat.color || 'blue'}
+                radius="md"
+                className="cursor-pointer transition-all duration-150 select-none hover:scale-105 active:scale-95 shrink-0 text-xs py-1 px-3"
+                onClick={() => setCategoriaSeleccionada(cat.nombre)}
+              >
+                {cat.nombre}
+              </Badge>
+            );
+          })}
+        </div>
+
+        {/* Flecha Derecha */}
+        <ActionIcon
+          variant="light"
+          color="gray"
+          size="md"
+          radius="md"
+          onClick={() => desplazarCategorias('derecha')}
+          className="shrink-0 hover:bg-slate-200 text-slate-600 cursor-pointer"
+          aria-label="Desplazar categorías hacia la derecha"
+        >
+          <IconChevronRight size={18} />
+        </ActionIcon>
       </div>
     </div>
   );

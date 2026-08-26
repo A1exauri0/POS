@@ -5,6 +5,13 @@ export const temaMantine = createTheme({
   primaryColor: 'indigo',
   defaultRadius: 'md',
   fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+  fontSizes: {
+    xs: '0.825rem',
+    sm: '0.925rem',
+    md: '1.05rem',
+    lg: '1.2rem',
+    xl: '1.35rem',
+  },
   colors: {
     // Paleta personalizada para botones de cobro y acciones destacadas
     posVerde: [
