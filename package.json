@@ -7,14 +7,23 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "tauri": "tauri"
   },
   "dependencies": {
+    "@mantine/core": "^9.5.2",
+    "@mantine/hooks": "^9.5.2",
+    "@mantine/notifications": "^9.5.2",
+    "@tabler/icons-react": "^3.46.0",
+    "clsx": "^2.1.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@rolldown/binding-win32-x64-msvc": "^1.2.6",
+    "@tailwindcss/vite": "^4.3.3",
+    "@tauri-apps/cli": "^2.11.4",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.4",
@@ -22,6 +31,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.3",
     "globals": "^17.7.0",
+    "tailwindcss": "^4.3.3",
     "vite": "^8.2.0"
   }
 }
