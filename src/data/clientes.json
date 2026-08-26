@@ -1,0 +1,26 @@
+[
+  {
+    "id": "cli-1",
+    "nombre": "Público General",
+    "telefono": "Sin teléfono",
+    "esPredeterminado": true
+  },
+  {
+    "id": "cli-2",
+    "nombre": "Juan Pérez Hernández",
+    "telefono": "55 9876 5432",
+    "esPredeterminado": false
+  },
+  {
+    "id": "cli-3",
+    "nombre": "María Luisa Gómez",
+    "telefono": "55 1122 3344",
+    "esPredeterminado": false
+  },
+  {
+    "id": "cli-4",
+    "nombre": "Abarrotes La Esquinita",
+    "telefono": "55 4433 2211",
+    "esPredeterminado": false
+  }
+]

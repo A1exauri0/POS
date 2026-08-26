@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { notifications } from '@mantine/notifications';
 import { IconCheck, IconAlertCircle } from '@tabler/icons-react';
 import { obtenerProductos, guardarProductos } from '../services/productoServicio';
+import { obtenerClientePredeterminado } from '../services/clienteServicio';
 import ventasIniciales from '../data/ventas.json';
 
 const VentaContext = createContext(null);
@@ -10,13 +11,8 @@ export const VentaProvider = ({ children }) => {
   // Lista de articulos en el ticket/carrito actual
   const [articulos, setArticulos] = useState([]);
 
-  // Datos del cliente actual
-  const [cliente, setCliente] = useState({
-    id: 'gral',
-    nombre: 'Público General',
-    rfc: 'XAXX010101000',
-    telefono: 'Sin teléfono',
-  });
+  // Datos del cliente actual (Siempre Publico General por defecto)
+  const [cliente, setCliente] = useState(() => obtenerClientePredeterminado());
 
   // Modal de cobro activo
   const [modalCobroAbierto, setModalCobroAbierto] = useState(false);
@@ -101,7 +97,7 @@ export const VentaProvider = ({ children }) => {
           return {
             ...item,
             cantidad: nuevaCantidad,
-            subtotal: nuevaCantidad * item.precio * (1 - (item.descuento || 0) / 100),
+            subtotal: nuevaCantidad * item.precio,
           };
         }
         return item;
@@ -114,41 +110,19 @@ export const VentaProvider = ({ children }) => {
     setArticulos((prev) => prev.filter((item) => item.id !== id));
   };
 
-  // Aplicar porcentaje de descuento a un item
-  const aplicarDescuento = (id, porcentaje) => {
-    setArticulos((prev) =>
-      prev.map((item) => {
-        if (item.id === id) {
-          const desc = Math.min(Math.max(porcentaje, 0), 100);
-          return {
-            ...item,
-            descuento: desc,
-            subtotal: item.cantidad * item.precio * (1 - desc / 100),
-          };
-        }
-        return item;
-      })
-    );
-  };
-
-  // Limpiar toda la venta actual
+  // Limpiar toda la venta actual y restablecer cliente a Publico General
   const limpiarVenta = () => {
     setArticulos([]);
+    setCliente(obtenerClientePredeterminado());
   };
 
   // Calculo de totales
   const totales = useMemo(() => {
-    let subtotalSinDescuento = 0;
-    let totalDescuento = 0;
     let totalGeneral = 0;
     let totalArticulos = 0;
 
     articulos.forEach((item) => {
-      const precioBruto = item.precio * item.cantidad;
-      const montoDescuento = precioBruto * ((item.descuento || 0) / 100);
-      subtotalSinDescuento += precioBruto;
-      totalDescuento += montoDescuento;
-      totalGeneral += precioBruto - montoDescuento;
+      totalGeneral += item.precio * item.cantidad;
       totalArticulos += item.cantidad;
     });
 
@@ -157,8 +131,8 @@ export const VentaProvider = ({ children }) => {
     const impuestoIva = totalGeneral - subtotalNeto;
 
     return {
-      subtotal: subtotalSinDescuento,
-      descuento: totalDescuento,
+      subtotal: totalGeneral,
+      descuento: 0,
       subtotalNeto,
       impuestos: impuestoIva,
       total: totalGeneral,
@@ -231,7 +205,6 @@ export const VentaProvider = ({ children }) => {
         agregarProducto,
         cambiarCantidad,
         eliminarArticulo,
-        aplicarDescuento,
         limpiarVenta,
         completarVenta,
         historialVentas,

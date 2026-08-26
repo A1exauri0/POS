@@ -2,6 +2,7 @@ import { Tooltip } from '@mantine/core';
 import {
   IconShoppingCart,
   IconPackage,
+  IconUsers,
   IconCashRegister,
   IconChartBar,
   IconSettings,
@@ -20,6 +21,12 @@ export const BarraNavegacion = ({ vistaActiva, setVistaActiva }) => {
       etiqueta: 'Inventario y Productos',
       icono: IconPackage,
       color: 'bg-emerald-600 text-white',
+    },
+    {
+      id: 'clientes',
+      etiqueta: 'Catálogo de Clientes',
+      icono: IconUsers,
+      color: 'bg-blue-600 text-white',
     },
     {
       id: 'caja',

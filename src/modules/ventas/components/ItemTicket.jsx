@@ -1,27 +1,14 @@
 import { ActionIcon, Tooltip } from '@mantine/core';
-import { IconMinus, IconPlus, IconTrash, IconPercentage } from '@tabler/icons-react';
+import { IconMinus, IconPlus, IconTrash } from '@tabler/icons-react';
 import { formatearMoneda } from '../../../utils/formateadores';
 import { useVenta } from '../../../contexts/VentaContext';
 
 export const ItemTicket = ({ item }) => {
-  const { cambiarCantidad, eliminarArticulo, aplicarDescuento } = useVenta();
-
-  const manejarCambioDescuento = () => {
-    const nuevoDescuento = window.prompt(
-      `Ingresa el porcentaje de descuento (0 a 100) para: ${item.nombre}`,
-      item.descuento || 0
-    );
-    if (nuevoDescuento !== null) {
-      const porcentaje = parseFloat(nuevoDescuento);
-      if (!isNaN(porcentaje)) {
-        aplicarDescuento(item.id, porcentaje);
-      }
-    }
-  };
+  const { cambiarCantidad, eliminarArticulo } = useVenta();
 
   return (
     <div className="flex items-center justify-between p-2.5 bg-white rounded-xl border border-slate-200/80 hover:border-slate-300 transition-colors shadow-2xs group">
-      {/* Informacion basica del producto */}
+      {/* Informacion basica del producto (sin descuentos) */}
       <div className="flex-1 min-w-0 pr-2">
         <h4 className="text-xs font-semibold text-slate-800 truncate" title={item.nombre}>
           {item.nombre}
@@ -30,11 +17,6 @@ export const ItemTicket = ({ item }) => {
           <span className="text-[11px] text-slate-500 font-medium">
             {formatearMoneda(item.precio)} / {item.unidad}
           </span>
-          {item.descuento > 0 && (
-            <span className="text-[10px] bg-rose-50 text-rose-600 font-semibold px-1.5 py-0.2 rounded border border-rose-200">
-              -{item.descuento}%
-            </span>
-          )}
         </div>
       </div>
 
@@ -68,20 +50,8 @@ export const ItemTicket = ({ item }) => {
         </span>
       </div>
 
-      {/* Acciones (Descuento y Eliminar) */}
-      <div className="flex items-center gap-1 shrink-0">
-        <Tooltip label="Aplicar descuento (%)" withArrow>
-          <ActionIcon
-            variant="subtle"
-            color="gray"
-            size="sm"
-            onClick={manejarCambioDescuento}
-            className="hover:text-indigo-600"
-          >
-            <IconPercentage size={15} />
-          </ActionIcon>
-        </Tooltip>
-
+      {/* Accion Eliminar */}
+      <div className="flex items-center shrink-0">
         <Tooltip label="Eliminar producto" withArrow>
           <ActionIcon
             variant="subtle"

@@ -1,4 +1,5 @@
-import { Button, Tooltip, Badge } from '@mantine/core';
+import { useState, useEffect } from 'react';
+import { Button, Tooltip, Badge, Select } from '@mantine/core';
 import {
   IconReceipt,
   IconTrash,
@@ -9,6 +10,7 @@ import {
 import { ItemTicket } from './ItemTicket';
 import { formatearMoneda } from '../../../utils/formateadores';
 import { useVenta } from '../../../contexts/VentaContext';
+import { obtenerClientes } from '../../../services/clienteServicio';
 
 export const PanelTicket = () => {
   const {
@@ -20,20 +22,20 @@ export const PanelTicket = () => {
     setModalCobroAbierto,
   } = useVenta();
 
-  const cambiarClientePrompt = () => {
-    const nuevoNombre = window.prompt('Nombre del cliente para la nota/ticket:', cliente.nombre);
-    if (nuevoNombre && nuevoNombre.trim()) {
-      setCliente((prev) => ({ ...prev, nombre: nuevoNombre.trim() }));
-    }
+  const [listaClientes, setListaClientes] = useState(() => obtenerClientes());
+
+  // Refrescar lista de clientes al interactuar con el dropdown
+  const refrescarClientes = () => {
+    setListaClientes(obtenerClientes());
   };
 
   const hayArticulos = articulos.length > 0;
 
   return (
     <div className="w-80 md:w-96 bg-slate-900 text-white flex flex-col h-full border-l border-slate-800 shadow-xl select-none shrink-0">
-      {/* Cabecera del Ticket y Cliente */}
-      <div className="p-3.5 border-b border-slate-800 bg-slate-900/90">
-        <div className="flex items-center justify-between mb-2">
+      {/* Cabecera del Ticket y Dropdown de Cliente con Buscador */}
+      <div className="p-3.5 border-b border-slate-800 bg-slate-900/90 space-y-2.5">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <IconReceipt size={20} className="text-indigo-400" />
             <h2 className="text-sm font-bold tracking-wide uppercase text-slate-200">
@@ -45,21 +47,57 @@ export const PanelTicket = () => {
           </Badge>
         </div>
 
-        {/* Barra de Cliente */}
-        <div className="flex items-center justify-between bg-slate-800/80 px-2.5 py-1.5 rounded-lg border border-slate-700/80">
-          <div className="flex items-center gap-2 overflow-hidden">
-            <IconUser size={15} className="text-slate-400 shrink-0" />
-            <span className="text-xs text-slate-300 font-medium truncate">
-              {cliente.nombre}
-            </span>
-          </div>
-          <button
-            type="button"
-            onClick={cambiarClientePrompt}
-            className="text-[11px] text-indigo-400 hover:text-indigo-300 font-semibold cursor-pointer shrink-0"
-          >
-            Cambiar
-          </button>
+        {/* Dropdown con Buscador para seleccionar Cliente (Publico General por default) */}
+        <div>
+          <Select
+            searchable
+            clearable={false}
+            size="xs"
+            leftSection={<IconUser size={15} className="text-indigo-400" />}
+            placeholder="Buscar cliente..."
+            value={cliente?.id || 'cli-1'}
+            data={listaClientes.map((c) => ({
+              value: c.id,
+              label: c.telefono && c.telefono !== 'Sin teléfono'
+                ? `${c.nombre} (${c.telefono})`
+                : c.nombre,
+            }))}
+            onChange={(idSeleccionado) => {
+              const encontrado = listaClientes.find((c) => c.id === idSeleccionado);
+              if (encontrado) setCliente(encontrado);
+            }}
+            onDropdownOpen={refrescarClientes}
+            nothingFoundMessage="No se encontró el cliente"
+            renderOption={({ option }) => {
+              const cli = listaClientes.find((c) => c.id === option.value);
+              const esDefault = cli?.esPredeterminado || cli?.id === 'cli-1';
+              return (
+                <div className="py-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-semibold text-xs text-slate-800 truncate">
+                      {cli?.nombre}
+                    </span>
+                    {esDefault && (
+                      <Badge color="dark" size="xs" variant="filled">
+                        Default
+                      </Badge>
+                    )}
+                  </div>
+                  {cli?.telefono && cli?.telefono !== 'Sin teléfono' && (
+                    <div className="text-[11px] text-slate-500 font-mono mt-0.5">
+                      {cli.telefono}
+                    </div>
+                  )}
+                </div>
+              );
+            }}
+            classNames={{
+              input:
+                'bg-slate-800/90 border-slate-700 text-slate-100 font-medium text-xs rounded-lg focus:border-indigo-500',
+              dropdown: 'bg-white border-slate-200 shadow-xl rounded-xl',
+              option: 'hover:bg-slate-50 transition-colors',
+            }}
+          />
         </div>
       </div>
 
@@ -80,19 +118,12 @@ export const PanelTicket = () => {
 
       {/* Resumen de Totales y Boton de Cobro */}
       <div className="p-3.5 bg-slate-900 border-t border-slate-800 space-y-3">
-        {/* Desglose de Precios */}
+        {/* Desglose de Precios (Sin descuentos) */}
         <div className="space-y-1 text-xs">
           <div className="flex justify-between text-slate-400">
             <span>Subtotal:</span>
             <span className="font-mono">{formatearMoneda(totales.subtotal)}</span>
           </div>
-
-          {totales.descuento > 0 && (
-            <div className="flex justify-between text-rose-400 font-medium">
-              <span>Descuento aplicado:</span>
-              <span className="font-mono">-{formatearMoneda(totales.descuento)}</span>
-            </div>
-          )}
 
           <div className="flex justify-between text-slate-400">
             <span>IVA incluido (16%):</span>

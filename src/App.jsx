@@ -3,6 +3,7 @@ import { Encabezado } from './components/Encabezado';
 import { BarraNavegacion } from './components/BarraNavegacion';
 import { PantallaVentas } from './modules/ventas/PantallaVentas';
 import { PantallaInventario } from './modules/inventario/PantallaInventario';
+import { PantallaClientes } from './modules/clientes/PantallaClientes';
 import { PantallaCaja } from './modules/caja/PantallaCaja';
 import { PantallaReportes } from './modules/reportes/PantallaReportes';
 import { PantallaConfiguracion } from './modules/configuracion/PantallaConfiguracion';
@@ -16,6 +17,8 @@ function App() {
         return <PantallaVentas />;
       case 'inventario':
         return <PantallaInventario />;
+      case 'clientes':
+        return <PantallaClientes />;
       case 'caja':
         return <PantallaCaja />;
       case 'reportes':
