@@ -28,6 +28,7 @@ import {
   guardarProductos,
 } from '../../../services/productoServicio';
 import { notifications } from '@mantine/notifications';
+import { ModalConfirmacion } from '../../../components/ModalConfirmacion';
 
 const COLORES_DISPONIBLES = [
   { value: 'blue', label: 'Azul' },
@@ -171,39 +172,37 @@ export const GestionCategorias = ({ onActualizacionCategorias }) => {
     });
   };
 
-  // Eliminar categoria
-  const eliminarCategoria = (cat) => {
+  const [categoriaAEliminar, setCategoriaAEliminar] = useState(null);
+
+  // Eliminar categoria con confirmacion
+  const confirmarEliminarCategoria = () => {
+    if (!categoriaAEliminar) return;
+    const cat = categoriaAEliminar;
     const productosEnEstaCategoria = productos.filter((p) => p.categoria === cat.nombre);
-    const mensajeConfirmacion =
-      productosEnEstaCategoria.length > 0
-        ? `La categoría "${cat.nombre}" tiene ${productosEnEstaCategoria.length} producto(s) asignados. ¿Deseas eliminarla? Los productos pasarán a la categoría "General".`
-        : `¿Estás seguro de eliminar la categoría "${cat.nombre}"?`;
+    const listaActualizada = categorias.filter((c) => c.id !== cat.id);
 
-    if (window.confirm(mensajeConfirmacion)) {
-      const listaActualizada = categorias.filter((c) => c.id !== cat.id);
-
-      // Reasignar productos a General
-      if (productosEnEstaCategoria.length > 0) {
-        const productosActualizados = productos.map((p) =>
-          p.categoria === cat.nombre ? { ...p, categoria: 'General' } : p
-        );
-        setProductos(productosActualizados);
-        guardarProductos(productosActualizados);
-      }
-
-      setCategorias(listaActualizada);
-      guardarCategorias(listaActualizada);
-
-      if (onActualizacionCategorias) {
-        onActualizacionCategorias(listaActualizada);
-      }
-
-      notifications.show({
-        title: 'Categoría eliminada',
-        message: `La categoría "${cat.nombre}" fue eliminada.`,
-        color: 'red',
-      });
+    // Reasignar productos a General
+    if (productosEnEstaCategoria.length > 0) {
+      const productosActualizados = productos.map((p) =>
+        p.categoria === cat.nombre ? { ...p, categoria: 'General' } : p
+      );
+      setProductos(productosActualizados);
+      guardarProductos(productosActualizados);
     }
+
+    setCategorias(listaActualizada);
+    guardarCategorias(listaActualizada);
+
+    if (onActualizacionCategorias) {
+      onActualizacionCategorias(listaActualizada);
+    }
+
+    notifications.show({
+      title: 'Categoría eliminada',
+      message: `La categoría "${cat.nombre}" fue eliminada.`,
+      color: 'red',
+    });
+    setCategoriaAEliminar(null);
   };
 
   // Filtrar categorias
@@ -321,7 +320,7 @@ export const GestionCategorias = ({ onActualizacionCategorias }) => {
                           <ActionIcon
                             variant="subtle"
                             color="red"
-                            onClick={() => eliminarCategoria(cat)}
+                            onClick={() => setCategoriaAEliminar(cat)}
                           >
                             <IconTrash size={16} />
                           </ActionIcon>
@@ -393,6 +392,18 @@ export const GestionCategorias = ({ onActualizacionCategorias }) => {
           </Group>
         </div>
       </Modal>
+
+      {/* Modal de confirmacion con componentes UI */}
+      <ModalConfirmacion
+        abierto={Boolean(categoriaAEliminar)}
+        alCerrar={() => setCategoriaAEliminar(null)}
+        alConfirmar={confirmarEliminarCategoria}
+        titulo="¿Eliminar categoría?"
+        mensaje={`¿Estás seguro de eliminar la categoría "${categoriaAEliminar?.nombre}"? Los productos asignados pasarán a la categoría "General".`}
+        textoConfirmar="Eliminar Categoría"
+        color="red"
+        icono={IconTrash}
+      />
     </div>
   );
 };

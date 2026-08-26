@@ -11,7 +11,7 @@ import { useCaja } from '../contexts/CajaContext';
 
 export const Encabezado = () => {
   const [horaActual, setHoraActual] = useState(formatearHora());
-  const { cajaAbierta, turnoActual } = useCaja();
+  const { cajaAbierta } = useCaja();
 
   useEffect(() => {
     const intervalo = setInterval(() => {

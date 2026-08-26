@@ -24,12 +24,14 @@ import {
   guardarClientes,
 } from '../../services/clienteServicio';
 import { notifications } from '@mantine/notifications';
+import { ModalConfirmacion } from '../../components/ModalConfirmacion';
 
 export const PantallaClientes = () => {
   const [clientes, setClientes] = useState(() => obtenerClientes());
   const [terminoBusqueda, setTerminoBusqueda] = useState('');
   const [modalAbierto, setModalAbierto] = useState(false);
   const [clienteEnEdicion, setClienteEnEdicion] = useState(null);
+  const [clienteAEliminar, setClienteAEliminar] = useState(null);
 
   // Formulario simplificado: solo Nombre y Telefono
   const [formNombre, setFormNombre] = useState('');
@@ -91,23 +93,30 @@ export const PantallaClientes = () => {
     });
   };
 
-  const eliminarCliente = (cli) => {
+  const solicitarEliminarCliente = (cli) => {
     if (cli.esPredeterminado || cli.id === 'cli-1') {
-      alert('El cliente "Público General" es el cliente predeterminado del sistema y no puede eliminarse.');
-      return;
-    }
-
-    if (window.confirm(`¿Estás seguro de eliminar a "${cli.nombre}" del catálogo?`)) {
-      const listaActualizada = clientes.filter((c) => c.id !== cli.id);
-      setClientes(listaActualizada);
-      guardarClientes(listaActualizada);
-
       notifications.show({
-        title: 'Cliente Eliminado',
-        message: `El cliente "${cli.nombre}" fue retirado del sistema.`,
+        title: 'Acción no permitida',
+        message: 'El cliente "Público General" es el cliente predeterminado del sistema y no puede eliminarse.',
         color: 'red',
       });
+      return;
     }
+    setClienteAEliminar(cli);
+  };
+
+  const confirmarEliminarCliente = () => {
+    if (!clienteAEliminar) return;
+    const listaActualizada = clientes.filter((c) => c.id !== clienteAEliminar.id);
+    setClientes(listaActualizada);
+    guardarClientes(listaActualizada);
+
+    notifications.show({
+      title: 'Cliente Eliminado',
+      message: `El cliente "${clienteAEliminar.nombre}" fue retirado del sistema.`,
+      color: 'red',
+    });
+    setClienteAEliminar(null);
   };
 
   const filtrados = useMemo(() => {
@@ -223,7 +232,7 @@ export const PantallaClientes = () => {
                             <ActionIcon
                               variant="subtle"
                               color="red"
-                              onClick={() => eliminarCliente(cli)}
+                              onClick={() => solicitarEliminarCliente(cli)}
                             >
                               <IconTrash size={16} />
                             </ActionIcon>
@@ -283,6 +292,18 @@ export const PantallaClientes = () => {
           </Group>
         </div>
       </Modal>
+
+      {/* Modal de confirmacion con componentes UI */}
+      <ModalConfirmacion
+        abierto={Boolean(clienteAEliminar)}
+        alCerrar={() => setClienteAEliminar(null)}
+        alConfirmar={confirmarEliminarCliente}
+        titulo="¿Eliminar cliente?"
+        mensaje={`¿Estás seguro de eliminar a "${clienteAEliminar?.nombre}" del catálogo de clientes?`}
+        textoConfirmar="Eliminar Cliente"
+        color="red"
+        icono={IconTrash}
+      />
     </div>
   );
 };
