@@ -142,8 +142,8 @@ export const PanelTicket = () => {
         <div className="grid grid-cols-4 gap-2 pt-1">
           <Tooltip label="Vaciar ticket actual (F9)" withArrow>
             <Button
-              color="gray"
-              variant="light"
+              color="red"
+              variant="filled"
               disabled={!hayArticulos}
               onClick={limpiarVenta}
               className="col-span-1"

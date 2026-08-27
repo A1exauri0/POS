@@ -17,8 +17,8 @@ export const CatalogoProductos = ({ productos }) => {
 
   return (
     <div className="flex-1 overflow-y-auto px-1.5 pt-3 pb-3">
-      {/* Rejilla fija de 4 Cards por fila */}
-      <div className="grid grid-cols-4 gap-3.5">
+      {/* Rejilla fija de 4 Cards por fila con altura uniforme forzada */}
+      <div className="grid grid-cols-4 gap-3.5 auto-rows-fr">
         {productos.map((producto) => {
           const sinStock = producto.stock <= 0;
           const tieneImagen = Boolean(producto.imagen && producto.imagen.trim());
@@ -29,21 +29,21 @@ export const CatalogoProductos = ({ productos }) => {
               type="button"
               disabled={sinStock}
               onClick={() => agregarProducto(producto, 1)}
-              className={`group relative flex flex-col justify-between p-2.5 rounded-xl border text-left transition-all duration-150 cursor-pointer select-none aspect-square ${
+              className={`group relative flex flex-col justify-between p-2 sm:p-2.5 rounded-2xl border text-left transition-all duration-150 cursor-pointer select-none h-full w-full ${
                 sinStock
                   ? 'bg-slate-100/70 border-slate-200 opacity-60 cursor-not-allowed'
                   : 'bg-white border-slate-200/90 hover:border-indigo-400 hover:shadow-md hover:-translate-y-1 active:scale-98'
               }`}
             >
-              {/* 1. Imagen Horizontal (Landscape) */}
-              <div className="w-full aspect-[16/10] shrink-0 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden relative group-hover:bg-slate-100/70 transition-colors">
+              {/* 1. Imagen del Producto: Ocupa la mayor parte de la card (aprox 75% del espacio) */}
+              <div className="w-full aspect-[4/3] rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden relative group-hover:bg-slate-100/70 transition-colors p-1.5">
                 {tieneImagen ? (
                   <>
                     <img
                       src={producto.imagen}
                       alt={producto.nombre}
                       loading="lazy"
-                      className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
+                      className="w-full h-full object-contain transition-transform duration-200 group-hover:scale-105"
                       onError={(e) => {
                         e.currentTarget.style.display = 'none';
                         const fallback = e.currentTarget.parentElement?.querySelector('.fallback-icono-foto');
@@ -51,22 +51,25 @@ export const CatalogoProductos = ({ productos }) => {
                       }}
                     />
                     <div className="fallback-icono-foto hidden w-full h-full flex items-center justify-center text-slate-300">
-                      <IconPhoto size={30} stroke={1.5} />
+                      <IconPhoto size={36} stroke={1.5} />
                     </div>
                   </>
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-slate-300">
-                    <IconPhoto size={30} stroke={1.5} />
+                    <IconPhoto size={36} stroke={1.5} />
                   </div>
                 )}
               </div>
 
-              {/* 2. Informacion: Exclusivamente Nombre y Precio */}
-              <div className="flex-1 flex flex-col justify-between pt-2 min-w-0 w-full">
-                <h3 className="text-xs sm:text-sm font-semibold text-slate-800 line-clamp-2 leading-tight group-hover:text-indigo-600 transition-colors">
+              {/* 2. Informacion compacta: Nombre y Precio sin quitar protagonismo a la imagen */}
+              <div className="pt-2 w-full flex flex-col justify-between min-w-0">
+                <h3
+                  className="text-xs sm:text-sm font-semibold text-slate-800 truncate group-hover:text-indigo-600 transition-colors"
+                  title={producto.nombre}
+                >
                   {producto.nombre}
                 </h3>
-                <div className="mt-auto pt-1">
+                <div className="mt-0.5 flex items-center justify-between">
                   <span className="text-sm sm:text-base font-extrabold text-emerald-600 tracking-tight font-mono">
                     {formatearMoneda(producto.precio)}
                   </span>
