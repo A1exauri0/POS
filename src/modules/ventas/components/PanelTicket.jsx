@@ -1,11 +1,15 @@
-import { useState, useEffect } from 'react';
-import { Button, Tooltip, Badge, Select } from '@mantine/core';
+import { useState, useEffect, useMemo } from 'react';
+import { Button, Tooltip, Badge, Popover, TextInput, ActionIcon } from '@mantine/core';
 import {
   IconReceipt,
   IconTrash,
   IconUser,
   IconCashBanknote,
   IconShoppingCartOff,
+  IconSearch,
+  IconChevronDown,
+  IconCheck,
+  IconX,
 } from '@tabler/icons-react';
 import { ItemTicket } from './ItemTicket';
 import { formatearMoneda } from '../../../utils/formateadores';
@@ -23,11 +27,19 @@ export const PanelTicket = () => {
   } = useVenta();
 
   const [listaClientes, setListaClientes] = useState(() => obtenerClientes());
+  const [popoverAbierto, setPopoverAbierto] = useState(false);
+  const [busquedaCliente, setBusquedaCliente] = useState('');
 
   // Refrescar lista de clientes al interactuar con el dropdown
   const refrescarClientes = () => {
     setListaClientes(obtenerClientes());
   };
+
+  const clientesFiltrados = useMemo(() => {
+    if (!busquedaCliente.trim()) return listaClientes;
+    const normalizado = busquedaCliente.toLowerCase().trim();
+    return listaClientes.filter((c) => c.nombre.toLowerCase().includes(normalizado));
+  }, [listaClientes, busquedaCliente]);
 
   const hayArticulos = articulos.length > 0;
 
@@ -47,57 +59,103 @@ export const PanelTicket = () => {
           </Badge>
         </div>
 
-        {/* Dropdown con Buscador para seleccionar Cliente (Publico General por default) */}
+        {/* Dropdown de Cliente: Boton limpio con Buscador en el menu de opciones */}
         <div>
-          <Select
-            searchable
-            clearable={false}
-            size="xs"
-            leftSection={<IconUser size={15} className="text-indigo-400" />}
-            placeholder="Buscar cliente..."
-            value={cliente?.id || 'cli-1'}
-            data={listaClientes.map((c) => ({
-              value: c.id,
-              label: c.telefono && c.telefono !== 'Sin teléfono'
-                ? `${c.nombre} (${c.telefono})`
-                : c.nombre,
-            }))}
-            onChange={(idSeleccionado) => {
-              const encontrado = listaClientes.find((c) => c.id === idSeleccionado);
-              if (encontrado) setCliente(encontrado);
-            }}
-            onDropdownOpen={refrescarClientes}
-            nothingFoundMessage="No se encontró el cliente"
-            renderOption={({ option }) => {
-              const cli = listaClientes.find((c) => c.id === option.value);
-              const esDefault = cli?.esPredeterminado || cli?.id === 'cli-1';
-              return (
-                <div className="py-1">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="font-semibold text-xs text-slate-800 truncate">
-                      {cli?.nombre}
-                    </span>
-                    {esDefault && (
-                      <Badge color="dark" size="xs" variant="filled">
-                        Default
-                      </Badge>
-                    )}
-                  </div>
-                  {cli?.telefono && cli?.telefono !== 'Sin teléfono' && (
-                    <div className="text-[11px] text-slate-500 font-mono mt-0.5">
-                      {cli.telefono}
-                    </div>
-                  )}
-                </div>
-              );
-            }}
+          <Popover
+            opened={popoverAbierto}
+            onChange={setPopoverAbierto}
+            position="bottom-start"
+            width="target"
+            shadow="lg"
+            radius={16}
             classNames={{
-              input:
-                'bg-slate-800/90 border-slate-700 text-slate-100 font-medium text-xs rounded-lg focus:border-indigo-500',
-              dropdown: 'bg-white border-slate-200 shadow-xl rounded-xl',
-              option: 'hover:bg-slate-50 transition-colors',
+              dropdown: '!rounded-2xl border border-slate-200 p-2 shadow-2xl bg-white',
             }}
-          />
+          >
+            <Popover.Target>
+              <button
+                type="button"
+                onClick={() => {
+                  refrescarClientes();
+                  setPopoverAbierto((prev) => !prev);
+                }}
+                className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-slate-800/90 hover:bg-slate-800 border border-slate-700 hover:border-slate-600 text-slate-100 transition-all cursor-pointer text-xs focus:outline-hidden focus:border-indigo-500"
+              >
+                <div className="flex items-center gap-2 truncate">
+                  <IconUser size={15} className="text-indigo-400 shrink-0" />
+                  <span className="font-semibold truncate">
+                    {cliente?.nombre || 'Público General'}
+                  </span>
+                </div>
+                <IconChevronDown size={14} className="text-slate-400 shrink-0 ml-1.5" />
+              </button>
+            </Popover.Target>
+
+            <Popover.Dropdown>
+              {/* Buscador dentro del menu de opciones */}
+              <div className="p-1 pb-2">
+                <TextInput
+                  placeholder="Buscar cliente..."
+                  size="xs"
+                  radius="lg"
+                  leftSection={<IconSearch size={14} className="text-slate-400" />}
+                  value={busquedaCliente}
+                  onChange={(e) => setBusquedaCliente(e.target.value)}
+                  autoFocus
+                  rightSection={
+                    busquedaCliente ? (
+                      <ActionIcon
+                        size="xs"
+                        variant="subtle"
+                        color="gray"
+                        onClick={() => setBusquedaCliente('')}
+                      >
+                        <IconX size={12} />
+                      </ActionIcon>
+                    ) : null
+                  }
+                />
+              </div>
+
+              {/* Lista de Clientes (Solo nombres, sin telefonos) */}
+              <div className="max-h-52 overflow-y-auto space-y-0.5">
+                {clientesFiltrados.length === 0 ? (
+                  <div className="py-4 text-center text-xs text-slate-400">
+                    No se encontró el cliente
+                  </div>
+                ) : (
+                  clientesFiltrados.map((cli) => {
+                    const esSeleccionado = (cliente?.id || 'cli-1') === cli.id;
+                    const esDefault = cli.esPredeterminado || cli.id === 'cli-1';
+
+                    return (
+                      <button
+                        key={cli.id}
+                        type="button"
+                        onClick={() => {
+                          setCliente(cli);
+                          setPopoverAbierto(false);
+                          setBusquedaCliente('');
+                        }}
+                        className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-left text-xs transition-colors cursor-pointer ${
+                          esSeleccionado
+                            ? 'bg-indigo-50 text-indigo-900 font-bold'
+                            : 'text-slate-700 hover:bg-slate-100 font-medium'
+                        }`}
+                      >
+                        <span className="truncate">{cli.nombre}</span>
+                        <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                          {esSeleccionado && (
+                            <IconCheck size={14} className="text-indigo-600" />
+                          )}
+                        </div>
+                      </button>
+                    );
+                  })
+                )}
+              </div>
+            </Popover.Dropdown>
+          </Popover>
         </div>
       </div>
 

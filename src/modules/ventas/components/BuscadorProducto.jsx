@@ -122,11 +122,13 @@ export const BuscadorProducto = ({
         >
           {/* Opcion Todos */}
           <Badge
+            component="button"
+            type="button"
             size="lg"
             variant={categoriaSeleccionada === 'Todos' ? 'filled' : 'light'}
             color="dark"
             radius="md"
-            className="cursor-pointer transition-all duration-150 select-none hover:scale-105 active:scale-95 shrink-0 uppercase tracking-wider text-[11px] py-1 px-3"
+            className="cursor-pointer transition-all duration-150 select-none hover:-translate-y-0.5 hover:shadow-xs active:translate-y-0.5 active:scale-90 shrink-0 uppercase tracking-wider text-[11px] py-1 px-3.5 border-0 focus:outline-none"
             onClick={() => setCategoriaSeleccionada('Todos')}
           >
             Todos
@@ -138,11 +140,13 @@ export const BuscadorProducto = ({
             return (
               <Badge
                 key={cat.id || cat.nombre}
+                component="button"
+                type="button"
                 size="lg"
                 variant={seleccionada ? 'filled' : 'light'}
                 color={cat.color || 'blue'}
                 radius="md"
-                className="cursor-pointer transition-all duration-150 select-none hover:scale-105 active:scale-95 shrink-0 text-xs py-1 px-3"
+                className="cursor-pointer transition-all duration-150 select-none hover:-translate-y-0.5 hover:shadow-xs active:translate-y-0.5 active:scale-90 shrink-0 text-xs py-1 px-3.5 border-0 focus:outline-none font-semibold"
                 onClick={() => setCategoriaSeleccionada(cat.nombre)}
               >
                 {cat.nombre}

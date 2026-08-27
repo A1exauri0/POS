@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "Punto de Venta",
+        "title": "Punto de Venta Local",
         "width": 1280,
         "height": 800,
         "minWidth": 1024,
