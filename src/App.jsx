@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Encabezado } from './components/Encabezado';
 import { BarraNavegacion } from './components/BarraNavegacion';
+import { PantallaDashboard } from './modules/dashboard/PantallaDashboard';
 import { PantallaVentas } from './modules/ventas/PantallaVentas';
 import { PantallaInventario } from './modules/inventario/PantallaInventario';
 import { PantallaClientes } from './modules/clientes/PantallaClientes';
@@ -13,6 +14,8 @@ function App() {
 
   const renderizarVista = () => {
     switch (vistaActiva) {
+      case 'dashboard':
+        return <PantallaDashboard alNavegar={setVistaActiva} />;
       case 'ventas':
         return <PantallaVentas />;
       case 'inventario':

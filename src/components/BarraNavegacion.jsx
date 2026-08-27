@@ -1,5 +1,6 @@
 import { Tooltip } from '@mantine/core';
 import {
+  IconLayoutDashboard,
   IconShoppingCart,
   IconPackage,
   IconUsers,
@@ -11,10 +12,16 @@ import {
 export const BarraNavegacion = ({ vistaActiva, setVistaActiva }) => {
   const modulos = [
     {
+      id: 'dashboard',
+      etiqueta: 'Panel de Control (Dashboard)',
+      icono: IconLayoutDashboard,
+      color: 'bg-violet-600 text-white',
+    },
+    {
       id: 'ventas',
       etiqueta: 'Punto de Venta',
       icono: IconShoppingCart,
-      color: 'bg-indigo-600 text-white',
+      color: 'bg-blue-600 text-white',
     },
     {
       id: 'inventario',
@@ -32,7 +39,7 @@ export const BarraNavegacion = ({ vistaActiva, setVistaActiva }) => {
       id: 'caja',
       etiqueta: 'Caja y Turnos',
       icono: IconCashRegister,
-      color: 'bg-amber-600 text-white',
+      color: 'bg-orange-500 text-white',
     },
     {
       id: 'reportes',
