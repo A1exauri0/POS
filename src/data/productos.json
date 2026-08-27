@@ -8,7 +8,7 @@
     "costo": 14.0,
     "stock": 48,
     "unidad": "Pza",
-    "imagen": "/images/productos/coca-cola.jpg"
+    "imagen": "/images/productos/coca-cola.png"
   },
   {
     "id": "prod-002",
@@ -19,7 +19,7 @@
     "costo": 8.5,
     "stock": 35,
     "unidad": "Pza",
-    "imagen": "/images/productos/bonafont.jpg"
+    "imagen": "/images/productos/bonafont.png"
   },
   {
     "id": "prod-003",
@@ -30,7 +30,7 @@
     "costo": 16.0,
     "stock": 24,
     "unidad": "Pza",
-    "imagen": "/images/productos/sabritas.jpg"
+    "imagen": "/images/productos/sabritas.png"
   },
   {
     "id": "prod-004",
@@ -41,7 +41,7 @@
     "costo": 13.2,
     "stock": 19,
     "unidad": "Pza",
-    "imagen": "/images/productos/chokis.jpg"
+    "imagen": "/images/productos/chokis.png"
   },
   {
     "id": "prod-005",
@@ -52,18 +52,18 @@
     "costo": 23.0,
     "stock": 15,
     "unidad": "Pza",
-    "imagen": "/images/productos/leche.jpg"
+    "imagen": "/images/productos/leche.png"
   },
   {
     "id": "prod-006",
     "codigo": "7501000153100",
-    "nombre": "Pan de Caja Bimbo Blanco Grande",
+    "nombre": "Pan Bimbo Blanco Grande",
     "categoria": "Panadería",
     "precio": 47.0,
     "costo": 38.0,
     "stock": 12,
     "unidad": "Pza",
-    "imagen": "/images/productos/bimbo.jpg"
+    "imagen": "/images/productos/bimbo.png"
   },
   {
     "id": "prod-007",
@@ -74,54 +74,10 @@
     "costo": 26.5,
     "stock": 40,
     "unidad": "Pza",
-    "imagen": ""
+    "imagen": "/images/productos/arroz.png"
   },
   {
     "id": "prod-008",
-    "codigo": "7501030491026",
-    "nombre": "Frijol Negro Verde Valle 1kg",
-    "categoria": "Abarrotes",
-    "precio": 39.5,
-    "costo": 31.0,
-    "stock": 28,
-    "unidad": "Pza",
-    "imagen": ""
-  },
-  {
-    "id": "prod-009",
-    "codigo": "7501025401344",
-    "nombre": "Aceite Nutrioli Puro de Soya 850ml",
-    "categoria": "Abarrotes",
-    "precio": 42.0,
-    "costo": 33.5,
-    "stock": 18,
-    "unidad": "Pza",
-    "imagen": ""
-  },
-  {
-    "id": "prod-010",
-    "codigo": "7501025409890",
-    "nombre": "Detergente Ariel Doble Poder 1kg",
-    "categoria": "Limpieza",
-    "precio": 45.0,
-    "costo": 34.0,
-    "stock": 14,
-    "unidad": "Pza",
-    "imagen": ""
-  },
-  {
-    "id": "prod-011",
-    "codigo": "7501025405520",
-    "nombre": "Jabón Zote Rosa 400g",
-    "categoria": "Limpieza",
-    "precio": 21.0,
-    "costo": 15.0,
-    "stock": 30,
-    "unidad": "Pza",
-    "imagen": ""
-  },
-  {
-    "id": "prod-012",
     "codigo": "7501001155909",
     "nombre": "Café Nescafé Clásico 120g",
     "categoria": "Abarrotes",
@@ -129,6 +85,50 @@
     "costo": 52.0,
     "stock": 9,
     "unidad": "Pza",
-    "imagen": "/images/productos/nescafe.jpg"
+    "imagen": "/images/productos/nescafe.png"
+  },
+  {
+    "id": "prod-009",
+    "codigo": "7501030491026",
+    "nombre": "Frijol Negro Verde Valle 1kg",
+    "categoria": "Abarrotes",
+    "precio": 39.5,
+    "costo": 31.0,
+    "stock": 28,
+    "unidad": "Pza",
+    "imagen": "/images/productos/frijol.png"
+  },
+  {
+    "id": "prod-010",
+    "codigo": "7501025401344",
+    "nombre": "Aceite Nutrioli Puro de Soya 850ml",
+    "categoria": "Abarrotes",
+    "precio": 42.0,
+    "costo": 33.5,
+    "stock": 18,
+    "unidad": "Pza",
+    "imagen": "/images/productos/nutrioli.png"
+  },
+  {
+    "id": "prod-011",
+    "codigo": "7501025409890",
+    "nombre": "Detergente Ariel Doble Poder 1kg",
+    "categoria": "Limpieza",
+    "precio": 45.0,
+    "costo": 34.0,
+    "stock": 14,
+    "unidad": "Pza",
+    "imagen": "/images/productos/ariel.png"
+  },
+  {
+    "id": "prod-012",
+    "codigo": "7501025405520",
+    "nombre": "Jabón Zote Rosa 400g",
+    "categoria": "Limpieza",
+    "precio": 21.0,
+    "costo": 15.0,
+    "stock": 30,
+    "unidad": "Pza",
+    "imagen": "/images/productos/zote.png"
   }
 ]

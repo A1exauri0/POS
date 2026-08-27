@@ -5,13 +5,19 @@ import productosIniciales from '../data/productos.json';
 // Categorias base predefinidas importadas desde src/data/categorias.json
 export const CATEGORIAS_BASE = categoriasIniciales;
 
-// Obtener lista de categorias desde localStorage o cargar las de categorias.json
+// Obtener lista de categorias con sincronizacion automatica de cambios en categorias.json
 export const obtenerCategorias = () => {
   const guardadas = localStorage.getItem('pos_categorias');
-  if (!guardadas) {
+  const huellaGuardada = localStorage.getItem('pos_categorias_huella');
+  const huellaActual = JSON.stringify(categoriasIniciales);
+
+  // Si no hay datos guardados o si se edito categorias.json manualmente
+  if (!guardadas || huellaGuardada !== huellaActual) {
     localStorage.setItem('pos_categorias', JSON.stringify(categoriasIniciales));
+    localStorage.setItem('pos_categorias_huella', huellaActual);
     return categoriasIniciales;
   }
+
   try {
     return JSON.parse(guardadas);
   } catch (error) {
@@ -33,23 +39,35 @@ export const CATEGORIAS_PRODUCTOS = [
 
 export const PRODUCTOS_INICIALES = productosIniciales;
 
-// Obtener todos los productos (guardados en localStorage o cargar desde productos.json)
+// Obtener todos los productos con sincronizacion automatica de orden, cambios y rutas de productos.json
 export const obtenerProductos = () => {
   const productosGuardados = localStorage.getItem('pos_productos');
-  if (!productosGuardados) {
-    localStorage.setItem('pos_productos', JSON.stringify(productosIniciales));
-    return productosIniciales;
-  }
-  try {
-    const parseados = JSON.parse(productosGuardados);
-    // Asegurar que las imagenes sean siempre locales y no consulten internet
-    return parseados.map((p) => {
-      const coincidencia = productosIniciales.find((pi) => pi.id === p.id);
-      if (p.imagen === undefined || (p.imagen && p.imagen.startsWith('http'))) {
-        return { ...p, imagen: coincidencia?.imagen || '' };
+  const huellaGuardada = localStorage.getItem('pos_productos_huella');
+  const huellaActual = JSON.stringify(productosIniciales);
+
+  // Si no hay datos o si productos.json cambio (orden, nombres, codigos, imagenes, etc.)
+  if (!productosGuardados || huellaGuardada !== huellaActual) {
+    let listaFinal = [...productosIniciales];
+
+    // Preservar productos creados de forma manual en el CRUD de la aplicacion
+    if (productosGuardados) {
+      try {
+        const previos = JSON.parse(productosGuardados);
+        const idsIniciales = new Set(productosIniciales.map((p) => p.id));
+        const productosPersonalizados = previos.filter((p) => !idsIniciales.has(p.id));
+        listaFinal = [...productosIniciales, ...productosPersonalizados];
+      } catch (error) {
+        console.error('Error al migrar productos previos:', error);
       }
-      return p;
-    });
+    }
+
+    localStorage.setItem('pos_productos', JSON.stringify(listaFinal));
+    localStorage.setItem('pos_productos_huella', huellaActual);
+    return listaFinal;
+  }
+
+  try {
+    return JSON.parse(productosGuardados);
   } catch (error) {
     console.error('Error al parsear productos:', error);
     return productosIniciales;
