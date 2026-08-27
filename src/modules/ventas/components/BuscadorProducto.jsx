@@ -59,7 +59,7 @@ export const BuscadorProducto = ({
   };
 
   return (
-    <div className="flex flex-col gap-2.5 bg-white p-3.5 rounded-xl border border-slate-200/90 shadow-xs">
+    <div className="flex flex-col gap-3 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
       {/* Input de Busqueda / Lector de Barras */}
       <div className="relative">
         <TextInput
@@ -72,7 +72,7 @@ export const BuscadorProducto = ({
           onKeyDown={manejarKeyDown}
           placeholder="Escanear código de barras o buscar por nombre... (Presiona Enter o F4)"
           size="md"
-          radius="md"
+          radius="xl"
           leftSection={<IconBarcode size={22} className="text-slate-400" />}
           rightSection={
             terminoBusqueda ? (

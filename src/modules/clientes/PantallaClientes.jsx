@@ -131,19 +131,19 @@ export const PantallaClientes = () => {
   }, [clientes, terminoBusqueda]);
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-slate-100 p-4 gap-3.5 overflow-hidden">
-      {/* Encabezado del modulo */}
-      <div className="flex items-center justify-between bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-indigo-100 text-indigo-700 rounded-xl">
-            <IconUsers size={24} />
+    <div className="flex-1 flex flex-col h-full bg-slate-100 p-4 gap-4 overflow-hidden">
+      {/* Encabezado del modulo unificado */}
+      <div className="flex items-center justify-between bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
+        <div className="flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 shadow-2xs">
+            <IconUsers size={22} stroke={2} />
           </div>
           <div>
-            <h2 className="text-base font-bold text-slate-800 leading-tight">
+            <h2 className="text-lg font-black text-slate-800 tracking-tight leading-tight">
               Catálogo de Clientes
             </h2>
-            <p className="text-xs text-slate-500">
-              {clientes.length} clientes registrados
+            <p className="text-xs text-slate-500 font-medium">
+              {clientes.length} clientes registrados en el sistema
             </p>
           </div>
         </div>
@@ -151,17 +151,21 @@ export const PantallaClientes = () => {
         <div className="flex items-center gap-3">
           <TextInput
             placeholder="Buscar por nombre o teléfono..."
-            leftSection={<IconSearch size={16} />}
+            leftSection={<IconSearch size={16} className="text-slate-400" />}
             value={terminoBusqueda}
             onChange={(e) => setTerminoBusqueda(e.target.value)}
             size="sm"
+            radius="xl"
             className="w-72"
           />
 
           <Button
             color="indigo"
-            leftSection={<IconPlus size={18} />}
+            radius="xl"
+            size="sm"
+            leftSection={<IconPlus size={16} />}
             onClick={abrirModalNuevo}
+            className="font-bold shadow-md shadow-indigo-500/15"
           >
             Nuevo Cliente
           </Button>
@@ -169,9 +173,9 @@ export const PantallaClientes = () => {
       </div>
 
       {/* Tabla de Clientes Simplificada */}
-      <div className="flex-1 bg-white rounded-xl border border-slate-200 shadow-xs overflow-y-auto">
+      <div className="flex-1 bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-y-auto">
         <Table highlightOnHover verticalSpacing="sm" stickyHeader>
-          <Table.Thead className="bg-slate-50 text-slate-700 font-bold text-xs uppercase tracking-wider">
+          <Table.Thead className="bg-slate-50/80 text-slate-600 font-bold text-xs uppercase tracking-wider border-b border-slate-200/80">
             <Table.Tr>
               <Table.Th>Nombre / Razón Social</Table.Th>
               <Table.Th>Teléfono</Table.Th>
@@ -181,7 +185,7 @@ export const PantallaClientes = () => {
           <Table.Tbody>
             {filtrados.length === 0 ? (
               <Table.Tr>
-                <Table.Td colSpan={3} className="text-center py-8 text-slate-400 text-sm">
+                <Table.Td colSpan={3} className="text-center py-12 text-slate-400 text-sm">
                   No se encontraron clientes registrados.
                 </Table.Td>
               </Table.Tr>
@@ -195,7 +199,7 @@ export const PantallaClientes = () => {
                       <div className="flex items-center gap-2">
                         <span>{cli.nombre}</span>
                         {esDefault && (
-                          <Badge color="dark" size="xs" variant="filled">
+                          <Badge color="dark" size="xs" variant="filled" radius="sm">
                             Predeterminado
                           </Badge>
                         )}
@@ -215,6 +219,7 @@ export const PantallaClientes = () => {
                           <ActionIcon
                             variant="subtle"
                             color="indigo"
+                            radius="md"
                             onClick={() => abrirModalEditar(cli)}
                           >
                             <IconEdit size={16} />
@@ -223,7 +228,7 @@ export const PantallaClientes = () => {
 
                         {esDefault ? (
                           <Tooltip label="Cliente predeterminado (No eliminable)">
-                            <ActionIcon variant="subtle" color="gray" disabled>
+                            <ActionIcon variant="subtle" color="gray" radius="md" disabled>
                               <IconLock size={16} />
                             </ActionIcon>
                           </Tooltip>
@@ -232,6 +237,7 @@ export const PantallaClientes = () => {
                             <ActionIcon
                               variant="subtle"
                               color="red"
+                              radius="md"
                               onClick={() => solicitarEliminarCliente(cli)}
                             >
                               <IconTrash size={16} />
@@ -253,14 +259,28 @@ export const PantallaClientes = () => {
         opened={modalAbierto}
         onClose={() => setModalAbierto(false)}
         title={
-          <span className="font-bold text-slate-800">
-            {clienteEnEdicion ? 'Editar Cliente' : 'Registrar Nuevo Cliente'}
-          </span>
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 shadow-2xs">
+              <IconUsers size={18} stroke={2} />
+            </div>
+            <div>
+              <h3 className="text-base font-extrabold text-slate-800 leading-tight">
+                {clienteEnEdicion ? 'Editar Cliente' : 'Registrar Nuevo Cliente'}
+              </h3>
+              <p className="text-xs text-slate-400 font-medium">Información básica de contacto</p>
+            </div>
+          </div>
         }
         centered
-        radius="lg"
+        radius={24}
+        size="md"
+        classNames={{
+          header: 'border-b border-slate-100 pb-3 pt-1 px-5',
+          body: 'p-5',
+          content: '!rounded-3xl shadow-2xl overflow-hidden border border-slate-100',
+        }}
       >
-        <div className="space-y-3.5 pt-1">
+        <div className="space-y-4">
           <TextInput
             label="Nombre Completo / Razón Social"
             placeholder="Ej. Comercializadora del Norte"
@@ -270,6 +290,7 @@ export const PantallaClientes = () => {
               if (errorNombre) setErrorNombre('');
             }}
             error={errorNombre}
+            radius="lg"
             required
             autoFocus
           />
@@ -280,13 +301,14 @@ export const PantallaClientes = () => {
             leftSection={<IconPhone size={16} className="text-slate-400" />}
             value={formTelefono}
             onChange={(e) => setFormTelefono(e.target.value)}
+            radius="lg"
           />
 
-          <Group justify="flex-end" pt="sm">
-            <Button variant="default" onClick={() => setModalAbierto(false)}>
+          <Group justify="flex-end" gap="sm" pt="xs" className="border-t border-slate-100">
+            <Button variant="default" radius="xl" onClick={() => setModalAbierto(false)}>
               Cancelar
             </Button>
-            <Button color="indigo" onClick={guardarCliente}>
+            <Button color="indigo" radius="xl" className="font-bold shadow-md shadow-indigo-500/15" onClick={guardarCliente}>
               Guardar Cliente
             </Button>
           </Group>

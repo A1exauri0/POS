@@ -136,9 +136,9 @@ export const PantallaInventario = () => {
   }, [productos, terminoBusqueda]);
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-slate-100 p-4 gap-3.5 overflow-hidden">
+    <div className="flex-1 flex flex-col h-full bg-slate-100 p-4 gap-4 overflow-hidden">
       {/* Pestañas de navegacion entre Productos y Categorias */}
-      <div className="bg-white px-4 pt-2 rounded-xl border border-slate-200 shadow-xs">
+      <div className="bg-white px-4 pt-2 rounded-2xl border border-slate-200/80 shadow-xs">
         <Tabs value={pestanaActiva} onChange={setPestanaActiva} color="indigo">
           <Tabs.List>
             <Tabs.Tab value="productos" leftSection={<IconPackage size={18} />}>
@@ -154,14 +154,15 @@ export const PantallaInventario = () => {
       {pestanaActiva === 'productos' ? (
         <>
           {/* Barra de Herramientas de Productos */}
-          <div className="flex items-center justify-between bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs">
-            <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
+            <div className="flex items-center gap-3.5">
               <TextInput
                 placeholder="Buscar por código, nombre o categoría..."
-                leftSection={<IconSearch size={16} />}
+                leftSection={<IconSearch size={16} className="text-slate-400" />}
                 value={terminoBusqueda}
                 onChange={(e) => setTerminoBusqueda(e.target.value)}
                 size="sm"
+                radius="xl"
                 className="w-80"
               />
               <span className="text-xs text-slate-500 font-medium">
@@ -171,17 +172,20 @@ export const PantallaInventario = () => {
 
             <Button
               color="teal"
-              leftSection={<IconPlus size={18} />}
+              radius="xl"
+              size="sm"
+              leftSection={<IconPlus size={16} />}
               onClick={abrirModalNuevo}
+              className="font-bold shadow-md shadow-teal-500/15"
             >
               Nuevo Producto
             </Button>
           </div>
 
           {/* Tabla de Productos con Columna de Imagen */}
-          <div className="flex-1 bg-white rounded-xl border border-slate-200 shadow-xs overflow-y-auto">
+          <div className="flex-1 bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-y-auto">
             <Table highlightOnHover verticalSpacing="sm" stickyHeader>
-              <Table.Thead className="bg-slate-50 text-slate-700 font-bold text-xs uppercase tracking-wider">
+              <Table.Thead className="bg-slate-50/80 text-slate-600 font-bold text-xs uppercase tracking-wider border-b border-slate-200/80">
                 <Table.Tr>
                   <Table.Th className="w-24">Imagen</Table.Th>
                   <Table.Th>Código</Table.Th>
@@ -298,12 +302,26 @@ export const PantallaInventario = () => {
         opened={modalAbierto}
         onClose={() => setModalAbierto(false)}
         title={
-          <span className="font-bold text-slate-800">
-            {productoEnEdicion ? 'Editar Producto' : 'Nuevo Producto'}
-          </span>
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center shrink-0 shadow-2xs">
+              <IconPackage size={18} stroke={2} />
+            </div>
+            <div>
+              <h3 className="text-base font-extrabold text-slate-800 leading-tight">
+                {productoEnEdicion ? 'Editar Producto' : 'Nuevo Producto'}
+              </h3>
+              <p className="text-xs text-slate-400 font-medium">Información comercial e inventario</p>
+            </div>
+          </div>
         }
         centered
-        radius="lg"
+        radius={24}
+        size="lg"
+        classNames={{
+          header: 'border-b border-slate-100 pb-3 pt-1 px-5',
+          body: 'p-5',
+          content: '!rounded-3xl shadow-2xl overflow-hidden border border-slate-100',
+        }}
       >
         <div className="space-y-3.5 pt-2">
           <TextInput
@@ -438,11 +456,11 @@ export const PantallaInventario = () => {
             />
           </div>
 
-          <Group justify="flex-end" pt="md">
-            <Button variant="default" onClick={() => setModalAbierto(false)}>
+          <Group justify="flex-end" gap="sm" pt="md" className="border-t border-slate-100">
+            <Button variant="default" radius="xl" onClick={() => setModalAbierto(false)}>
               Cancelar
             </Button>
-            <Button color="teal" onClick={guardarProducto}>
+            <Button color="teal" radius="xl" className="font-bold shadow-md shadow-teal-500/15" onClick={guardarProducto}>
               Guardar Producto
             </Button>
           </Group>
