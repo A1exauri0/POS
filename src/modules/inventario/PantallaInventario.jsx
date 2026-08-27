@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
   Table,
   Button,
@@ -11,6 +11,7 @@ import {
   ActionIcon,
   Tooltip,
   Tabs,
+  Pagination,
 } from '@mantine/core';
 import {
   IconPlus,
@@ -126,6 +127,9 @@ export const PantallaInventario = () => {
     setProductos(obtenerProductos()); // Refrescar productos en caso de reasignaciones
   };
 
+  const [paginaActual, setPaginaActual] = useState(1);
+  const itemsPorPagina = 6;
+
   const filtrados = useMemo(() => {
     return productos.filter(
       (p) =>
@@ -134,6 +138,17 @@ export const PantallaInventario = () => {
         p.categoria.toLowerCase().includes(terminoBusqueda.toLowerCase())
     );
   }, [productos, terminoBusqueda]);
+
+  // Reiniciar a la primera pagina al buscar
+  useEffect(() => {
+    setPaginaActual(1);
+  }, [terminoBusqueda]);
+
+  const totalPaginas = Math.ceil(filtrados.length / itemsPorPagina) || 1;
+  const productosPaginados = useMemo(() => {
+    const inicio = (paginaActual - 1) * itemsPorPagina;
+    return filtrados.slice(inicio, inicio + itemsPorPagina);
+  }, [filtrados, paginaActual, itemsPorPagina]);
 
   return (
     <div className="flex-1 flex flex-col h-full bg-slate-100 p-4 gap-4 overflow-hidden">
@@ -182,114 +197,136 @@ export const PantallaInventario = () => {
             </Button>
           </div>
 
-          {/* Tabla de Productos con Columna de Imagen */}
-          <div className="flex-1 bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-y-auto">
-            <Table highlightOnHover verticalSpacing="sm" stickyHeader>
-              <Table.Thead className="bg-slate-50/80 text-slate-600 font-bold text-xs uppercase tracking-wider border-b border-slate-200/80">
-                <Table.Tr>
-                  <Table.Th className="w-24">Imagen</Table.Th>
-                  <Table.Th>Código</Table.Th>
-                  <Table.Th>Nombre del Producto</Table.Th>
-                  <Table.Th>Categoría</Table.Th>
-                  <Table.Th>Costo</Table.Th>
-                  <Table.Th>Precio Venta</Table.Th>
-                  <Table.Th>Stock Actual</Table.Th>
-                  <Table.Th className="text-right">Acciones</Table.Th>
-                </Table.Tr>
-              </Table.Thead>
-              <Table.Tbody>
-                {filtrados.length === 0 ? (
+          {/* Tabla de Productos con Columna de Imagen y Paginacion */}
+          <div className="flex-1 bg-white rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-between overflow-hidden">
+            <div className="flex-1 overflow-y-auto">
+              <Table highlightOnHover verticalSpacing="sm" stickyHeader>
+                <Table.Thead className="bg-slate-50/80 text-slate-600 font-bold text-xs uppercase tracking-wider border-b border-slate-200/80">
                   <Table.Tr>
-                    <Table.Td colSpan={8} className="text-center py-8 text-slate-400 text-sm">
-                      No se encontraron productos.
-                    </Table.Td>
+                    <Table.Th className="w-24">Imagen</Table.Th>
+                    <Table.Th>Código</Table.Th>
+                    <Table.Th>Nombre del Producto</Table.Th>
+                    <Table.Th>Categoría</Table.Th>
+                    <Table.Th>Costo</Table.Th>
+                    <Table.Th>Precio Venta</Table.Th>
+                    <Table.Th>Stock Actual</Table.Th>
+                    <Table.Th className="text-right">Acciones</Table.Th>
                   </Table.Tr>
-                ) : (
-                  filtrados.map((prod) => {
-                    const sinStock = prod.stock <= 0;
-                    const stockBajo = prod.stock > 0 && prod.stock <= 10;
-                    const catObj = categorias.find((c) => c.nombre === prod.categoria);
-                    const tieneImg = Boolean(prod.imagen && prod.imagen.trim());
+                </Table.Thead>
+                <Table.Tbody>
+                  {filtrados.length === 0 ? (
+                    <Table.Tr>
+                      <Table.Td colSpan={8} className="text-center py-8 text-slate-400 text-sm">
+                        No se encontraron productos.
+                      </Table.Td>
+                    </Table.Tr>
+                  ) : (
+                    productosPaginados.map((prod) => {
+                      const sinStock = prod.stock <= 0;
+                      const stockBajo = prod.stock > 0 && prod.stock <= 10;
+                      const catObj = categorias.find((c) => c.nombre === prod.categoria);
+                      const tieneImg = Boolean(prod.imagen && prod.imagen.trim());
 
-                    return (
-                      <Table.Tr key={prod.id} className="text-sm text-slate-800">
-                        {/* Miniatura de Imagen Ampliada o Icono Placeholder */}
-                        <Table.Td>
-                          <div className="w-20 h-14 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center overflow-hidden shrink-0 shadow-2xs">
-                            {tieneImg ? (
-                              <img
-                                src={prod.imagen}
-                                alt={prod.nombre}
-                                className="w-full h-full object-cover transition-transform duration-150 hover:scale-105"
-                                onError={(e) => {
-                                  e.currentTarget.style.display = 'none';
-                                  const fallback = e.currentTarget.parentElement?.querySelector('.fallback-img');
-                                  if (fallback) fallback.classList.remove('hidden');
-                                }}
-                              />
-                            ) : null}
-                            <div
-                              className={`fallback-img w-full h-full flex items-center justify-center text-slate-300 bg-slate-100/60 ${
-                                tieneImg ? 'hidden' : 'flex'
-                              }`}
-                            >
-                              <IconPhoto size={24} stroke={1.5} />
+                      return (
+                        <Table.Tr key={prod.id} className="text-sm text-slate-800">
+                          {/* Miniatura de Imagen Ampliada o Icono Placeholder */}
+                          <Table.Td>
+                            <div className="w-20 h-14 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center overflow-hidden shrink-0 shadow-2xs">
+                              {tieneImg ? (
+                                <img
+                                  src={prod.imagen}
+                                  alt={prod.nombre}
+                                  className="w-full h-full object-cover transition-transform duration-150 hover:scale-105"
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = 'none';
+                                    const fallback = e.currentTarget.parentElement?.querySelector('.fallback-img');
+                                    if (fallback) fallback.classList.remove('hidden');
+                                  }}
+                                />
+                              ) : null}
+                              <div
+                                className={`fallback-img w-full h-full flex items-center justify-center text-slate-300 bg-slate-100/60 ${
+                                  tieneImg ? 'hidden' : 'flex'
+                                }`}
+                              >
+                                <IconPhoto size={24} stroke={1.5} />
+                              </div>
                             </div>
-                          </div>
-                        </Table.Td>
+                          </Table.Td>
 
-                        <Table.Td className="font-mono text-xs font-semibold text-slate-600">
-                          {prod.codigo}
-                        </Table.Td>
-                        <Table.Td className="font-medium text-slate-900">{prod.nombre}</Table.Td>
-                        <Table.Td>
-                          <Badge variant="light" color={catObj?.color || 'indigo'} size="sm">
-                            {prod.categoria}
-                          </Badge>
-                        </Table.Td>
-                        <Table.Td className="font-mono text-slate-500">
-                          {formatearMoneda(prod.costo || 0)}
-                        </Table.Td>
-                        <Table.Td className="font-mono font-bold text-emerald-700">
-                          {formatearMoneda(prod.precio)}
-                        </Table.Td>
-                        <Table.Td>
-                          <Badge
-                            variant="filled"
-                            size="sm"
-                            color={sinStock ? 'red' : stockBajo ? 'orange' : 'teal'}
-                          >
-                            {prod.stock} {prod.unidad || 'Pza'}
-                          </Badge>
-                        </Table.Td>
-                        <Table.Td className="text-right">
-                          <Group gap="xs" justify="flex-end">
-                            <Tooltip label="Editar">
-                              <ActionIcon
-                                variant="subtle"
-                                color="indigo"
-                                onClick={() => abrirModalEditar(prod)}
-                              >
-                                <IconEdit size={16} />
-                              </ActionIcon>
-                            </Tooltip>
-                            <Tooltip label="Eliminar">
-                              <ActionIcon
-                                variant="subtle"
-                                color="red"
-                                onClick={() => setProductoAEliminar(prod)}
-                              >
-                                <IconTrash size={16} />
-                              </ActionIcon>
-                            </Tooltip>
-                          </Group>
-                        </Table.Td>
-                      </Table.Tr>
-                    );
-                  })
+                          <Table.Td className="font-mono text-xs font-semibold text-slate-600">
+                            {prod.codigo}
+                          </Table.Td>
+                          <Table.Td className="font-medium text-slate-900">{prod.nombre}</Table.Td>
+                          <Table.Td>
+                            <Badge variant="light" color={catObj?.color || 'indigo'} size="sm">
+                              {prod.categoria}
+                            </Badge>
+                          </Table.Td>
+                          <Table.Td className="font-mono text-slate-500">
+                            {formatearMoneda(prod.costo || 0)}
+                          </Table.Td>
+                          <Table.Td className="font-mono font-bold text-emerald-700">
+                            {formatearMoneda(prod.precio)}
+                          </Table.Td>
+                          <Table.Td>
+                            <Badge
+                              variant="filled"
+                              size="sm"
+                              color={sinStock ? 'red' : stockBajo ? 'orange' : 'teal'}
+                            >
+                              {prod.stock} {prod.unidad || 'Pza'}
+                            </Badge>
+                          </Table.Td>
+                          <Table.Td className="text-right">
+                            <Group gap="xs" justify="flex-end">
+                              <Tooltip label="Editar">
+                                <ActionIcon
+                                  variant="subtle"
+                                  color="indigo"
+                                  onClick={() => abrirModalEditar(prod)}
+                                >
+                                  <IconEdit size={16} />
+                                </ActionIcon>
+                              </Tooltip>
+                              <Tooltip label="Eliminar">
+                                <ActionIcon
+                                  variant="subtle"
+                                  color="red"
+                                  onClick={() => setProductoAEliminar(prod)}
+                                >
+                                  <IconTrash size={16} />
+                                </ActionIcon>
+                              </Tooltip>
+                            </Group>
+                          </Table.Td>
+                        </Table.Tr>
+                      );
+                    })
+                  )}
+                </Table.Tbody>
+              </Table>
+            </div>
+
+            {/* Pie de Paginación */}
+            {filtrados.length > 0 && (
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3.5 border-t border-slate-100 bg-white">
+                <span className="text-xs text-slate-500 font-medium">
+                  Mostrando {(paginaActual - 1) * itemsPorPagina + 1} -{' '}
+                  {Math.min(paginaActual * itemsPorPagina, filtrados.length)} de {filtrados.length} productos
+                </span>
+                {totalPaginas > 1 && (
+                  <Pagination
+                    total={totalPaginas}
+                    value={paginaActual}
+                    onChange={setPaginaActual}
+                    size="sm"
+                    radius="xl"
+                    color="indigo"
+                  />
                 )}
-              </Table.Tbody>
-            </Table>
+              </div>
+            )}
           </div>
         </>
       ) : (

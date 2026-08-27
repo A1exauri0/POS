@@ -3,15 +3,50 @@
   "turnoActual": {
     "id": "TURNO-001",
     "cajero": "Cajero Principal",
-    "fechaApertura": "2026-08-26T08:00:00.000Z",
-    "fondoInicial": 500.0,
+    "fechaApertura": "2026-08-27T08:00:00.000Z",
+    "fondoInicial": 1000.0,
     "movimientos": [
       {
         "id": "MOV-001",
         "tipo": "entrada",
-        "monto": 200.0,
-        "concepto": "Fondo extra para cambio",
-        "fecha": "2026-08-26T09:15:00.000Z"
+        "monto": 300.0,
+        "concepto": "Fondo extra para cambio en monedas",
+        "fecha": "2026-08-27T08:30:00.000Z"
+      },
+      {
+        "id": "MOV-002",
+        "tipo": "salida",
+        "monto": 120.0,
+        "concepto": "Compra de rollos térmicos para impresora",
+        "fecha": "2026-08-27T09:45:00.000Z"
+      },
+      {
+        "id": "MOV-003",
+        "tipo": "salida",
+        "monto": 90.0,
+        "concepto": "Pago de 2 garrafones de agua purificada",
+        "fecha": "2026-08-27T11:15:00.000Z"
+      },
+      {
+        "id": "MOV-004",
+        "tipo": "entrada",
+        "monto": 450.0,
+        "concepto": "Cobro de pedido especial de abarrotes",
+        "fecha": "2026-08-27T13:20:00.000Z"
+      },
+      {
+        "id": "MOV-005",
+        "tipo": "salida",
+        "monto": 150.0,
+        "concepto": "Compra de bolsas plásticas biodegradables",
+        "fecha": "2026-08-27T15:00:00.000Z"
+      },
+      {
+        "id": "MOV-006",
+        "tipo": "entrada",
+        "monto": 280.0,
+        "concepto": "Aporte de caja chica",
+        "fecha": "2026-08-27T16:30:00.000Z"
       }
     ]
   }

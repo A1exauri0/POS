@@ -22,5 +22,53 @@
     "nombre": "Abarrotes La Esquinita",
     "telefono": "55 4433 2211",
     "esPredeterminado": false
+  },
+  {
+    "id": "cli-5",
+    "nombre": "Tacos El Pastorcito",
+    "telefono": "55 7788 9900",
+    "esPredeterminado": false
+  },
+  {
+    "id": "cli-6",
+    "nombre": "Doña Carmen Rodríguez",
+    "telefono": "55 6655 4433",
+    "esPredeterminado": false
+  },
+  {
+    "id": "cli-7",
+    "nombre": "Ferretería San José",
+    "telefono": "55 8899 0011",
+    "esPredeterminado": false
+  },
+  {
+    "id": "cli-8",
+    "nombre": "Lic. Carlos Mendoza",
+    "telefono": "55 3344 5566",
+    "esPredeterminado": false
+  },
+  {
+    "id": "cli-9",
+    "nombre": "Panadería Los Hermanos",
+    "telefono": "55 2211 4455",
+    "esPredeterminado": false
+  },
+  {
+    "id": "cli-10",
+    "nombre": "Farmacia San Juan",
+    "telefono": "55 9988 7766",
+    "esPredeterminado": false
+  },
+  {
+    "id": "cli-11",
+    "nombre": "Elena Morales Santos",
+    "telefono": "55 5544 3322",
+    "esPredeterminado": false
+  },
+  {
+    "id": "cli-12",
+    "nombre": "Restaurante El Rincón",
+    "telefono": "55 1234 9876",
+    "esPredeterminado": false
   }
 ]

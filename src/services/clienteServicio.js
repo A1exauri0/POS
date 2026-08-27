@@ -1,13 +1,31 @@
 // Servicio para gestion y persistencia del catalogo de clientes
 import clientesIniciales from '../data/clientes.json';
 
-// Obtener la lista completa de clientes (desde localStorage o clientes.json)
+// Obtener la lista completa de clientes con sincronizacion automatica desde clientes.json
 export const obtenerClientes = () => {
   const guardados = localStorage.getItem('pos_clientes');
-  if (!guardados) {
-    localStorage.setItem('pos_clientes', JSON.stringify(clientesIniciales));
-    return clientesIniciales;
+  const huellaGuardada = localStorage.getItem('pos_clientes_huella');
+  const huellaActual = JSON.stringify(clientesIniciales);
+
+  if (!guardados || huellaGuardada !== huellaActual) {
+    let listaFinal = [...clientesIniciales];
+
+    if (guardados) {
+      try {
+        const previos = JSON.parse(guardados);
+        const idsIniciales = new Set(clientesIniciales.map((c) => c.id));
+        const clientesPersonalizados = previos.filter((c) => !idsIniciales.has(c.id));
+        listaFinal = [...clientesIniciales, ...clientesPersonalizados];
+      } catch (error) {
+        console.error('Error al sincronizar clientes previos:', error);
+      }
+    }
+
+    localStorage.setItem('pos_clientes', JSON.stringify(listaFinal));
+    localStorage.setItem('pos_clientes_huella', huellaActual);
+    return listaFinal;
   }
+
   try {
     return JSON.parse(guardados);
   } catch (error) {

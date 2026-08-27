@@ -1,12 +1,506 @@
 [
   {
-    "id": "TKT-892014",
-    "fecha": "2026-08-26T11:30:00.000Z",
+    "id": "TKT-892001",
+    "fecha": "2026-08-02T09:15:00.000Z",
     "cliente": {
-      "id": "gral",
+      "id": "cli-1",
       "nombre": "Público General",
-      "rfc": "XAXX010101000",
       "telefono": "Sin teléfono"
+    },
+    "articulos": [
+      {
+        "id": "prod-001",
+        "codigo": "7501055300075",
+        "nombre": "Coca Cola Original 600ml",
+        "precio": 19.5,
+        "cantidad": 1,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 19.5
+      },
+      {
+        "id": "prod-002",
+        "codigo": "7501031311309",
+        "nombre": "Agua Purificada Bonafont 1L",
+        "precio": 14,
+        "cantidad": 1,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 14
+      }
+    ],
+    "totales": {
+      "subtotal": 33.5,
+      "descuento": 0,
+      "subtotalNeto": 28.88,
+      "impuestos": 4.62,
+      "total": 33.5,
+      "totalArticulos": 2
+    },
+    "pago": {
+      "metodo": "efectivo",
+      "montoRecibido": 50,
+      "cambio": 16.5,
+      "referencia": ""
+    }
+  },
+  {
+    "id": "TKT-892002",
+    "fecha": "2026-08-02T12:30:00.000Z",
+    "cliente": {
+      "id": "cli-2",
+      "nombre": "Juan Pérez Hernández",
+      "telefono": "55 9876 5432"
+    },
+    "articulos": [
+      {
+        "id": "prod-002",
+        "codigo": "7501031311309",
+        "nombre": "Agua Purificada Bonafont 1L",
+        "precio": 14,
+        "cantidad": 2,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 28
+      },
+      {
+        "id": "prod-003",
+        "codigo": "7501000111209",
+        "nombre": "Papas Sabritas Sal 45g",
+        "precio": 22,
+        "cantidad": 2,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 44
+      }
+    ],
+    "totales": {
+      "subtotal": 72,
+      "descuento": 0,
+      "subtotalNeto": 62.07,
+      "impuestos": 9.93,
+      "total": 72,
+      "totalArticulos": 4
+    },
+    "pago": {
+      "metodo": "tarjeta",
+      "montoRecibido": 72,
+      "cambio": 0,
+      "referencia": "AUTH-893003"
+    }
+  },
+  {
+    "id": "TKT-892003",
+    "fecha": "2026-08-04T09:15:00.000Z",
+    "cliente": {
+      "id": "cli-2",
+      "nombre": "Juan Pérez Hernández",
+      "telefono": "55 9876 5432"
+    },
+    "articulos": [
+      {
+        "id": "prod-003",
+        "codigo": "7501000111209",
+        "nombre": "Papas Sabritas Sal 45g",
+        "precio": 22,
+        "cantidad": 2,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 44
+      },
+      {
+        "id": "prod-005",
+        "codigo": "7501020513653",
+        "nombre": "Leche Entera Lala 1L",
+        "precio": 28.5,
+        "cantidad": 2,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 57
+      }
+    ],
+    "totales": {
+      "subtotal": 101,
+      "descuento": 0,
+      "subtotalNeto": 87.07,
+      "impuestos": 13.93,
+      "total": 101,
+      "totalArticulos": 4
+    },
+    "pago": {
+      "metodo": "tarjeta",
+      "montoRecibido": 101,
+      "cambio": 0,
+      "referencia": "AUTH-893004"
+    }
+  },
+  {
+    "id": "TKT-892004",
+    "fecha": "2026-08-04T12:30:00.000Z",
+    "cliente": {
+      "id": "cli-3",
+      "nombre": "María Luisa Gómez",
+      "telefono": "55 1122 3344"
+    },
+    "articulos": [
+      {
+        "id": "prod-004",
+        "codigo": "7501000128504",
+        "nombre": "Galletas Chokis Clásicas 84g",
+        "precio": 18.5,
+        "cantidad": 3,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 55.5
+      },
+      {
+        "id": "prod-006",
+        "codigo": "7501000153100",
+        "nombre": "Pan Bimbo Blanco Grande",
+        "precio": 47,
+        "cantidad": 1,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 47
+      }
+    ],
+    "totales": {
+      "subtotal": 102.5,
+      "descuento": 0,
+      "subtotalNeto": 88.36,
+      "impuestos": 14.14,
+      "total": 102.5,
+      "totalArticulos": 4
+    },
+    "pago": {
+      "metodo": "transferencia",
+      "montoRecibido": 102.5,
+      "cambio": 0,
+      "referencia": "SPEI-1772005"
+    }
+  },
+  {
+    "id": "TKT-892005",
+    "fecha": "2026-08-04T15:45:00.000Z",
+    "cliente": {
+      "id": "cli-4",
+      "nombre": "Abarrotes La Esquinita",
+      "telefono": "55 4433 2211"
+    },
+    "articulos": [
+      {
+        "id": "prod-005",
+        "codigo": "7501020513653",
+        "nombre": "Leche Entera Lala 1L",
+        "precio": 28.5,
+        "cantidad": 1,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 28.5
+      },
+      {
+        "id": "prod-007",
+        "codigo": "7501030467540",
+        "nombre": "Arroz Verde Valle Super Extra 1kg",
+        "precio": 34,
+        "cantidad": 2,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 68
+      }
+    ],
+    "totales": {
+      "subtotal": 96.5,
+      "descuento": 0,
+      "subtotalNeto": 83.19,
+      "impuestos": 13.31,
+      "total": 96.5,
+      "totalArticulos": 3
+    },
+    "pago": {
+      "metodo": "efectivo",
+      "montoRecibido": 100,
+      "cambio": 3.5,
+      "referencia": ""
+    }
+  },
+  {
+    "id": "TKT-892006",
+    "fecha": "2026-08-06T09:15:00.000Z",
+    "cliente": {
+      "id": "cli-3",
+      "nombre": "María Luisa Gómez",
+      "telefono": "55 1122 3344"
+    },
+    "articulos": [
+      {
+        "id": "prod-005",
+        "codigo": "7501020513653",
+        "nombre": "Leche Entera Lala 1L",
+        "precio": 28.5,
+        "cantidad": 3,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 85.5
+      },
+      {
+        "id": "prod-008",
+        "codigo": "7501001155909",
+        "nombre": "Café Nescafé Clásico 120g",
+        "precio": 68,
+        "cantidad": 1,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 68
+      }
+    ],
+    "totales": {
+      "subtotal": 153.5,
+      "descuento": 0,
+      "subtotalNeto": 132.33,
+      "impuestos": 21.17,
+      "total": 153.5,
+      "totalArticulos": 4
+    },
+    "pago": {
+      "metodo": "transferencia",
+      "montoRecibido": 153.5,
+      "cambio": 0,
+      "referencia": "SPEI-1772007"
+    }
+  },
+  {
+    "id": "TKT-892007",
+    "fecha": "2026-08-08T09:15:00.000Z",
+    "cliente": {
+      "id": "cli-4",
+      "nombre": "Abarrotes La Esquinita",
+      "telefono": "55 4433 2211"
+    },
+    "articulos": [
+      {
+        "id": "prod-007",
+        "codigo": "7501030467540",
+        "nombre": "Arroz Verde Valle Super Extra 1kg",
+        "precio": 34,
+        "cantidad": 1,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 34
+      },
+      {
+        "id": "prod-011",
+        "codigo": "7501025409890",
+        "nombre": "Detergente Ariel Doble Poder 1kg",
+        "precio": 45,
+        "cantidad": 2,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 90
+      }
+    ],
+    "totales": {
+      "subtotal": 124,
+      "descuento": 0,
+      "subtotalNeto": 106.9,
+      "impuestos": 17.1,
+      "total": 124,
+      "totalArticulos": 3
+    },
+    "pago": {
+      "metodo": "efectivo",
+      "montoRecibido": 150,
+      "cambio": 26,
+      "referencia": ""
+    }
+  },
+  {
+    "id": "TKT-892008",
+    "fecha": "2026-08-08T12:30:00.000Z",
+    "cliente": {
+      "id": "cli-5",
+      "nombre": "Tacos El Pastorcito",
+      "telefono": "55 7788 9900"
+    },
+    "articulos": [
+      {
+        "id": "prod-008",
+        "codigo": "7501001155909",
+        "nombre": "Café Nescafé Clásico 120g",
+        "precio": 68,
+        "cantidad": 2,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 136
+      },
+      {
+        "id": "prod-012",
+        "codigo": "7501025405520",
+        "nombre": "Jabón Zote Rosa 400g",
+        "precio": 21,
+        "cantidad": 1,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 21
+      }
+    ],
+    "totales": {
+      "subtotal": 157,
+      "descuento": 0,
+      "subtotalNeto": 135.34,
+      "impuestos": 21.66,
+      "total": 157,
+      "totalArticulos": 3
+    },
+    "pago": {
+      "metodo": "tarjeta",
+      "montoRecibido": 157,
+      "cambio": 0,
+      "referencia": "AUTH-893009"
+    }
+  },
+  {
+    "id": "TKT-892009",
+    "fecha": "2026-08-10T09:15:00.000Z",
+    "cliente": {
+      "id": "cli-5",
+      "nombre": "Tacos El Pastorcito",
+      "telefono": "55 7788 9900"
+    },
+    "articulos": [
+      {
+        "id": "prod-009",
+        "codigo": "7501030491026",
+        "nombre": "Frijol Negro Verde Valle 1kg",
+        "precio": 39.5,
+        "cantidad": 2,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 79
+      },
+      {
+        "id": "prod-002",
+        "codigo": "7501031311309",
+        "nombre": "Agua Purificada Bonafont 1L",
+        "precio": 14,
+        "cantidad": 1,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 14
+      }
+    ],
+    "totales": {
+      "subtotal": 93,
+      "descuento": 0,
+      "subtotalNeto": 80.17,
+      "impuestos": 12.83,
+      "total": 93,
+      "totalArticulos": 3
+    },
+    "pago": {
+      "metodo": "tarjeta",
+      "montoRecibido": 93,
+      "cambio": 0,
+      "referencia": "AUTH-893010"
+    }
+  },
+  {
+    "id": "TKT-892010",
+    "fecha": "2026-08-12T09:15:00.000Z",
+    "cliente": {
+      "id": "cli-6",
+      "nombre": "Doña Carmen Rodríguez",
+      "telefono": "55 6655 4433"
+    },
+    "articulos": [
+      {
+        "id": "prod-011",
+        "codigo": "7501025409890",
+        "nombre": "Detergente Ariel Doble Poder 1kg",
+        "precio": 45,
+        "cantidad": 3,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 135
+      },
+      {
+        "id": "prod-005",
+        "codigo": "7501020513653",
+        "nombre": "Leche Entera Lala 1L",
+        "precio": 28.5,
+        "cantidad": 2,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 57
+      }
+    ],
+    "totales": {
+      "subtotal": 192,
+      "descuento": 0,
+      "subtotalNeto": 165.52,
+      "impuestos": 26.48,
+      "total": 192,
+      "totalArticulos": 5
+    },
+    "pago": {
+      "metodo": "transferencia",
+      "montoRecibido": 192,
+      "cambio": 0,
+      "referencia": "SPEI-1772011"
+    }
+  },
+  {
+    "id": "TKT-892011",
+    "fecha": "2026-08-12T12:30:00.000Z",
+    "cliente": {
+      "id": "cli-7",
+      "nombre": "Ferretería San José",
+      "telefono": "55 8899 0011"
+    },
+    "articulos": [
+      {
+        "id": "prod-012",
+        "codigo": "7501025405520",
+        "nombre": "Jabón Zote Rosa 400g",
+        "precio": 21,
+        "cantidad": 1,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 21
+      },
+      {
+        "id": "prod-006",
+        "codigo": "7501000153100",
+        "nombre": "Pan Bimbo Blanco Grande",
+        "precio": 47,
+        "cantidad": 1,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 47
+      }
+    ],
+    "totales": {
+      "subtotal": 68,
+      "descuento": 0,
+      "subtotalNeto": 58.62,
+      "impuestos": 9.38,
+      "total": 68,
+      "totalArticulos": 2
+    },
+    "pago": {
+      "metodo": "efectivo",
+      "montoRecibido": 100,
+      "cambio": 32,
+      "referencia": ""
+    }
+  },
+  {
+    "id": "TKT-892012",
+    "fecha": "2026-08-12T15:45:00.000Z",
+    "cliente": {
+      "id": "cli-8",
+      "nombre": "Lic. Carlos Mendoza",
+      "telefono": "55 3344 5566"
     },
     "articulos": [
       {
@@ -17,32 +511,812 @@
         "cantidad": 2,
         "descuento": 0,
         "unidad": "Pza",
-        "subtotal": 39.0
+        "subtotal": 39
+      },
+      {
+        "id": "prod-007",
+        "codigo": "7501030467540",
+        "nombre": "Arroz Verde Valle Super Extra 1kg",
+        "precio": 34,
+        "cantidad": 2,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 68
+      }
+    ],
+    "totales": {
+      "subtotal": 107,
+      "descuento": 0,
+      "subtotalNeto": 92.24,
+      "impuestos": 14.76,
+      "total": 107,
+      "totalArticulos": 4
+    },
+    "pago": {
+      "metodo": "tarjeta",
+      "montoRecibido": 107,
+      "cambio": 0,
+      "referencia": "AUTH-893013"
+    }
+  },
+  {
+    "id": "TKT-892013",
+    "fecha": "2026-08-14T09:15:00.000Z",
+    "cliente": {
+      "id": "cli-7",
+      "nombre": "Ferretería San José",
+      "telefono": "55 8899 0011"
+    },
+    "articulos": [
+      {
+        "id": "prod-001",
+        "codigo": "7501055300075",
+        "nombre": "Coca Cola Original 600ml",
+        "precio": 19.5,
+        "cantidad": 1,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 19.5
+      },
+      {
+        "id": "prod-008",
+        "codigo": "7501001155909",
+        "nombre": "Café Nescafé Clásico 120g",
+        "precio": 68,
+        "cantidad": 1,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 68
+      }
+    ],
+    "totales": {
+      "subtotal": 87.5,
+      "descuento": 0,
+      "subtotalNeto": 75.43,
+      "impuestos": 12.07,
+      "total": 87.5,
+      "totalArticulos": 2
+    },
+    "pago": {
+      "metodo": "efectivo",
+      "montoRecibido": 100,
+      "cambio": 12.5,
+      "referencia": ""
+    }
+  },
+  {
+    "id": "TKT-892014",
+    "fecha": "2026-08-14T12:30:00.000Z",
+    "cliente": {
+      "id": "cli-8",
+      "nombre": "Lic. Carlos Mendoza",
+      "telefono": "55 3344 5566"
+    },
+    "articulos": [
+      {
+        "id": "prod-002",
+        "codigo": "7501031311309",
+        "nombre": "Agua Purificada Bonafont 1L",
+        "precio": 14,
+        "cantidad": 2,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 28
+      },
+      {
+        "id": "prod-009",
+        "codigo": "7501030491026",
+        "nombre": "Frijol Negro Verde Valle 1kg",
+        "precio": 39.5,
+        "cantidad": 2,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 79
+      }
+    ],
+    "totales": {
+      "subtotal": 107,
+      "descuento": 0,
+      "subtotalNeto": 92.24,
+      "impuestos": 14.76,
+      "total": 107,
+      "totalArticulos": 4
+    },
+    "pago": {
+      "metodo": "tarjeta",
+      "montoRecibido": 107,
+      "cambio": 0,
+      "referencia": "AUTH-893015"
+    }
+  },
+  {
+    "id": "TKT-892015",
+    "fecha": "2026-08-16T09:15:00.000Z",
+    "cliente": {
+      "id": "cli-8",
+      "nombre": "Lic. Carlos Mendoza",
+      "telefono": "55 3344 5566"
+    },
+    "articulos": [
+      {
+        "id": "prod-003",
+        "codigo": "7501000111209",
+        "nombre": "Papas Sabritas Sal 45g",
+        "precio": 22,
+        "cantidad": 2,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 44
+      },
+      {
+        "id": "prod-011",
+        "codigo": "7501025409890",
+        "nombre": "Detergente Ariel Doble Poder 1kg",
+        "precio": 45,
+        "cantidad": 2,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 90
+      }
+    ],
+    "totales": {
+      "subtotal": 134,
+      "descuento": 0,
+      "subtotalNeto": 115.52,
+      "impuestos": 18.48,
+      "total": 134,
+      "totalArticulos": 4
+    },
+    "pago": {
+      "metodo": "tarjeta",
+      "montoRecibido": 134,
+      "cambio": 0,
+      "referencia": "AUTH-893016"
+    }
+  },
+  {
+    "id": "TKT-892016",
+    "fecha": "2026-08-16T12:30:00.000Z",
+    "cliente": {
+      "id": "cli-9",
+      "nombre": "Panadería Los Hermanos",
+      "telefono": "55 2211 4455"
+    },
+    "articulos": [
+      {
+        "id": "prod-004",
+        "codigo": "7501000128504",
+        "nombre": "Galletas Chokis Clásicas 84g",
+        "precio": 18.5,
+        "cantidad": 3,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 55.5
+      },
+      {
+        "id": "prod-012",
+        "codigo": "7501025405520",
+        "nombre": "Jabón Zote Rosa 400g",
+        "precio": 21,
+        "cantidad": 1,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 21
+      }
+    ],
+    "totales": {
+      "subtotal": 76.5,
+      "descuento": 0,
+      "subtotalNeto": 65.95,
+      "impuestos": 10.55,
+      "total": 76.5,
+      "totalArticulos": 4
+    },
+    "pago": {
+      "metodo": "transferencia",
+      "montoRecibido": 76.5,
+      "cambio": 0,
+      "referencia": "SPEI-1772017"
+    }
+  },
+  {
+    "id": "TKT-892017",
+    "fecha": "2026-08-16T15:45:00.000Z",
+    "cliente": {
+      "id": "cli-10",
+      "nombre": "Farmacia San Juan",
+      "telefono": "55 9988 7766"
+    },
+    "articulos": [
+      {
+        "id": "prod-005",
+        "codigo": "7501020513653",
+        "nombre": "Leche Entera Lala 1L",
+        "precio": 28.5,
+        "cantidad": 1,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 28.5
+      },
+      {
+        "id": "prod-001",
+        "codigo": "7501055300075",
+        "nombre": "Coca Cola Original 600ml",
+        "precio": 19.5,
+        "cantidad": 2,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 39
+      }
+    ],
+    "totales": {
+      "subtotal": 67.5,
+      "descuento": 0,
+      "subtotalNeto": 58.19,
+      "impuestos": 9.31,
+      "total": 67.5,
+      "totalArticulos": 3
+    },
+    "pago": {
+      "metodo": "efectivo",
+      "montoRecibido": 100,
+      "cambio": 32.5,
+      "referencia": ""
+    }
+  },
+  {
+    "id": "TKT-892018",
+    "fecha": "2026-08-18T09:15:00.000Z",
+    "cliente": {
+      "id": "cli-9",
+      "nombre": "Panadería Los Hermanos",
+      "telefono": "55 2211 4455"
+    },
+    "articulos": [
+      {
+        "id": "prod-005",
+        "codigo": "7501020513653",
+        "nombre": "Leche Entera Lala 1L",
+        "precio": 28.5,
+        "cantidad": 3,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 85.5
+      },
+      {
+        "id": "prod-002",
+        "codigo": "7501031311309",
+        "nombre": "Agua Purificada Bonafont 1L",
+        "precio": 14,
+        "cantidad": 1,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 14
+      }
+    ],
+    "totales": {
+      "subtotal": 99.5,
+      "descuento": 0,
+      "subtotalNeto": 85.78,
+      "impuestos": 13.72,
+      "total": 99.5,
+      "totalArticulos": 4
+    },
+    "pago": {
+      "metodo": "transferencia",
+      "montoRecibido": 99.5,
+      "cambio": 0,
+      "referencia": "SPEI-1772019"
+    }
+  },
+  {
+    "id": "TKT-892019",
+    "fecha": "2026-08-20T09:15:00.000Z",
+    "cliente": {
+      "id": "cli-10",
+      "nombre": "Farmacia San Juan",
+      "telefono": "55 9988 7766"
+    },
+    "articulos": [
+      {
+        "id": "prod-007",
+        "codigo": "7501030467540",
+        "nombre": "Arroz Verde Valle Super Extra 1kg",
+        "precio": 34,
+        "cantidad": 1,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 34
+      },
+      {
+        "id": "prod-005",
+        "codigo": "7501020513653",
+        "nombre": "Leche Entera Lala 1L",
+        "precio": 28.5,
+        "cantidad": 2,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 57
+      }
+    ],
+    "totales": {
+      "subtotal": 91,
+      "descuento": 0,
+      "subtotalNeto": 78.45,
+      "impuestos": 12.55,
+      "total": 91,
+      "totalArticulos": 3
+    },
+    "pago": {
+      "metodo": "efectivo",
+      "montoRecibido": 100,
+      "cambio": 9,
+      "referencia": ""
+    }
+  },
+  {
+    "id": "TKT-892020",
+    "fecha": "2026-08-20T12:30:00.000Z",
+    "cliente": {
+      "id": "cli-11",
+      "nombre": "Elena Morales Santos",
+      "telefono": "55 5544 3322"
+    },
+    "articulos": [
+      {
+        "id": "prod-008",
+        "codigo": "7501001155909",
+        "nombre": "Café Nescafé Clásico 120g",
+        "precio": 68,
+        "cantidad": 2,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 136
+      },
+      {
+        "id": "prod-006",
+        "codigo": "7501000153100",
+        "nombre": "Pan Bimbo Blanco Grande",
+        "precio": 47,
+        "cantidad": 1,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 47
+      }
+    ],
+    "totales": {
+      "subtotal": 183,
+      "descuento": 0,
+      "subtotalNeto": 157.76,
+      "impuestos": 25.24,
+      "total": 183,
+      "totalArticulos": 3
+    },
+    "pago": {
+      "metodo": "tarjeta",
+      "montoRecibido": 183,
+      "cambio": 0,
+      "referencia": "AUTH-893021"
+    }
+  },
+  {
+    "id": "TKT-892021",
+    "fecha": "2026-08-22T09:15:00.000Z",
+    "cliente": {
+      "id": "cli-11",
+      "nombre": "Elena Morales Santos",
+      "telefono": "55 5544 3322"
+    },
+    "articulos": [
+      {
+        "id": "prod-009",
+        "codigo": "7501030491026",
+        "nombre": "Frijol Negro Verde Valle 1kg",
+        "precio": 39.5,
+        "cantidad": 2,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 79
+      },
+      {
+        "id": "prod-008",
+        "codigo": "7501001155909",
+        "nombre": "Café Nescafé Clásico 120g",
+        "precio": 68,
+        "cantidad": 1,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 68
+      }
+    ],
+    "totales": {
+      "subtotal": 147,
+      "descuento": 0,
+      "subtotalNeto": 126.72,
+      "impuestos": 20.28,
+      "total": 147,
+      "totalArticulos": 3
+    },
+    "pago": {
+      "metodo": "tarjeta",
+      "montoRecibido": 147,
+      "cambio": 0,
+      "referencia": "AUTH-893022"
+    }
+  },
+  {
+    "id": "TKT-892022",
+    "fecha": "2026-08-24T09:15:00.000Z",
+    "cliente": {
+      "id": "cli-12",
+      "nombre": "Restaurante El Rincón",
+      "telefono": "55 1234 9876"
+    },
+    "articulos": [
+      {
+        "id": "prod-011",
+        "codigo": "7501025409890",
+        "nombre": "Detergente Ariel Doble Poder 1kg",
+        "precio": 45,
+        "cantidad": 3,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 135
+      }
+    ],
+    "totales": {
+      "subtotal": 135,
+      "descuento": 0,
+      "subtotalNeto": 116.38,
+      "impuestos": 18.62,
+      "total": 135,
+      "totalArticulos": 3
+    },
+    "pago": {
+      "metodo": "transferencia",
+      "montoRecibido": 135,
+      "cambio": 0,
+      "referencia": "SPEI-1772023"
+    }
+  },
+  {
+    "id": "TKT-892023",
+    "fecha": "2026-08-24T12:30:00.000Z",
+    "cliente": {
+      "id": "cli-1",
+      "nombre": "Público General",
+      "telefono": "Sin teléfono"
+    },
+    "articulos": [
+      {
+        "id": "prod-012",
+        "codigo": "7501025405520",
+        "nombre": "Jabón Zote Rosa 400g",
+        "precio": 21,
+        "cantidad": 1,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 21
+      }
+    ],
+    "totales": {
+      "subtotal": 21,
+      "descuento": 0,
+      "subtotalNeto": 18.1,
+      "impuestos": 2.9,
+      "total": 21,
+      "totalArticulos": 1
+    },
+    "pago": {
+      "metodo": "efectivo",
+      "montoRecibido": 50,
+      "cambio": 29,
+      "referencia": ""
+    }
+  },
+  {
+    "id": "TKT-892024",
+    "fecha": "2026-08-24T15:45:00.000Z",
+    "cliente": {
+      "id": "cli-2",
+      "nombre": "Juan Pérez Hernández",
+      "telefono": "55 9876 5432"
+    },
+    "articulos": [
+      {
+        "id": "prod-001",
+        "codigo": "7501055300075",
+        "nombre": "Coca Cola Original 600ml",
+        "precio": 19.5,
+        "cantidad": 2,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 39
+      }
+    ],
+    "totales": {
+      "subtotal": 39,
+      "descuento": 0,
+      "subtotalNeto": 33.62,
+      "impuestos": 5.38,
+      "total": 39,
+      "totalArticulos": 2
+    },
+    "pago": {
+      "metodo": "tarjeta",
+      "montoRecibido": 39,
+      "cambio": 0,
+      "referencia": "AUTH-893025"
+    }
+  },
+  {
+    "id": "TKT-892025",
+    "fecha": "2026-08-25T09:15:00.000Z",
+    "cliente": {
+      "id": "cli-1",
+      "nombre": "Público General",
+      "telefono": "Sin teléfono"
+    },
+    "articulos": [
+      {
+        "id": "prod-001",
+        "codigo": "7501055300075",
+        "nombre": "Coca Cola Original 600ml",
+        "precio": 19.5,
+        "cantidad": 1,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 19.5
+      },
+      {
+        "id": "prod-002",
+        "codigo": "7501031311309",
+        "nombre": "Agua Purificada Bonafont 1L",
+        "precio": 14,
+        "cantidad": 1,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 14
+      }
+    ],
+    "totales": {
+      "subtotal": 33.5,
+      "descuento": 0,
+      "subtotalNeto": 28.88,
+      "impuestos": 4.62,
+      "total": 33.5,
+      "totalArticulos": 2
+    },
+    "pago": {
+      "metodo": "efectivo",
+      "montoRecibido": 50,
+      "cambio": 16.5,
+      "referencia": ""
+    }
+  },
+  {
+    "id": "TKT-892026",
+    "fecha": "2026-08-25T12:30:00.000Z",
+    "cliente": {
+      "id": "cli-2",
+      "nombre": "Juan Pérez Hernández",
+      "telefono": "55 9876 5432"
+    },
+    "articulos": [
+      {
+        "id": "prod-002",
+        "codigo": "7501031311309",
+        "nombre": "Agua Purificada Bonafont 1L",
+        "precio": 14,
+        "cantidad": 2,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 28
       },
       {
         "id": "prod-003",
         "codigo": "7501000111209",
         "nombre": "Papas Sabritas Sal 45g",
-        "precio": 22.0,
-        "cantidad": 1,
+        "precio": 22,
+        "cantidad": 2,
         "descuento": 0,
         "unidad": "Pza",
-        "subtotal": 22.0
+        "subtotal": 44
       }
     ],
     "totales": {
-      "subtotal": 61.0,
+      "subtotal": 72,
       "descuento": 0,
-      "subtotalNeto": 52.59,
-      "impuestos": 8.41,
-      "total": 61.0,
+      "subtotalNeto": 62.07,
+      "impuestos": 9.93,
+      "total": 72,
+      "totalArticulos": 4
+    },
+    "pago": {
+      "metodo": "tarjeta",
+      "montoRecibido": 72,
+      "cambio": 0,
+      "referencia": "AUTH-893027"
+    }
+  },
+  {
+    "id": "TKT-892027",
+    "fecha": "2026-08-26T09:15:00.000Z",
+    "cliente": {
+      "id": "cli-2",
+      "nombre": "Juan Pérez Hernández",
+      "telefono": "55 9876 5432"
+    },
+    "articulos": [
+      {
+        "id": "prod-003",
+        "codigo": "7501000111209",
+        "nombre": "Papas Sabritas Sal 45g",
+        "precio": 22,
+        "cantidad": 2,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 44
+      },
+      {
+        "id": "prod-005",
+        "codigo": "7501020513653",
+        "nombre": "Leche Entera Lala 1L",
+        "precio": 28.5,
+        "cantidad": 2,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 57
+      }
+    ],
+    "totales": {
+      "subtotal": 101,
+      "descuento": 0,
+      "subtotalNeto": 87.07,
+      "impuestos": 13.93,
+      "total": 101,
+      "totalArticulos": 4
+    },
+    "pago": {
+      "metodo": "tarjeta",
+      "montoRecibido": 101,
+      "cambio": 0,
+      "referencia": "AUTH-893028"
+    }
+  },
+  {
+    "id": "TKT-892028",
+    "fecha": "2026-08-26T12:30:00.000Z",
+    "cliente": {
+      "id": "cli-3",
+      "nombre": "María Luisa Gómez",
+      "telefono": "55 1122 3344"
+    },
+    "articulos": [
+      {
+        "id": "prod-004",
+        "codigo": "7501000128504",
+        "nombre": "Galletas Chokis Clásicas 84g",
+        "precio": 18.5,
+        "cantidad": 3,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 55.5
+      },
+      {
+        "id": "prod-006",
+        "codigo": "7501000153100",
+        "nombre": "Pan Bimbo Blanco Grande",
+        "precio": 47,
+        "cantidad": 1,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 47
+      }
+    ],
+    "totales": {
+      "subtotal": 102.5,
+      "descuento": 0,
+      "subtotalNeto": 88.36,
+      "impuestos": 14.14,
+      "total": 102.5,
+      "totalArticulos": 4
+    },
+    "pago": {
+      "metodo": "transferencia",
+      "montoRecibido": 102.5,
+      "cambio": 0,
+      "referencia": "SPEI-1772029"
+    }
+  },
+  {
+    "id": "TKT-892029",
+    "fecha": "2026-08-26T15:45:00.000Z",
+    "cliente": {
+      "id": "cli-4",
+      "nombre": "Abarrotes La Esquinita",
+      "telefono": "55 4433 2211"
+    },
+    "articulos": [
+      {
+        "id": "prod-005",
+        "codigo": "7501020513653",
+        "nombre": "Leche Entera Lala 1L",
+        "precio": 28.5,
+        "cantidad": 1,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 28.5
+      },
+      {
+        "id": "prod-007",
+        "codigo": "7501030467540",
+        "nombre": "Arroz Verde Valle Super Extra 1kg",
+        "precio": 34,
+        "cantidad": 2,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 68
+      }
+    ],
+    "totales": {
+      "subtotal": 96.5,
+      "descuento": 0,
+      "subtotalNeto": 83.19,
+      "impuestos": 13.31,
+      "total": 96.5,
       "totalArticulos": 3
     },
     "pago": {
       "metodo": "efectivo",
-      "montoRecibido": 100.0,
-      "cambio": 39.0,
+      "montoRecibido": 100,
+      "cambio": 3.5,
       "referencia": ""
+    }
+  },
+  {
+    "id": "TKT-892030",
+    "fecha": "2026-08-27T09:15:00.000Z",
+    "cliente": {
+      "id": "cli-3",
+      "nombre": "María Luisa Gómez",
+      "telefono": "55 1122 3344"
+    },
+    "articulos": [
+      {
+        "id": "prod-005",
+        "codigo": "7501020513653",
+        "nombre": "Leche Entera Lala 1L",
+        "precio": 28.5,
+        "cantidad": 3,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 85.5
+      },
+      {
+        "id": "prod-008",
+        "codigo": "7501001155909",
+        "nombre": "Café Nescafé Clásico 120g",
+        "precio": 68,
+        "cantidad": 1,
+        "descuento": 0,
+        "unidad": "Pza",
+        "subtotal": 68
+      }
+    ],
+    "totales": {
+      "subtotal": 153.5,
+      "descuento": 0,
+      "subtotalNeto": 132.33,
+      "impuestos": 21.17,
+      "total": 153.5,
+      "totalArticulos": 4
+    },
+    "pago": {
+      "metodo": "transferencia",
+      "montoRecibido": 153.5,
+      "cambio": 0,
+      "referencia": "SPEI-1772031"
     }
   }
 ]

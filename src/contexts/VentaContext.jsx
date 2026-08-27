@@ -19,13 +19,18 @@ export const VentaProvider = ({ children }) => {
   const [modalExitoAbierto, setModalExitoAbierto] = useState(false);
   const [ultimaVentaRealizada, setUltimaVentaRealizada] = useState(null);
 
-  // Historial de ventas completadas
+  // Historial de ventas completadas con sincronizacion automatica desde ventas.json
   const [historialVentas, setHistorialVentas] = useState(() => {
     const ventasGuardadas = localStorage.getItem('pos_historial_ventas');
-    if (!ventasGuardadas) {
+    const huellaGuardada = localStorage.getItem('pos_historial_ventas_huella');
+    const huellaActual = JSON.stringify(ventasIniciales);
+
+    if (!ventasGuardadas || huellaGuardada !== huellaActual) {
       localStorage.setItem('pos_historial_ventas', JSON.stringify(ventasIniciales));
+      localStorage.setItem('pos_historial_ventas_huella', huellaActual);
       return ventasIniciales;
     }
+
     try {
       return JSON.parse(ventasGuardadas);
     } catch {

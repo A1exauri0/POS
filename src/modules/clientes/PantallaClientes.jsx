@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
   Table,
   Button,
@@ -9,6 +9,7 @@ import {
   ActionIcon,
   Tooltip,
   Text,
+  Pagination,
 } from '@mantine/core';
 import {
   IconPlus,
@@ -119,6 +120,9 @@ export const PantallaClientes = () => {
     setClienteAEliminar(null);
   };
 
+  const [paginaActual, setPaginaActual] = useState(1);
+  const itemsPorPagina = 6;
+
   const filtrados = useMemo(() => {
     if (!terminoBusqueda.trim()) return clientes;
     const normalizado = terminoBusqueda.trim().toLowerCase();
@@ -129,6 +133,17 @@ export const PantallaClientes = () => {
         (c.telefono && c.telefono.includes(normalizado))
     );
   }, [clientes, terminoBusqueda]);
+
+  // Reiniciar a la primera pagina al buscar
+  useEffect(() => {
+    setPaginaActual(1);
+  }, [terminoBusqueda]);
+
+  const totalPaginas = Math.ceil(filtrados.length / itemsPorPagina) || 1;
+  const clientesPaginados = useMemo(() => {
+    const inicio = (paginaActual - 1) * itemsPorPagina;
+    return filtrados.slice(inicio, inicio + itemsPorPagina);
+  }, [filtrados, paginaActual, itemsPorPagina]);
 
   return (
     <div className="flex-1 flex flex-col h-full bg-slate-100 p-4 gap-4 overflow-hidden">
@@ -172,86 +187,108 @@ export const PantallaClientes = () => {
         </div>
       </div>
 
-      {/* Tabla de Clientes Simplificada */}
-      <div className="flex-1 bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-y-auto">
-        <Table highlightOnHover verticalSpacing="sm" stickyHeader>
-          <Table.Thead className="bg-slate-50/80 text-slate-600 font-bold text-xs uppercase tracking-wider border-b border-slate-200/80">
-            <Table.Tr>
-              <Table.Th>Nombre / Razón Social</Table.Th>
-              <Table.Th>Teléfono</Table.Th>
-              <Table.Th className="text-right">Acciones</Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
-            {filtrados.length === 0 ? (
+      {/* Tabla de Clientes con Paginacion */}
+      <div className="flex-1 bg-white rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-between overflow-hidden">
+        <div className="flex-1 overflow-y-auto">
+          <Table highlightOnHover verticalSpacing="sm" stickyHeader>
+            <Table.Thead className="bg-slate-50/80 text-slate-600 font-bold text-xs uppercase tracking-wider border-b border-slate-200/80">
               <Table.Tr>
-                <Table.Td colSpan={3} className="text-center py-12 text-slate-400 text-sm">
-                  No se encontraron clientes registrados.
-                </Table.Td>
+                <Table.Th>Nombre / Razón Social</Table.Th>
+                <Table.Th>Teléfono</Table.Th>
+                <Table.Th className="text-right">Acciones</Table.Th>
               </Table.Tr>
-            ) : (
-              filtrados.map((cli) => {
-                const esDefault = cli.esPredeterminado || cli.id === 'cli-1';
+            </Table.Thead>
+            <Table.Tbody>
+              {filtrados.length === 0 ? (
+                <Table.Tr>
+                  <Table.Td colSpan={3} className="text-center py-12 text-slate-400 text-sm">
+                    No se encontraron clientes registrados.
+                  </Table.Td>
+                </Table.Tr>
+              ) : (
+                clientesPaginados.map((cli) => {
+                  const esDefault = cli.esPredeterminado || cli.id === 'cli-1';
 
-                return (
-                  <Table.Tr key={cli.id} className="text-sm text-slate-800">
-                    <Table.Td className="font-bold text-slate-900">
-                      <div className="flex items-center gap-2">
-                        <span>{cli.nombre}</span>
-                        {esDefault && (
-                          <Badge color="dark" size="xs" variant="filled" radius="sm">
-                            Predeterminado
-                          </Badge>
-                        )}
-                      </div>
-                    </Table.Td>
+                  return (
+                    <Table.Tr key={cli.id} className="text-sm text-slate-800">
+                      <Table.Td className="font-bold text-slate-900">
+                        <div className="flex items-center gap-2">
+                          <span>{cli.nombre}</span>
+                          {esDefault && (
+                            <Badge color="dark" size="xs" variant="filled" radius="sm">
+                              Predeterminado
+                            </Badge>
+                          )}
+                        </div>
+                      </Table.Td>
 
-                    <Table.Td className="text-xs text-slate-600 font-mono">
-                      <div className="flex items-center gap-1.5">
-                        <IconPhone size={14} className="text-slate-400" />
-                        <span>{cli.telefono || 'Sin teléfono'}</span>
-                      </div>
-                    </Table.Td>
+                      <Table.Td className="text-xs text-slate-600 font-mono">
+                        <div className="flex items-center gap-1.5">
+                          <IconPhone size={14} className="text-slate-400" />
+                          <span>{cli.telefono || 'Sin teléfono'}</span>
+                        </div>
+                      </Table.Td>
 
-                    <Table.Td className="text-right">
-                      <Group gap="xs" justify="flex-end">
-                        <Tooltip label="Editar cliente">
-                          <ActionIcon
-                            variant="subtle"
-                            color="indigo"
-                            radius="md"
-                            onClick={() => abrirModalEditar(cli)}
-                          >
-                            <IconEdit size={16} />
-                          </ActionIcon>
-                        </Tooltip>
-
-                        {esDefault ? (
-                          <Tooltip label="Cliente predeterminado (No eliminable)">
-                            <ActionIcon variant="subtle" color="gray" radius="md" disabled>
-                              <IconLock size={16} />
-                            </ActionIcon>
-                          </Tooltip>
-                        ) : (
-                          <Tooltip label="Eliminar cliente">
+                      <Table.Td className="text-right">
+                        <Group gap="xs" justify="flex-end">
+                          <Tooltip label="Editar cliente">
                             <ActionIcon
                               variant="subtle"
-                              color="red"
+                              color="indigo"
                               radius="md"
-                              onClick={() => solicitarEliminarCliente(cli)}
+                              onClick={() => abrirModalEditar(cli)}
                             >
-                              <IconTrash size={16} />
+                              <IconEdit size={16} />
                             </ActionIcon>
                           </Tooltip>
-                        )}
-                      </Group>
-                    </Table.Td>
-                  </Table.Tr>
-                );
-              })
+
+                          {esDefault ? (
+                            <Tooltip label="Cliente predeterminado (No eliminable)">
+                              <ActionIcon variant="subtle" color="gray" radius="md" disabled>
+                                <IconLock size={16} />
+                              </ActionIcon>
+                            </Tooltip>
+                          ) : (
+                            <Tooltip label="Eliminar cliente">
+                              <ActionIcon
+                                variant="subtle"
+                                color="red"
+                                radius="md"
+                                onClick={() => solicitarEliminarCliente(cli)}
+                              >
+                                <IconTrash size={16} />
+                              </ActionIcon>
+                            </Tooltip>
+                          )}
+                        </Group>
+                      </Table.Td>
+                    </Table.Tr>
+                  );
+                })
+              )}
+            </Table.Tbody>
+          </Table>
+        </div>
+
+        {/* Pie de Paginación */}
+        {filtrados.length > 0 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3.5 border-t border-slate-100 bg-white">
+            <span className="text-xs text-slate-500 font-medium">
+              Mostrando {(paginaActual - 1) * itemsPorPagina + 1} -{' '}
+              {Math.min(paginaActual * itemsPorPagina, filtrados.length)} de {filtrados.length} clientes
+            </span>
+            {totalPaginas > 1 && (
+              <Pagination
+                total={totalPaginas}
+                value={paginaActual}
+                onChange={setPaginaActual}
+                size="sm"
+                radius="xl"
+                color="indigo"
+              />
             )}
-          </Table.Tbody>
-        </Table>
+          </div>
+        )}
       </div>
 
       {/* Modal Formulario de Cliente Simplificado */}

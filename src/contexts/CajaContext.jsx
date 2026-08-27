@@ -6,16 +6,32 @@ import datosCajaInicial from '../data/caja.json';
 const CajaContext = createContext(null);
 
 export const CajaProvider = ({ children }) => {
-  // Estado de la caja
+  // Estado de la caja con deteccion automatica de cambios en caja.json
   const [cajaAbierta, setCajaAbierta] = useState(() => {
+    const huellaGuardada = localStorage.getItem('pos_caja_huella');
+    const huellaActual = JSON.stringify(datosCajaInicial);
+    if (huellaGuardada !== huellaActual) {
+      localStorage.setItem('pos_caja_abierta', JSON.stringify(datosCajaInicial.cajaAbierta));
+      return datosCajaInicial.cajaAbierta;
+    }
     const estado = localStorage.getItem('pos_caja_abierta');
     return estado !== null ? JSON.parse(estado) : datosCajaInicial.cajaAbierta;
   });
 
   const [turnoActual, setTurnoActual] = useState(() => {
+    const huellaGuardada = localStorage.getItem('pos_caja_huella');
+    const huellaActual = JSON.stringify(datosCajaInicial);
+
+    if (huellaGuardada !== huellaActual) {
+      localStorage.setItem('pos_turno_actual', JSON.stringify(datosCajaInicial.turnoActual));
+      localStorage.setItem('pos_caja_huella', huellaActual);
+      return datosCajaInicial.turnoActual;
+    }
+
     const guardado = localStorage.getItem('pos_turno_actual');
     if (!guardado) {
       localStorage.setItem('pos_turno_actual', JSON.stringify(datosCajaInicial.turnoActual));
+      localStorage.setItem('pos_caja_huella', huellaActual);
       return datosCajaInicial.turnoActual;
     }
     try {
