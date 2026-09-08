@@ -39,7 +39,7 @@ export const cargarVentasBD = async () => {
       const ventasSql = await ejecutarConsulta(
         `SELECT id, fecha, cliente_id, cliente_nombre, cliente_telefono,
                 subtotal, descuento, subtotal_neto, impuestos, total, total_articulos,
-                metodo_pago, monto_recibido, cambio, referencia
+                metodo_pago, monto_recibido, cambio, referencia, comprobante
          FROM ventas
          ORDER BY fecha DESC;`
       );
@@ -91,6 +91,7 @@ export const cargarVentasBD = async () => {
             montoRecibido: v.monto_recibido,
             cambio: v.cambio,
             referencia: v.referencia || '',
+            comprobante: v.comprobante || null,
           },
         }));
 
@@ -124,8 +125,8 @@ export const registrarVentaBD = async (nuevaVenta) => {
         `INSERT INTO ventas (
           id, fecha, cliente_id, cliente_nombre, cliente_telefono,
           subtotal, descuento, subtotal_neto, impuestos, total, total_articulos,
-          metodo_pago, monto_recibido, cambio, referencia
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15);`,
+          metodo_pago, monto_recibido, cambio, referencia, comprobante
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16);`,
         [
           nuevaVenta.id,
           nuevaVenta.fecha,
@@ -142,6 +143,7 @@ export const registrarVentaBD = async (nuevaVenta) => {
           nuevaVenta.pago.montoRecibido,
           nuevaVenta.pago.cambio || 0,
           nuevaVenta.pago.referencia || '',
+          nuevaVenta.pago.comprobante || null,
         ]
       );
 

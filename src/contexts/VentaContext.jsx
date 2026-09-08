@@ -171,6 +171,7 @@ export const VentaProvider = ({ children }) => {
         montoRecibido: datosPago.montoRecibido || totales.total,
         cambio: datosPago.cambio || 0,
         referencia: datosPago.referencia || '',
+        comprobante: datosPago.comprobante || null,
       },
     };
 

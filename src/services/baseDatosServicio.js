@@ -131,9 +131,17 @@ const crearTablas = async (db) => {
       metodo_pago TEXT NOT NULL,
       monto_recibido REAL NOT NULL,
       cambio REAL DEFAULT 0,
-      referencia TEXT
+      referencia TEXT,
+      comprobante TEXT
     );
   `);
+
+  // Migration: add column comprobante to ventas
+  try {
+    await db.execute('ALTER TABLE ventas ADD COLUMN comprobante TEXT;');
+  } catch {
+    // La columna ya existe en la base de datos
+  }
 
   // 7. Artículos por Venta
   await db.execute(`
@@ -251,8 +259,8 @@ const sembrarDatosIniciales = async (db) => {
         `INSERT INTO ventas (
           id, fecha, cliente_id, cliente_nombre, cliente_telefono,
           subtotal, descuento, subtotal_neto, impuestos, total, total_articulos,
-          metodo_pago, monto_recibido, cambio, referencia
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15);`,
+          metodo_pago, monto_recibido, cambio, referencia, comprobante
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16);`,
         [
           v.id,
           v.fecha,
@@ -269,6 +277,7 @@ const sembrarDatosIniciales = async (db) => {
           v.pago?.montoRecibido || 0,
           v.pago?.cambio || 0,
           v.pago?.referencia || '',
+          v.pago?.comprobante || null,
         ]
       );
 

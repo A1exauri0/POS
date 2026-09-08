@@ -7,17 +7,21 @@ import {
   IconCreditCard,
   IconCash,
   IconBuildingBank,
-  IconCalendar,
-  IconFilter,
   IconX,
   IconCalendarEvent,
+  IconPaperclip,
+  IconFileText,
+  IconExternalLink,
+  IconPrinter,
 } from '@tabler/icons-react';
 import { useVenta } from '../../contexts/VentaContext';
 import { formatearMoneda, formatearFechaHora } from '../../utils/formateadores';
+import { TicketImpresion } from '../ventas/components/TicketImpresion';
 
 export const PantallaReportes = () => {
   const { historialVentas } = useVenta();
   const [ventaDetalle, setVentaDetalle] = useState(null);
+  const [comprobanteZoom, setComprobanteZoom] = useState(null);
 
   // Estados de filtrado por fecha
   const [filtroRapido, setFiltroRapido] = useState('todas'); // 'todas' | 'hoy' | '7dias' | 'mes' | 'personalizado'
@@ -227,89 +231,131 @@ export const PantallaReportes = () => {
         </div>
       </div>
 
-      {/* Tabla de Historial con Paginacion */}
-      <div className="flex-1 bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs flex flex-col justify-between overflow-hidden">
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
-              <IconReceipt size={18} className="text-slate-500" /> Transacciones Registradas
-            </h3>
-            {filtroRapido !== 'todas' && (
-              <Badge color="purple" variant="light" size="xs" radius="sm">
-                Filtro Activo
-              </Badge>
-            )}
+      {/* Tabla de Historial con Misma Estructura y Componentes */}
+      <div className="flex-1 bg-white rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-between overflow-hidden">
+        {/* Cabecera interna del listado */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 bg-white">
+          <div className="flex items-center gap-2">
+            <IconReceipt size={18} className="text-indigo-600" />
+            <h3 className="text-sm font-bold text-slate-800">Transacciones Registradas</h3>
           </div>
+          {filtroRapido !== 'todas' && (
+            <Badge color="purple" variant="light" size="xs" radius="sm">
+              Filtro Activo
+            </Badge>
+          )}
+        </div>
 
-          {ventasFiltradas.length === 0 ? (
-            <div className="text-center py-16 text-slate-400 text-sm">
-              <IconCalendarEvent size={36} className="mx-auto mb-2 text-slate-300" />
-              <p className="font-semibold text-slate-600">No se encontraron ventas en este período</p>
-              <p className="text-xs text-slate-400 mt-1">Prueba seleccionando otro rango de fechas</p>
-              <Button
-                variant="subtle"
-                color="purple"
-                size="xs"
-                radius="xl"
-                onClick={limpiarFiltros}
-                className="mt-3 font-bold"
-              >
-                Ver Todas las Ventas
-              </Button>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <Table highlightOnHover verticalSpacing="sm">
-                <Table.Thead className="bg-slate-50/80 text-slate-600 font-bold text-xs uppercase tracking-wider border-b border-slate-200/80">
-                  <Table.Tr>
-                    <Table.Th>Folio</Table.Th>
-                    <Table.Th>Fecha / Hora</Table.Th>
-                    <Table.Th>Cliente</Table.Th>
-                    <Table.Th>Método de Pago</Table.Th>
-                    <Table.Th>Artículos</Table.Th>
-                    <Table.Th>Total</Table.Th>
-                    <Table.Th className="text-right">Detalle</Table.Th>
-                  </Table.Tr>
-                </Table.Thead>
-                <Table.Tbody>
-                  {ventasPaginadas.map((venta) => (
-                    <Table.Tr key={venta.id} className="text-sm text-slate-800">
+        {ventasFiltradas.length === 0 ? (
+          <div className="flex-1 flex flex-col items-center justify-center text-center py-16 text-slate-400 text-sm">
+            <IconCalendarEvent size={36} className="mx-auto mb-2 text-slate-300" />
+            <p className="font-semibold text-slate-600">No se encontraron ventas en este período</p>
+            <p className="text-xs text-slate-400 mt-1">Prueba seleccionando otro rango de fechas</p>
+            <Button
+              variant="subtle"
+              color="indigo"
+              size="xs"
+              radius="xl"
+              onClick={limpiarFiltros}
+              className="mt-3 font-bold"
+            >
+              Ver Todas las Ventas
+            </Button>
+          </div>
+        ) : (
+          <div className="flex-1 overflow-y-auto">
+            <Table highlightOnHover verticalSpacing="md" stickyHeader className="w-full">
+              <Table.Thead className="bg-slate-50/80 text-slate-600 font-bold text-xs uppercase tracking-wider border-b border-slate-200/80">
+                <Table.Tr>
+                  <Table.Th className="w-36">Folio de Venta</Table.Th>
+                  <Table.Th className="w-48">Fecha y Hora</Table.Th>
+                  <Table.Th className="min-w-[180px]">Cliente / Receptor</Table.Th>
+                  <Table.Th className="w-36">Método de Pago</Table.Th>
+                  <Table.Th className="w-32">Artículos</Table.Th>
+                  <Table.Th className="w-32">Subtotal</Table.Th>
+                  <Table.Th className="w-28">IVA (16%)</Table.Th>
+                  <Table.Th className="w-36">Total Cobrado</Table.Th>
+                  <Table.Th className="w-28 text-right">Acciones</Table.Th>
+                </Table.Tr>
+              </Table.Thead>
+              <Table.Tbody>
+                {ventasPaginadas.map((venta) => {
+                  const esPublicoGeneral = !venta.cliente?.id || venta.cliente?.id === 'cli-1';
+                  const nombreCliente = venta.cliente?.nombre || 'Público General';
+
+                  return (
+                    <Table.Tr key={venta.id} className="text-sm text-slate-800 hover:bg-slate-50/80 transition-colors">
                       <Table.Td className="font-mono font-bold text-xs text-indigo-600">
-                        {venta.id}
+                        <span className="bg-indigo-50 text-indigo-700 px-2 py-1 rounded-md border border-indigo-100">
+                          {venta.id}
+                        </span>
                       </Table.Td>
                       <Table.Td className="text-xs font-mono text-slate-500">
                         {formatearFechaHora(venta.fecha)}
                       </Table.Td>
-                      <Table.Td className="text-xs font-medium">{venta.cliente?.nombre || 'Público General'}</Table.Td>
                       <Table.Td>
-                        <Badge
-                          size="sm"
-                          radius="sm"
-                          variant="light"
-                          color={
-                            venta.pago.metodo === 'efectivo'
-                              ? 'teal'
-                              : venta.pago.metodo === 'tarjeta'
-                              ? 'blue'
-                              : 'purple'
-                          }
-                          leftSection={
-                            venta.pago.metodo === 'efectivo' ? (
-                              <IconCash size={12} />
-                            ) : venta.pago.metodo === 'tarjeta' ? (
-                              <IconCreditCard size={12} />
-                            ) : (
-                              <IconBuildingBank size={12} />
-                            )
-                          }
-                        >
-                          {venta.pago.metodo.toUpperCase()}
+                        <div className="flex items-center gap-2.5">
+                          <div
+                            className={`w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-bold shrink-0 ${
+                              esPublicoGeneral
+                                ? 'bg-slate-100 text-slate-600'
+                                : 'bg-indigo-50 text-indigo-600'
+                            }`}
+                          >
+                            {nombreCliente.slice(0, 2).toUpperCase()}
+                          </div>
+                          <span className="text-sm font-semibold text-slate-800 truncate">
+                            {nombreCliente}
+                          </span>
+                        </div>
+                      </Table.Td>
+                      <Table.Td>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <Badge
+                            size="sm"
+                            radius="sm"
+                            variant="light"
+                            color={
+                              venta.pago.metodo === 'efectivo'
+                                ? 'teal'
+                                : venta.pago.metodo === 'tarjeta'
+                                ? 'blue'
+                                : 'purple'
+                            }
+                            leftSection={
+                              venta.pago.metodo === 'efectivo' ? (
+                                <IconCash size={12} />
+                              ) : venta.pago.metodo === 'tarjeta' ? (
+                                <IconCreditCard size={12} />
+                              ) : (
+                                <IconBuildingBank size={12} />
+                              )
+                            }
+                          >
+                            {venta.pago.metodo.toUpperCase()}
+                          </Badge>
+
+                          {venta.pago?.comprobante && (
+                            <Tooltip label="Comprobante adjunto">
+                              <span className="p-1 rounded-md bg-indigo-50 text-indigo-600 border border-indigo-150 inline-flex items-center justify-center">
+                                <IconPaperclip size={12} />
+                              </span>
+                            </Tooltip>
+                          )}
+                        </div>
+                      </Table.Td>
+                      <Table.Td className="text-xs font-mono font-medium text-slate-600">
+                        <Badge variant="outline" color="gray" size="sm">
+                          {venta.totales.totalArticulos} {venta.totales.totalArticulos === 1 ? 'pza' : 'pzas'}
                         </Badge>
                       </Table.Td>
-                      <Table.Td className="text-xs font-mono">
-                        {venta.totales.totalArticulos} pzs
+                      <Table.Td className="font-mono text-xs text-slate-500">
+                        {formatearMoneda(venta.totales.subtotalNeto || venta.totales.subtotal / 1.16)}
                       </Table.Td>
-                      <Table.Td className="font-mono font-extrabold text-emerald-700">
+                      <Table.Td className="font-mono text-xs text-slate-400">
+                        {formatearMoneda(venta.totales.impuestos || 0)}
+                      </Table.Td>
+                      <Table.Td className="font-mono font-black text-emerald-700 text-sm">
                         {formatearMoneda(venta.totales.total)}
                       </Table.Td>
                       <Table.Td className="text-right">
@@ -325,16 +371,16 @@ export const PantallaReportes = () => {
                         </Button>
                       </Table.Td>
                     </Table.Tr>
-                  ))}
-                </Table.Tbody>
-              </Table>
-            </div>
-          )}
-        </div>
+                  );
+                })}
+              </Table.Tbody>
+            </Table>
+          </div>
+        )}
 
-        {/* Barra Inferior de Paginacion */}
+        {/* Pie de Paginación Unificado */}
         {ventasFiltradas.length > 0 && (
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-100 mt-2">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3.5 border-t border-slate-100 bg-white">
             <span className="text-xs text-slate-500 font-medium">
               Mostrando {(paginaActual - 1) * itemsPorPagina + 1} -{' '}
               {Math.min(paginaActual * itemsPorPagina, ventasFiltradas.length)} de {ventasFiltradas.length} ventas
@@ -389,6 +435,63 @@ export const PantallaReportes = () => {
               <Badge color="indigo" radius="sm" size="sm">{ventaDetalle.pago.metodo.toUpperCase()}</Badge>
             </div>
 
+            {/* Referencia de Pago si existe */}
+            {ventaDetalle.pago?.referencia && (
+              <div className="bg-indigo-50/50 p-2.5 rounded-xl border border-indigo-100 text-slate-700 flex items-center justify-between">
+                <span className="font-semibold text-slate-500">Folio / Autorización:</span>
+                <span className="font-mono font-bold text-indigo-700">{ventaDetalle.pago.referencia}</span>
+              </div>
+            )}
+
+            {/* Comprobante Adjunto si existe */}
+            {ventaDetalle.pago?.comprobante && (
+              <div className="p-3 bg-slate-50/80 rounded-2xl border border-slate-200 space-y-2">
+                <span className="font-bold text-slate-700 flex items-center gap-1.5 text-xs">
+                  <IconPaperclip size={14} className="text-indigo-600" />
+                  Comprobante de Pago Adjunto
+                </span>
+
+                <div className="flex items-center justify-between gap-3 bg-white p-2 rounded-xl border border-slate-200/80">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    {ventaDetalle.pago.comprobante.startsWith('data:image/') ? (
+                      <img
+                        src={ventaDetalle.pago.comprobante}
+                        alt="Comprobante"
+                        className="w-12 h-12 rounded-lg object-cover border border-slate-200 shrink-0 cursor-pointer hover:opacity-90"
+                        onClick={() => setComprobanteZoom(ventaDetalle.pago.comprobante)}
+                      />
+                    ) : (
+                      <div className="w-12 h-12 rounded-lg bg-red-50 text-red-600 flex items-center justify-center shrink-0">
+                        <IconFileText size={22} />
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold text-slate-800 truncate">Voucher / Comprobante</p>
+                      <p className="text-[10px] text-slate-400">Adjuntado al momento del cobro</p>
+                    </div>
+                  </div>
+
+                  <Button
+                    size="xs"
+                    radius="xl"
+                    variant="light"
+                    color="indigo"
+                    leftSection={<IconExternalLink size={13} />}
+                    onClick={() => {
+                      if (ventaDetalle.pago.comprobante.startsWith('data:image/')) {
+                        setComprobanteZoom(ventaDetalle.pago.comprobante);
+                      } else {
+                        const win = window.open();
+                        win?.document.write(`<iframe src="${ventaDetalle.pago.comprobante}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`);
+                      }
+                    }}
+                  >
+                    Ver
+                  </Button>
+                </div>
+              </div>
+            )}
+
             <div className="border border-slate-200/80 rounded-2xl overflow-hidden">
               <Table verticalSpacing="xs">
                 <Table.Thead className="bg-slate-100 text-slate-600 font-bold">
@@ -418,6 +521,66 @@ export const PantallaReportes = () => {
                 {formatearMoneda(ventaDetalle.totales.total)}
               </span>
             </div>
+
+            {/* Acciones del Ticket */}
+            <div className="pt-2 flex items-center justify-end gap-2 border-t border-slate-100">
+              <Button
+                variant="default"
+                size="xs"
+                radius="xl"
+                onClick={() => setVentaDetalle(null)}
+              >
+                Cerrar
+              </Button>
+              <Button
+                color="indigo"
+                size="xs"
+                radius="xl"
+                leftSection={<IconPrinter size={15} />}
+                onClick={() => window.print()}
+                className="font-bold shadow-xs"
+              >
+                Imprimir Ticket
+              </Button>
+            </div>
+          </div>
+        )}
+      </Modal>
+
+      {/* Elemento de impresión cuando se imprime desde el historial */}
+      <div className="hidden print:block">
+        {ventaDetalle && <TicketImpresion venta={ventaDetalle} />}
+      </div>
+
+      {/* Modal Lightbox para Ampliación de Comprobante */}
+      <Modal
+        opened={!!comprobanteZoom}
+        onClose={() => setComprobanteZoom(null)}
+        title={
+          <span className="font-bold text-slate-800 text-sm flex items-center gap-2">
+            <IconPaperclip size={16} className="text-indigo-600" />
+            Comprobante de Pago
+          </span>
+        }
+        centered
+        size="lg"
+        radius={20}
+      >
+        {comprobanteZoom && (
+          <div className="flex flex-col items-center justify-center p-2 gap-3">
+            <img
+              src={comprobanteZoom}
+              alt="Comprobante ampliado"
+              className="max-h-[70vh] w-auto max-w-full rounded-xl object-contain border border-slate-200 shadow-md"
+            />
+            <Button
+              variant="default"
+              size="xs"
+              radius="xl"
+              onClick={() => setComprobanteZoom(null)}
+            >
+              Cerrar
+            </Button>
           </div>
         )}
       </Modal>
