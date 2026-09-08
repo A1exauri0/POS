@@ -152,61 +152,63 @@ export const PantallaCaja = () => {
       </div>
 
       {/* Historial de Movimientos Unificado */}
-      <div className="flex-1 bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs overflow-y-auto">
+      <div className="flex-1 bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs overflow-y-auto flex flex-col">
         <h3 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
           <IconHistory size={18} className="text-slate-500" /> Movimientos Registrados en el Turno
         </h3>
 
         {(turnoActual?.movimientos || []).length === 0 ? (
-          <div className="text-center py-12 text-slate-400 text-sm">
+          <div className="flex-1 flex items-center justify-center text-slate-400 text-sm py-12">
             No se han registrado movimientos de entrada o salida en este turno.
           </div>
         ) : (
-          <Table highlightOnHover verticalSpacing="sm">
-            <Table.Thead className="bg-slate-50/80 text-slate-600 font-bold text-xs uppercase tracking-wider border-b border-slate-200/80">
-              <Table.Tr>
-                <Table.Th>Hora</Table.Th>
-                <Table.Th>Tipo</Table.Th>
-                <Table.Th>Concepto / Motivo</Table.Th>
-                <Table.Th className="text-right">Monto</Table.Th>
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>
-              {(turnoActual?.movimientos || []).map((mov) => (
-                <Table.Tr key={mov.id} className="text-sm text-slate-800">
-                  <Table.Td className="text-xs font-mono text-slate-500">
-                    {formatearFechaHora(mov.fecha)}
-                  </Table.Td>
-                  <Table.Td>
-                    <Badge
-                      size="sm"
-                      radius="sm"
-                      variant="light"
-                      color={mov.tipo === 'entrada' ? 'teal' : 'red'}
-                      leftSection={
-                        mov.tipo === 'entrada' ? (
-                          <IconArrowDownLeft size={12} />
-                        ) : (
-                          <IconArrowUpRight size={12} />
-                        )
-                      }
-                    >
-                      {mov.tipo === 'entrada' ? 'Entrada' : 'Salida'}
-                    </Badge>
-                  </Table.Td>
-                  <Table.Td className="text-xs text-slate-700 font-medium">{mov.concepto}</Table.Td>
-                  <Table.Td
-                    className={`text-xs font-mono font-bold text-right ${
-                      mov.tipo === 'entrada' ? 'text-teal-600' : 'text-rose-600'
-                    }`}
-                  >
-                    {mov.tipo === 'entrada' ? '+' : '-'}
-                    {formatearMoneda(mov.monto)}
-                  </Table.Td>
+          <div className="flex-1 overflow-y-auto">
+            <Table highlightOnHover verticalSpacing="md" stickyHeader className="w-full">
+              <Table.Thead className="bg-slate-50/80 text-slate-600 font-bold text-xs uppercase tracking-wider border-b border-slate-200/80">
+                <Table.Tr>
+                  <Table.Th className="w-48">Hora y Fecha</Table.Th>
+                  <Table.Th className="w-36">Tipo</Table.Th>
+                  <Table.Th className="min-w-[250px]">Concepto / Motivo</Table.Th>
+                  <Table.Th className="w-40 text-right">Monto</Table.Th>
                 </Table.Tr>
-              ))}
-            </Table.Tbody>
-          </Table>
+              </Table.Thead>
+              <Table.Tbody>
+                {(turnoActual?.movimientos || []).map((mov) => (
+                  <Table.Tr key={mov.id} className="text-sm text-slate-800 hover:bg-slate-50/80 transition-colors">
+                    <Table.Td className="text-xs font-mono text-slate-500">
+                      {formatearFechaHora(mov.fecha)}
+                    </Table.Td>
+                    <Table.Td>
+                      <Badge
+                        size="sm"
+                        radius="sm"
+                        variant="light"
+                        color={mov.tipo === 'entrada' ? 'teal' : 'red'}
+                        leftSection={
+                          mov.tipo === 'entrada' ? (
+                            <IconArrowDownLeft size={12} />
+                          ) : (
+                            <IconArrowUpRight size={12} />
+                          )
+                        }
+                      >
+                        {mov.tipo === 'entrada' ? 'Entrada' : 'Salida'}
+                      </Badge>
+                    </Table.Td>
+                    <Table.Td className="text-sm text-slate-700 font-medium">{mov.concepto}</Table.Td>
+                    <Table.Td
+                      className={`text-sm font-mono font-bold text-right ${
+                        mov.tipo === 'entrada' ? 'text-teal-600' : 'text-rose-600'
+                      }`}
+                    >
+                      {mov.tipo === 'entrada' ? '+' : '-'}
+                      {formatearMoneda(mov.monto)}
+                    </Table.Td>
+                  </Table.Tr>
+                ))}
+              </Table.Tbody>
+            </Table>
+          </div>
         )}
       </div>
 

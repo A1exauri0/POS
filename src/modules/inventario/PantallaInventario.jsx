@@ -131,7 +131,7 @@ export const PantallaInventario = () => {
   };
 
   const [paginaActual, setPaginaActual] = useState(1);
-  const itemsPorPagina = 6;
+  const itemsPorPagina = 8;
 
   const filtrados = useMemo(() => {
     return productos.filter(
@@ -203,23 +203,23 @@ export const PantallaInventario = () => {
           {/* Tabla de Productos con Columna de Imagen y Paginacion */}
           <div className="flex-1 bg-white rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-between overflow-hidden">
             <div className="flex-1 overflow-y-auto">
-              <Table highlightOnHover verticalSpacing="sm" stickyHeader>
+              <Table highlightOnHover verticalSpacing="md" stickyHeader className="w-full">
                 <Table.Thead className="bg-slate-50/80 text-slate-600 font-bold text-xs uppercase tracking-wider border-b border-slate-200/80">
                   <Table.Tr>
                     <Table.Th className="w-24">Imagen</Table.Th>
-                    <Table.Th>Código</Table.Th>
-                    <Table.Th>Nombre del Producto</Table.Th>
-                    <Table.Th>Categoría</Table.Th>
-                    <Table.Th>Costo</Table.Th>
-                    <Table.Th>Precio Venta</Table.Th>
-                    <Table.Th>Stock Actual</Table.Th>
-                    <Table.Th className="text-right">Acciones</Table.Th>
+                    <Table.Th className="w-36">Código</Table.Th>
+                    <Table.Th className="min-w-[200px]">Nombre del Producto</Table.Th>
+                    <Table.Th className="w-36">Categoría</Table.Th>
+                    <Table.Th className="w-28">Costo</Table.Th>
+                    <Table.Th className="w-32">Precio Venta</Table.Th>
+                    <Table.Th className="w-32">Stock Actual</Table.Th>
+                    <Table.Th className="w-24 text-right">Acciones</Table.Th>
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
                   {filtrados.length === 0 ? (
                     <Table.Tr>
-                      <Table.Td colSpan={8} className="text-center py-8 text-slate-400 text-sm">
+                      <Table.Td colSpan={8} className="text-center py-12 text-slate-400 text-sm">
                         No se encontraron productos.
                       </Table.Td>
                     </Table.Tr>
@@ -231,10 +231,10 @@ export const PantallaInventario = () => {
                       const tieneImg = Boolean(prod.imagen && prod.imagen.trim());
 
                       return (
-                        <Table.Tr key={prod.id} className="text-sm text-slate-800">
+                        <Table.Tr key={prod.id} className="text-sm text-slate-800 hover:bg-slate-50/80 transition-colors">
                           {/* Miniatura de Imagen Ampliada o Icono Placeholder */}
                           <Table.Td>
-                            <div className="w-20 h-14 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center overflow-hidden shrink-0 shadow-2xs">
+                            <div className="w-16 h-12 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center overflow-hidden shrink-0 shadow-2xs">
                               {tieneImg ? (
                                 <img
                                   src={prod.imagen}
@@ -252,7 +252,7 @@ export const PantallaInventario = () => {
                                   tieneImg ? 'hidden' : 'flex'
                                 }`}
                               >
-                                <IconPhoto size={24} stroke={1.5} />
+                                <IconPhoto size={20} stroke={1.5} />
                               </div>
                             </div>
                           </Table.Td>
@@ -260,7 +260,7 @@ export const PantallaInventario = () => {
                           <Table.Td className="font-mono text-xs font-semibold text-slate-600">
                             {prod.codigo}
                           </Table.Td>
-                          <Table.Td className="font-medium text-slate-900">{prod.nombre}</Table.Td>
+                          <Table.Td className="font-semibold text-slate-900">{prod.nombre}</Table.Td>
                           <Table.Td>
                             <Badge variant="light" color={catObj?.color || 'indigo'} size="sm">
                               {prod.categoria}
@@ -337,7 +337,7 @@ export const PantallaInventario = () => {
         <GestionCategorias onActualizacionCategorias={manejarActualizacionCategorias} />
       )}
 
-      {/* Modal Formulario Producto con soporte de Imagen */}
+      {/* Modal Formulario Producto con Diseño Limpio, Armónico y Compacto */}
       <Modal
         opened={modalAbierto}
         onClose={() => setModalAbierto(false)}
@@ -358,152 +358,215 @@ export const PantallaInventario = () => {
         radius={24}
         size="lg"
         classNames={{
-          header: 'border-b border-slate-100 pb-3 pt-1 px-5',
-          body: 'p-5',
-          content: '!rounded-3xl shadow-2xl overflow-hidden border border-slate-100',
+          header: 'border-b border-slate-100 py-3.5 px-5',
+          body: '!p-0',
+          content: '!rounded-3xl shadow-2xl overflow-hidden border border-slate-100 flex flex-col max-h-[92vh]',
         }}
       >
-        <div className="space-y-3.5 pt-2">
-          <TextInput
-            label="Código de Barras"
-            placeholder="Ej. 7501055300075"
-            leftSection={<IconBarcode size={18} />}
-            value={formCodigo}
-            onChange={(e) => setFormCodigo(e.target.value)}
-            required
-          />
+        {/* Cuerpo del formulario organizado */}
+        <div className="p-5 space-y-4 overflow-y-auto max-h-[calc(92vh-130px)]">
+          {/* Bloque Superior: Foto a la izquierda y Datos del Producto a la derecha */}
+          <div className="flex flex-col sm:flex-row gap-4 items-start">
+            {/* 1. Selector / Vista Previa de Imagen Cuadrada */}
+            <div className="flex flex-col items-center gap-1.5 shrink-0 w-full sm:w-auto">
+              <input
+                type="file"
+                id="subir-foto-producto"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const archivo = e.target.files?.[0];
+                  if (archivo) {
+                    const lector = new FileReader();
+                    lector.onload = (evento) => {
+                      const img = new Image();
+                      img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let { width, height } = img;
+                        const maxDim = 600;
+                        if (width > maxDim || height > maxDim) {
+                          if (width > height) {
+                            height = Math.round((height * maxDim) / width);
+                            width = maxDim;
+                          } else {
+                            width = Math.round((width * maxDim) / height);
+                            height = maxDim;
+                          }
+                        }
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        setFormImagen(canvas.toDataURL('image/jpeg', 0.85));
+                      };
+                      img.src = evento.target.result;
+                    };
+                    lector.readAsDataURL(archivo);
+                  }
+                }}
+              />
 
-          <TextInput
-            label="Nombre / Descripción del Producto"
-            placeholder="Ej. Leche Entera 1L"
-            value={formNombre}
-            onChange={(e) => setFormNombre(e.target.value)}
-            required
-          />
-
-          <Select
-            label="Categoría"
-            data={categorias.map((c) => ({ value: c.nombre, label: c.nombre }))}
-            value={formCategoria}
-            onChange={(val) => setFormCategoria(val || categorias[0]?.nombre || 'General')}
-            renderOption={({ option }) => {
-              const catInfo = categorias.find((c) => c.nombre === option.value);
-              return (
-                <Group gap="xs">
-                  <Badge color={catInfo?.color || 'blue'} size="xs" variant="filled">
-                    {option.label}
-                  </Badge>
-                </Group>
-              );
-            }}
-          />
-
-          {/* Campo de Imagen y Vista Previa Ampliada */}
-          <div className="space-y-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
-            <span className="text-xs font-bold text-slate-700">Imagen del Producto</span>
-
-            <input
-              type="file"
-              id="subir-foto-producto"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => {
-                const archivo = e.target.files?.[0];
-                if (archivo) {
-                  const lector = new FileReader();
-                  lector.onloadend = () => {
-                    setFormImagen(lector.result);
-                  };
-                  lector.readAsDataURL(archivo);
-                }
-              }}
-            />
-
-            {formImagen ? (
-              /* Vista previa en tamaño amplio */
-              <div className="w-full h-44 rounded-xl border border-slate-200 bg-white overflow-hidden relative flex items-center justify-center shadow-inner group">
-                <img
-                  src={formImagen}
-                  alt="Vista previa de producto"
-                  className="w-full h-full object-contain p-2"
-                />
-                <div className="absolute top-2 right-2 flex items-center gap-1.5 bg-black/65 backdrop-blur-xs p-1 rounded-lg shadow-md">
-                  <label
-                    htmlFor="subir-foto-producto"
-                    className="px-2.5 py-1 bg-white/90 hover:bg-white text-slate-800 text-xs font-semibold rounded cursor-pointer transition-colors flex items-center gap-1"
-                  >
-                    <IconUpload size={13} /> Cambiar
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => setFormImagen('')}
-                    className="px-2.5 py-1 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded cursor-pointer transition-colors"
-                  >
-                    Quitar
-                  </button>
-                </div>
-              </div>
-            ) : (
-              /* Area para subir imagen interactiva */
               <label
                 htmlFor="subir-foto-producto"
-                className="w-full h-32 rounded-xl border-2 border-dashed border-slate-300 hover:border-indigo-400 bg-white hover:bg-indigo-50/20 flex flex-col items-center justify-center gap-1.5 cursor-pointer transition-colors text-slate-500 hover:text-indigo-600"
+                className="w-32 h-32 rounded-2xl border-2 border-dashed border-slate-200 hover:border-teal-500 bg-slate-50/70 hover:bg-teal-50/20 flex flex-col items-center justify-center cursor-pointer transition-all relative overflow-hidden group shadow-2xs"
               >
-                <div className="p-2 rounded-full bg-slate-100 text-slate-400">
-                  <IconPhoto size={28} stroke={1.5} />
-                </div>
-                <span className="text-xs font-semibold">
-                  Haz clic aquí para subir una foto desde tu equipo
-                </span>
-                <span className="text-[11px] text-slate-400">
-                  Formatos JPG, PNG, WEBP
-                </span>
+                {formImagen ? (
+                  <>
+                    <img
+                      src={formImagen}
+                      alt="Producto"
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white text-[11px] font-bold gap-1">
+                      <IconUpload size={18} />
+                      <span>Cambiar</span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex flex-col items-center text-center p-2 text-slate-400 group-hover:text-teal-600 transition-colors">
+                    <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center text-slate-400 group-hover:text-teal-600 shadow-2xs mb-1">
+                      <IconPhoto size={20} stroke={1.5} />
+                    </div>
+                    <span className="text-[11px] font-bold">Subir foto</span>
+                    <span className="text-[9px] text-slate-400">JPG, PNG</span>
+                  </div>
+                )}
               </label>
-            )}
 
-            <TextInput
-              placeholder="O ingresa la ruta local (ej. /images/productos/foto.jpg)"
-              value={formImagen}
-              onChange={(e) => setFormImagen(e.target.value)}
-              size="xs"
-              leftSection={<IconPhoto size={14} className="text-slate-400" />}
-            />
+              {formImagen && (
+                <button
+                  type="button"
+                  onClick={() => setFormImagen('')}
+                  className="text-[11px] font-bold text-rose-600 hover:text-rose-700 hover:underline cursor-pointer"
+                >
+                  Quitar foto
+                </button>
+              )}
+            </div>
+
+            {/* 2. Datos Principales (Nombre, Código, Categoría) */}
+            <div className="flex-1 w-full space-y-3">
+              <TextInput
+                label="Nombre / Descripción del Producto"
+                placeholder="Ej. Coca Cola Original 600ml"
+                value={formNombre}
+                onChange={(e) => setFormNombre(e.target.value)}
+                required
+                size="sm"
+                radius="md"
+              />
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <TextInput
+                  label="Código de Barras"
+                  placeholder="Ej. 7501055300075"
+                  leftSection={<IconBarcode size={16} className="text-slate-400" />}
+                  value={formCodigo}
+                  onChange={(e) => setFormCodigo(e.target.value)}
+                  required
+                  size="sm"
+                  radius="md"
+                />
+
+                <Select
+                  label="Categoría"
+                  data={categorias.map((c) => ({ value: c.nombre, label: c.nombre }))}
+                  value={formCategoria}
+                  onChange={(val) => setFormCategoria(val || categorias[0]?.nombre || 'General')}
+                  size="sm"
+                  radius="md"
+                  renderOption={({ option }) => {
+                    const catInfo = categorias.find((c) => c.nombre === option.value);
+                    return (
+                      <Group gap="xs">
+                        <Badge color={catInfo?.color || 'blue'} size="xs" variant="filled">
+                          {option.label}
+                        </Badge>
+                      </Group>
+                    );
+                  }}
+                />
+              </div>
+            </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-2">
-            <NumberInput
-              label="Costo ($)"
-              value={formCosto}
-              onChange={(val) => setFormCosto(typeof val === 'number' ? val : 0)}
-              min={0}
-              decimalScale={2}
-            />
+          {/* Bloque Inferior: Precios, Costos e Inventario */}
+          <div className="bg-slate-50/80 p-3.5 rounded-2xl border border-slate-200/80 space-y-2.5">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                Precios e Inventario
+              </span>
 
-            <NumberInput
-              label="Precio Venta ($)"
-              value={formPrecio}
-              onChange={(val) => setFormPrecio(typeof val === 'number' ? val : 0)}
-              min={0}
-              decimalScale={2}
-              required
-            />
+              {/* Indicador dinámico de margen de ganancia */}
+              {formPrecio > 0 && formCosto > 0 && (
+                <Badge
+                  size="sm"
+                  variant="light"
+                  color={formPrecio >= formCosto ? 'teal' : 'red'}
+                  radius="sm"
+                  className="font-mono"
+                >
+                  Margen: {(((formPrecio - formCosto) / formPrecio) * 100).toFixed(1)}% ({formatearMoneda(formPrecio - formCosto)})
+                </Badge>
+              )}
+            </div>
 
-            <NumberInput
-              label="Stock Inicial"
-              value={formStock}
-              onChange={(val) => setFormStock(typeof val === 'number' ? val : 0)}
-              min={0}
-            />
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <NumberInput
+                label="Costo de Compra ($)"
+                placeholder="0.00"
+                value={formCosto}
+                onChange={(val) => setFormCosto(typeof val === 'number' ? val : 0)}
+                min={0}
+                decimalScale={2}
+                fixedDecimalScale
+                hideControls
+                prefix="$ "
+                size="sm"
+                radius="md"
+                classNames={{ input: 'font-mono font-bold text-slate-800' }}
+              />
+
+              <NumberInput
+                label="Precio de Venta ($) *"
+                placeholder="0.00"
+                value={formPrecio}
+                onChange={(val) => setFormPrecio(typeof val === 'number' ? val : 0)}
+                min={0}
+                decimalScale={2}
+                fixedDecimalScale
+                hideControls
+                prefix="$ "
+                size="sm"
+                radius="md"
+                required
+                classNames={{ input: 'font-mono font-bold text-emerald-700' }}
+              />
+
+              <NumberInput
+                label="Stock Inicial"
+                placeholder="0"
+                value={formStock}
+                onChange={(val) => setFormStock(typeof val === 'number' ? val : 0)}
+                min={0}
+                hideControls
+                suffix=" pzas"
+                size="sm"
+                radius="md"
+                classNames={{ input: 'font-mono font-bold text-slate-800' }}
+              />
+            </div>
           </div>
+        </div>
 
-          <Group justify="flex-end" gap="sm" pt="md" className="border-t border-slate-100">
-            <Button variant="default" radius="xl" onClick={() => setModalAbierto(false)}>
-              Cancelar
-            </Button>
-            <Button color="teal" radius="xl" className="font-bold shadow-md shadow-teal-500/15" onClick={guardarProducto}>
-              Guardar Producto
-            </Button>
-          </Group>
+        {/* Footer fijo con botones de acción siempre visibles */}
+        <div className="border-t border-slate-100 px-5 py-3.5 bg-slate-50/80 flex items-center justify-end gap-2.5 rounded-b-3xl">
+          <Button variant="default" radius="xl" onClick={() => setModalAbierto(false)}>
+            Cancelar
+          </Button>
+          <Button color="teal" radius="xl" className="font-bold shadow-md shadow-teal-500/15" onClick={guardarProducto}>
+            Guardar Producto
+          </Button>
         </div>
       </Modal>
 

@@ -234,21 +234,21 @@ export const GestionCategorias = ({ onActualizacionCategorias }) => {
       </div>
 
       {/* Tabla de categorias */}
-      <div className="flex-1 bg-white rounded-xl border border-slate-200 shadow-xs overflow-y-auto">
-        <Table highlightOnHover verticalSpacing="sm" stickyHeader>
-          <Table.Thead className="bg-slate-50 text-slate-700 font-bold text-xs uppercase tracking-wider">
+      <div className="flex-1 bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-y-auto">
+        <Table highlightOnHover verticalSpacing="md" stickyHeader className="w-full">
+          <Table.Thead className="bg-slate-50/80 text-slate-700 font-bold text-xs uppercase tracking-wider border-b border-slate-200/80">
             <Table.Tr>
-              <Table.Th>Categoría</Table.Th>
-              <Table.Th>Cambiar Color / Etiqueta</Table.Th>
-              <Table.Th>Descripción</Table.Th>
-              <Table.Th>Productos Asignados</Table.Th>
-              <Table.Th className="text-right">Acciones</Table.Th>
+              <Table.Th className="w-1/4">Categoría</Table.Th>
+              <Table.Th className="w-1/5">Color / Etiqueta</Table.Th>
+              <Table.Th className="min-w-[200px]">Descripción</Table.Th>
+              <Table.Th className="w-44">Productos Asignados</Table.Th>
+              <Table.Th className="w-24 text-right">Acciones</Table.Th>
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
             {categoriasFiltradas.length === 0 ? (
               <Table.Tr>
-                <Table.Td colSpan={5} className="text-center py-8 text-slate-400 text-sm">
+                <Table.Td colSpan={5} className="text-center py-12 text-slate-400 text-sm">
                   No se encontraron categorías.
                 </Table.Td>
               </Table.Tr>
@@ -257,11 +257,13 @@ export const GestionCategorias = ({ onActualizacionCategorias }) => {
                 const totalProds = productos.filter((p) => p.categoria === cat.nombre).length;
 
                 return (
-                  <Table.Tr key={cat.id} className="text-sm text-slate-800">
+                  <Table.Tr key={cat.id} className="text-sm text-slate-800 hover:bg-slate-50/80 transition-colors">
                     <Table.Td className="font-bold text-slate-900">
-                      <div className="flex items-center gap-2">
-                        <IconCategory size={18} className="text-slate-400" />
-                        <span>{cat.nombre}</span>
+                      <div className="flex items-center gap-2.5">
+                        <div className="p-1.5 rounded-lg bg-slate-100 text-slate-500">
+                          <IconCategory size={16} />
+                        </div>
+                        <span className="font-bold">{cat.nombre}</span>
                       </div>
                     </Table.Td>
 
@@ -269,7 +271,8 @@ export const GestionCategorias = ({ onActualizacionCategorias }) => {
                     <Table.Td>
                       <Select
                         size="xs"
-                        className="w-40"
+                        className="w-44"
+                        radius="md"
                         leftSection={<IconPalette size={14} />}
                         value={cat.color || 'blue'}
                         data={COLORES_DISPONIBLES}
@@ -284,8 +287,8 @@ export const GestionCategorias = ({ onActualizacionCategorias }) => {
                       />
                     </Table.Td>
 
-                    <Table.Td className="text-slate-500 text-xs max-w-xs truncate">
-                      {cat.descripcion || 'Sin descripción'}
+                    <Table.Td className="text-slate-600 text-xs font-normal">
+                      {cat.descripcion || <span className="text-slate-400 italic">Sin descripción</span>}
                     </Table.Td>
 
                     <Table.Td>

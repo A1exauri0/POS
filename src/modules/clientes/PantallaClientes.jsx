@@ -19,6 +19,8 @@ import {
   IconUsers,
   IconPhone,
   IconLock,
+  IconReceipt,
+  IconCash,
 } from '@tabler/icons-react';
 import {
   obtenerClientes,
@@ -26,10 +28,13 @@ import {
   guardarClienteBD,
   eliminarClienteBD,
 } from '../../services/clienteServicio';
+import { useVenta } from '../../contexts/VentaContext';
+import { formatearMoneda, formatearFechaHora } from '../../utils/formateadores';
 import { notifications } from '@mantine/notifications';
 import { ModalConfirmacion } from '../../components/ModalConfirmacion';
 
 export const PantallaClientes = () => {
+  const { historialVentas } = useVenta();
   const [clientes, setClientes] = useState(() => obtenerClientes());
   const [terminoBusqueda, setTerminoBusqueda] = useState('');
   const [modalAbierto, setModalAbierto] = useState(false);
@@ -122,7 +127,7 @@ export const PantallaClientes = () => {
   };
 
   const [paginaActual, setPaginaActual] = useState(1);
-  const itemsPorPagina = 6;
+  const itemsPorPagina = 10;
 
   const filtrados = useMemo(() => {
     if (!terminoBusqueda.trim()) return clientes;
@@ -191,18 +196,21 @@ export const PantallaClientes = () => {
       {/* Tabla de Clientes con Paginacion */}
       <div className="flex-1 bg-white rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-between overflow-hidden">
         <div className="flex-1 overflow-y-auto">
-          <Table highlightOnHover verticalSpacing="sm" stickyHeader>
+          <Table highlightOnHover verticalSpacing="md" stickyHeader className="w-full">
             <Table.Thead className="bg-slate-50/80 text-slate-600 font-bold text-xs uppercase tracking-wider border-b border-slate-200/80">
               <Table.Tr>
-                <Table.Th>Nombre / Razón Social</Table.Th>
-                <Table.Th>Teléfono</Table.Th>
-                <Table.Th className="text-right">Acciones</Table.Th>
+                <Table.Th className="w-1/3">Cliente / Razón Social</Table.Th>
+                <Table.Th className="w-1/5">Teléfono de Contacto</Table.Th>
+                <Table.Th className="w-36">Compras</Table.Th>
+                <Table.Th className="w-40">Monto Acumulado</Table.Th>
+                <Table.Th className="w-40">Tipo de Cliente</Table.Th>
+                <Table.Th className="w-24 text-right">Acciones</Table.Th>
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
               {filtrados.length === 0 ? (
                 <Table.Tr>
-                  <Table.Td colSpan={3} className="text-center py-12 text-slate-400 text-sm">
+                  <Table.Td colSpan={6} className="text-center py-16 text-slate-400 text-sm">
                     No se encontraron clientes registrados.
                   </Table.Td>
                 </Table.Tr>
@@ -210,24 +218,78 @@ export const PantallaClientes = () => {
                 clientesPaginados.map((cli) => {
                   const esDefault = cli.esPredeterminado || cli.id === 'cli-1';
 
+                  // Calcular metricas de compras asociadas a este cliente
+                  const compras = historialVentas.filter(
+                    (v) =>
+                      v.cliente?.id === cli.id ||
+                      (esDefault && (!v.cliente?.id || v.cliente?.id === 'cli-1'))
+                  );
+                  const totalTickets = compras.length;
+                  const totalGastado = compras.reduce(
+                    (sum, v) => sum + (v.totales?.total || 0),
+                    0
+                  );
+
                   return (
-                    <Table.Tr key={cli.id} className="text-sm text-slate-800">
+                    <Table.Tr key={cli.id} className="text-sm text-slate-800 hover:bg-slate-50/80 transition-colors">
                       <Table.Td className="font-bold text-slate-900">
-                        <div className="flex items-center gap-2">
-                          <span>{cli.nombre}</span>
-                          {esDefault && (
-                            <Badge color="dark" size="xs" variant="filled" radius="sm">
-                              Predeterminado
-                            </Badge>
-                          )}
+                        <div className="flex items-center gap-3">
+                          <div
+                            className={`w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold shrink-0 shadow-2xs ${
+                              esDefault
+                                ? 'bg-slate-100 text-slate-700 border border-slate-200'
+                                : 'bg-indigo-50 text-indigo-600 border border-indigo-100'
+                            }`}
+                          >
+                            {cli.nombre.slice(0, 2).toUpperCase()}
+                          </div>
+                          <div className="flex flex-col min-w-0">
+                            <span className="font-bold text-slate-900 leading-tight truncate">
+                              {cli.nombre}
+                            </span>
+                            <span className="text-[11px] text-slate-400 font-mono font-normal">
+                              ID: {cli.id}
+                            </span>
+                          </div>
                         </div>
                       </Table.Td>
 
                       <Table.Td className="text-xs text-slate-600 font-mono">
                         <div className="flex items-center gap-1.5">
-                          <IconPhone size={14} className="text-slate-400" />
+                          <IconPhone size={14} className="text-slate-400 shrink-0" />
                           <span>{cli.telefono || 'Sin teléfono'}</span>
                         </div>
+                      </Table.Td>
+
+                      <Table.Td>
+                        <Badge
+                          variant="light"
+                          color={totalTickets > 0 ? 'indigo' : 'gray'}
+                          size="sm"
+                          leftSection={<IconReceipt size={12} />}
+                        >
+                          {totalTickets} {totalTickets === 1 ? 'ticket' : 'tickets'}
+                        </Badge>
+                      </Table.Td>
+
+                      <Table.Td className="font-mono font-bold text-emerald-700 text-sm">
+                        {formatearMoneda(totalGastado)}
+                      </Table.Td>
+
+                      <Table.Td>
+                        {esDefault ? (
+                          <Badge color="gray" size="sm" variant="filled" radius="sm">
+                            Público General
+                          </Badge>
+                        ) : totalTickets >= 3 ? (
+                          <Badge color="teal" size="sm" variant="light" radius="sm">
+                            Cliente Frecuente
+                          </Badge>
+                        ) : (
+                          <Badge color="indigo" size="sm" variant="light" radius="sm">
+                            Registrado
+                          </Badge>
+                        )}
                       </Table.Td>
 
                       <Table.Td className="text-right">
