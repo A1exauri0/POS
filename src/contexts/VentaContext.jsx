@@ -1,9 +1,19 @@
 import { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { notifications } from '@mantine/notifications';
 import { IconCheck, IconAlertCircle } from '@tabler/icons-react';
-import { obtenerProductos, guardarProductos } from '../services/productoServicio';
-import { obtenerClientePredeterminado } from '../services/clienteServicio';
-import ventasIniciales from '../data/ventas.json';
+import {
+  obtenerProductos,
+  cargarProductosBD,
+} from '../services/productoServicio';
+import {
+  obtenerClientePredeterminado,
+  cargarClientesBD,
+} from '../services/clienteServicio';
+import {
+  obtenerVentas,
+  cargarVentasBD,
+  registrarVentaBD,
+} from '../services/ventaServicio';
 
 const VentaContext = createContext(null);
 
@@ -19,29 +29,25 @@ export const VentaProvider = ({ children }) => {
   const [modalExitoAbierto, setModalExitoAbierto] = useState(false);
   const [ultimaVentaRealizada, setUltimaVentaRealizada] = useState(null);
 
-  // Historial de ventas completadas con sincronizacion automatica desde ventas.json
-  const [historialVentas, setHistorialVentas] = useState(() => {
-    const ventasGuardadas = localStorage.getItem('pos_historial_ventas');
-    const huellaGuardada = localStorage.getItem('pos_historial_ventas_huella');
-    const huellaActual = JSON.stringify(ventasIniciales);
+  // Historial de ventas completadas
+  const [historialVentas, setHistorialVentas] = useState(() => obtenerVentas());
 
-    if (!ventasGuardadas || huellaGuardada !== huellaActual) {
-      localStorage.setItem('pos_historial_ventas', JSON.stringify(ventasIniciales));
-      localStorage.setItem('pos_historial_ventas_huella', huellaActual);
-      return ventasIniciales;
-    }
-
-    try {
-      return JSON.parse(ventasGuardadas);
-    } catch {
-      return ventasIniciales;
-    }
-  });
-
-  // Guardar historial en local storage
+  // Cargar datos iniciales desde SQLite al montar
   useEffect(() => {
-    localStorage.setItem('pos_historial_ventas', JSON.stringify(historialVentas));
-  }, [historialVentas]);
+    const hidratarDatos = async () => {
+      const ventasBD = await cargarVentasBD();
+      if (ventasBD) setHistorialVentas(ventasBD);
+
+      await cargarProductosBD();
+      const clientesBD = await cargarClientesBD();
+      if (clientesBD) {
+        const predeterminado = clientesBD.find((c) => c.esPredeterminado) || clientesBD[0];
+        if (predeterminado) setCliente(predeterminado);
+      }
+    };
+
+    hidratarDatos();
+  }, []);
 
   // Agregar un producto al carrito
   const agregarProducto = (producto, cantidad = 1) => {
@@ -147,8 +153,8 @@ export const VentaProvider = ({ children }) => {
     };
   }, [articulos]);
 
-  // Completar y registrar la venta
-  const completarVenta = (datosPago) => {
+  // Completar y registrar la venta en SQLite
+  const completarVenta = async (datosPago) => {
     if (articulos.length === 0) return null;
 
     const folioVenta = `TKT-${Date.now().toString().slice(-6)}`;
@@ -168,21 +174,10 @@ export const VentaProvider = ({ children }) => {
       },
     };
 
-    // Actualizar stock de los productos
-    const productosActuales = obtenerProductos();
-    const productosActualizados = productosActuales.map((p) => {
-      const vendido = articulos.find((art) => art.id === p.id);
-      if (vendido) {
-        return {
-          ...p,
-          stock: Math.max(0, p.stock - vendido.cantidad),
-        };
-      }
-      return p;
-    });
-    guardarProductos(productosActualizados);
+    // Registrar en SQLite y actualizar existencias
+    await registrarVentaBD(nuevaVenta);
 
-    // Guardar en el historial
+    // Actualizar estado local de ventas
     setHistorialVentas((prev) => [nuevaVenta, ...prev]);
 
     // Limpiar carrito, cerrar modal de cobro y abrir modal de exito

@@ -2,61 +2,45 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import { notifications } from '@mantine/notifications';
 import { IconCheck, IconCash } from '@tabler/icons-react';
 import datosCajaInicial from '../data/caja.json';
+import {
+  obtenerEstadoCajaBD,
+  abrirTurnoBD,
+  cerrarTurnoBD,
+  registrarMovimientoBD,
+} from '../services/cajaServicio';
 
 const CajaContext = createContext(null);
 
 export const CajaProvider = ({ children }) => {
-  // Estado de la caja con deteccion automatica de cambios en caja.json
   const [cajaAbierta, setCajaAbierta] = useState(() => {
-    const huellaGuardada = localStorage.getItem('pos_caja_huella');
-    const huellaActual = JSON.stringify(datosCajaInicial);
-    if (huellaGuardada !== huellaActual) {
-      localStorage.setItem('pos_caja_abierta', JSON.stringify(datosCajaInicial.cajaAbierta));
-      return datosCajaInicial.cajaAbierta;
-    }
     const estado = localStorage.getItem('pos_caja_abierta');
     return estado !== null ? JSON.parse(estado) : datosCajaInicial.cajaAbierta;
   });
 
   const [turnoActual, setTurnoActual] = useState(() => {
-    const huellaGuardada = localStorage.getItem('pos_caja_huella');
-    const huellaActual = JSON.stringify(datosCajaInicial);
-
-    if (huellaGuardada !== huellaActual) {
-      localStorage.setItem('pos_turno_actual', JSON.stringify(datosCajaInicial.turnoActual));
-      localStorage.setItem('pos_caja_huella', huellaActual);
-      return datosCajaInicial.turnoActual;
-    }
-
     const guardado = localStorage.getItem('pos_turno_actual');
-    if (!guardado) {
-      localStorage.setItem('pos_turno_actual', JSON.stringify(datosCajaInicial.turnoActual));
-      localStorage.setItem('pos_caja_huella', huellaActual);
-      return datosCajaInicial.turnoActual;
-    }
     try {
-      return JSON.parse(guardado);
+      return guardado ? JSON.parse(guardado) : datosCajaInicial.turnoActual;
     } catch {
       return datosCajaInicial.turnoActual;
     }
   });
 
+  // Hidratar estado de caja desde SQLite al montar
   useEffect(() => {
-    localStorage.setItem('pos_caja_abierta', JSON.stringify(cajaAbierta));
-  }, [cajaAbierta]);
-
-  useEffect(() => {
-    localStorage.setItem('pos_turno_actual', JSON.stringify(turnoActual));
-  }, [turnoActual]);
-
-  const abrirCaja = (fondoInicial = 500, cajero = 'Cajero Principal') => {
-    const nuevoTurno = {
-      id: `TURNO-${Date.now().toString().slice(-4)}`,
-      cajero,
-      fechaApertura: new Date().toISOString(),
-      fondoInicial,
-      movimientos: [],
+    const cargarCaja = async () => {
+      const estadoBD = await obtenerEstadoCajaBD();
+      if (estadoBD) {
+        setCajaAbierta(estadoBD.cajaAbierta);
+        setTurnoActual(estadoBD.turnoActual);
+      }
     };
+
+    cargarCaja();
+  }, []);
+
+  const abrirCaja = async (fondoInicial = 500, cajero = 'Cajero Principal') => {
+    const nuevoTurno = await abrirTurnoBD(fondoInicial, cajero);
     setTurnoActual(nuevoTurno);
     setCajaAbierta(true);
 
@@ -68,7 +52,10 @@ export const CajaProvider = ({ children }) => {
     });
   };
 
-  const cerrarCaja = () => {
+  const cerrarCaja = async () => {
+    if (turnoActual?.id) {
+      await cerrarTurnoBD(turnoActual.id);
+    }
     setCajaAbierta(false);
     notifications.show({
       title: 'Caja Cerrada',
@@ -78,14 +65,10 @@ export const CajaProvider = ({ children }) => {
     });
   };
 
-  const registrarMovimiento = (tipo, monto, concepto) => {
-    const nuevoMovimiento = {
-      id: `MOV-${Date.now()}`,
-      tipo, // 'entrada' | 'salida'
-      monto,
-      concepto,
-      fecha: new Date().toISOString(),
-    };
+  const registrarMovimiento = async (tipo, monto, concepto) => {
+    if (!turnoActual?.id) return;
+
+    const nuevoMovimiento = await registrarMovimientoBD(turnoActual.id, tipo, monto, concepto);
 
     setTurnoActual((prev) => ({
       ...prev,

@@ -22,7 +22,9 @@ import {
 } from '@tabler/icons-react';
 import {
   obtenerClientes,
-  guardarClientes,
+  cargarClientesBD,
+  guardarClienteBD,
+  eliminarClienteBD,
 } from '../../services/clienteServicio';
 import { notifications } from '@mantine/notifications';
 import { ModalConfirmacion } from '../../components/ModalConfirmacion';
@@ -33,6 +35,11 @@ export const PantallaClientes = () => {
   const [modalAbierto, setModalAbierto] = useState(false);
   const [clienteEnEdicion, setClienteEnEdicion] = useState(null);
   const [clienteAEliminar, setClienteAEliminar] = useState(null);
+
+  // Cargar clientes desde SQLite al montar la vista
+  useEffect(() => {
+    cargarClientesBD().then(setClientes);
+  }, []);
 
   // Formulario simplificado: solo Nombre y Telefono
   const [formNombre, setFormNombre] = useState('');
@@ -55,36 +62,31 @@ export const PantallaClientes = () => {
     setModalAbierto(true);
   };
 
-  const guardarCliente = () => {
+  const guardarCliente = async () => {
     const nombreLimpio = formNombre.trim();
     if (!nombreLimpio) {
       setErrorNombre('El nombre del cliente es obligatorio');
       return;
     }
 
-    let listaActualizada;
+    let clienteAGuardar;
     if (clienteEnEdicion) {
-      listaActualizada = clientes.map((c) =>
-        c.id === clienteEnEdicion.id
-          ? {
-              ...c,
-              nombre: nombreLimpio,
-              telefono: formTelefono.trim() || 'Sin teléfono',
-            }
-          : c
-      );
+      clienteAGuardar = {
+        ...clienteEnEdicion,
+        nombre: nombreLimpio,
+        telefono: formTelefono.trim() || 'Sin teléfono',
+      };
     } else {
-      const nuevo = {
+      clienteAGuardar = {
         id: `cli-${Date.now()}`,
         nombre: nombreLimpio,
         telefono: formTelefono.trim() || 'Sin teléfono',
         esPredeterminado: false,
       };
-      listaActualizada = [...clientes, nuevo];
     }
 
+    const listaActualizada = await guardarClienteBD(clienteAGuardar);
     setClientes(listaActualizada);
-    guardarClientes(listaActualizada);
     setModalAbierto(false);
 
     notifications.show({
@@ -106,11 +108,10 @@ export const PantallaClientes = () => {
     setClienteAEliminar(cli);
   };
 
-  const confirmarEliminarCliente = () => {
+  const confirmarEliminarCliente = async () => {
     if (!clienteAEliminar) return;
-    const listaActualizada = clientes.filter((c) => c.id !== clienteAEliminar.id);
+    const listaActualizada = await eliminarClienteBD(clienteAEliminar.id);
     setClientes(listaActualizada);
-    guardarClientes(listaActualizada);
 
     notifications.show({
       title: 'Cliente Eliminado',

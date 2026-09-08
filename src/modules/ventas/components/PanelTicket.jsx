@@ -14,7 +14,7 @@ import {
 import { ItemTicket } from './ItemTicket';
 import { formatearMoneda } from '../../../utils/formateadores';
 import { useVenta } from '../../../contexts/VentaContext';
-import { obtenerClientes } from '../../../services/clienteServicio';
+import { obtenerClientes, cargarClientesBD } from '../../../services/clienteServicio';
 
 export const PanelTicket = () => {
   const {
@@ -32,7 +32,7 @@ export const PanelTicket = () => {
 
   // Refrescar lista de clientes al interactuar con el dropdown
   const refrescarClientes = () => {
-    setListaClientes(obtenerClientes());
+    cargarClientesBD().then(setListaClientes);
   };
 
   const clientesFiltrados = useMemo(() => {

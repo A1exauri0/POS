@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Encabezado } from './components/Encabezado';
 import { BarraNavegacion } from './components/BarraNavegacion';
 import { PantallaDashboard } from './modules/dashboard/PantallaDashboard';
@@ -8,9 +8,17 @@ import { PantallaClientes } from './modules/clientes/PantallaClientes';
 import { PantallaCaja } from './modules/caja/PantallaCaja';
 import { PantallaReportes } from './modules/reportes/PantallaReportes';
 import { PantallaConfiguracion } from './modules/configuracion/PantallaConfiguracion';
+import { inicializarBaseDatos } from './services/baseDatosServicio';
 
 function App() {
   const [vistaActiva, setVistaActiva] = useState('ventas');
+  const [bdLista, setBdLista] = useState(false);
+
+  useEffect(() => {
+    inicializarBaseDatos().then(() => {
+      setBdLista(true);
+    });
+  }, []);
 
   const renderizarVista = () => {
     switch (vistaActiva) {

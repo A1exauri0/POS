@@ -26,8 +26,11 @@ import {
 } from '@tabler/icons-react';
 import {
   obtenerProductos,
-  guardarProductos,
+  cargarProductosBD,
+  guardarProductoBD,
+  eliminarProductoBD,
   obtenerCategorias,
+  cargarCategoriasBD,
 } from '../../services/productoServicio';
 import { formatearMoneda } from '../../utils/formateadores';
 import { GestionCategorias } from './components/GestionCategorias';
@@ -41,6 +44,12 @@ export const PantallaInventario = () => {
   const [modalAbierto, setModalAbierto] = useState(false);
   const [productoEnEdicion, setProductoEnEdicion] = useState(null);
   const [productoAEliminar, setProductoAEliminar] = useState(null);
+
+  // Cargar datos frescos desde SQLite al montar la vista
+  useEffect(() => {
+    cargarProductosBD().then(setProductos);
+    cargarCategoriasBD().then(setCategorias);
+  }, []);
 
   // Formulario temporal de producto
   const [formCodigo, setFormCodigo] = useState('');
@@ -75,27 +84,23 @@ export const PantallaInventario = () => {
     setModalAbierto(true);
   };
 
-  const guardarProducto = () => {
+  const guardarProducto = async () => {
     if (!formNombre.trim() || !formCodigo.trim()) return;
 
-    let listaActualizada;
+    let productoAGuardar;
     if (productoEnEdicion) {
-      listaActualizada = productos.map((p) =>
-        p.id === productoEnEdicion.id
-          ? {
-              ...p,
-              codigo: formCodigo,
-              nombre: formNombre,
-              categoria: formCategoria || 'General',
-              precio: formPrecio,
-              costo: formCosto,
-              stock: formStock,
-              imagen: formImagen.trim(),
-            }
-          : p
-      );
+      productoAGuardar = {
+        ...productoEnEdicion,
+        codigo: formCodigo,
+        nombre: formNombre,
+        categoria: formCategoria || 'General',
+        precio: formPrecio,
+        costo: formCosto,
+        stock: formStock,
+        imagen: formImagen.trim(),
+      };
     } else {
-      const nuevo = {
+      productoAGuardar = {
         id: `prod-${Date.now()}`,
         codigo: formCodigo,
         nombre: formNombre,
@@ -106,19 +111,17 @@ export const PantallaInventario = () => {
         unidad: 'Pza',
         imagen: formImagen.trim(),
       };
-      listaActualizada = [nuevo, ...productos];
     }
 
+    const listaActualizada = await guardarProductoBD(productoAGuardar);
     setProductos(listaActualizada);
-    guardarProductos(listaActualizada);
     setModalAbierto(false);
   };
 
-  const confirmarEliminarProducto = () => {
+  const confirmarEliminarProducto = async () => {
     if (!productoAEliminar) return;
-    const listaActualizada = productos.filter((p) => p.id !== productoAEliminar.id);
+    const listaActualizada = await eliminarProductoBD(productoAEliminar.id);
     setProductos(listaActualizada);
-    guardarProductos(listaActualizada);
     setProductoAEliminar(null);
   };
 

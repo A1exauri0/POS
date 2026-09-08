@@ -23,8 +23,12 @@ import {
 } from '@tabler/icons-react';
 import {
   obtenerCategorias,
+  cargarCategoriasBD,
+  guardarCategoriaBD,
+  eliminarCategoriaBD,
   guardarCategorias,
   obtenerProductos,
+  cargarProductosBD,
   guardarProductos,
 } from '../../../services/productoServicio';
 import { notifications } from '@mantine/notifications';
@@ -76,31 +80,30 @@ export const GestionCategorias = ({ onActualizacionCategorias }) => {
   };
 
   // Cambio rapido de color directamente desde el listado
-  const cambiarColorDirecto = (catId, nuevoColor) => {
+  const cambiarColorDirecto = async (catId, nuevoColor) => {
     if (!nuevoColor) return;
 
-    const listaActualizada = categorias.map((c) =>
-      c.id === catId ? { ...c, color: nuevoColor } : c
-    );
+    const catActual = categorias.find((c) => c.id === catId);
+    if (!catActual) return;
 
+    const catActualizada = { ...catActual, color: nuevoColor };
+    const listaActualizada = await guardarCategoriaBD(catActualizada);
     setCategorias(listaActualizada);
-    guardarCategorias(listaActualizada);
 
     if (onActualizacionCategorias) {
       onActualizacionCategorias(listaActualizada);
     }
 
-    const catModificada = listaActualizada.find((c) => c.id === catId);
     notifications.show({
       title: 'Color Actualizado',
-      message: `El color de "${catModificada?.nombre}" cambió correctamente`,
+      message: `El color de "${catActualizada.nombre}" cambió correctamente`,
       color: nuevoColor,
       autoClose: 2000,
     });
   };
 
-  // Guardar creacion o edicion completa
-  const guardarCategoria = () => {
+  // Guardar creacion o edicion completa en SQLite
+  const guardarCategoria = async () => {
     const nombreLimpio = formNombre.trim();
     if (!nombreLimpio) {
       setErrorNombre('El nombre de la categoría es obligatorio');
@@ -119,22 +122,15 @@ export const GestionCategorias = ({ onActualizacionCategorias }) => {
       return;
     }
 
-    let listaActualizada;
-
+    let categoriaAGuardar;
     if (categoriaEnEdicion) {
       const nombreAnterior = categoriaEnEdicion.nombre;
-
-      // Actualizar categoria
-      listaActualizada = categorias.map((c) =>
-        c.id === categoriaEnEdicion.id
-          ? {
-              ...c,
-              nombre: nombreLimpio,
-              color: formColor,
-              descripcion: formDescripcion.trim(),
-            }
-          : c
-      );
+      categoriaAGuardar = {
+        ...categoriaEnEdicion,
+        nombre: nombreLimpio,
+        color: formColor,
+        descripcion: formDescripcion.trim(),
+      };
 
       // Si se cambio el nombre, actualizar productos asociados
       if (nombreAnterior !== nombreLimpio) {
@@ -148,17 +144,16 @@ export const GestionCategorias = ({ onActualizacionCategorias }) => {
       }
     } else {
       // Crear nueva categoria
-      const nueva = {
+      categoriaAGuardar = {
         id: `cat-${Date.now()}`,
         nombre: nombreLimpio,
         color: formColor,
         descripcion: formDescripcion.trim(),
       };
-      listaActualizada = [...categorias, nueva];
     }
 
+    const listaActualizada = await guardarCategoriaBD(categoriaAGuardar);
     setCategorias(listaActualizada);
-    guardarCategorias(listaActualizada);
     setModalAbierto(false);
 
     if (onActualizacionCategorias) {
@@ -174,12 +169,11 @@ export const GestionCategorias = ({ onActualizacionCategorias }) => {
 
   const [categoriaAEliminar, setCategoriaAEliminar] = useState(null);
 
-  // Eliminar categoria con confirmacion
-  const confirmarEliminarCategoria = () => {
+  // Eliminar categoria con confirmacion en SQLite
+  const confirmarEliminarCategoria = async () => {
     if (!categoriaAEliminar) return;
     const cat = categoriaAEliminar;
     const productosEnEstaCategoria = productos.filter((p) => p.categoria === cat.nombre);
-    const listaActualizada = categorias.filter((c) => c.id !== cat.id);
 
     // Reasignar productos a General
     if (productosEnEstaCategoria.length > 0) {
@@ -190,8 +184,8 @@ export const GestionCategorias = ({ onActualizacionCategorias }) => {
       guardarProductos(productosActualizados);
     }
 
+    const listaActualizada = await eliminarCategoriaBD(cat.id);
     setCategorias(listaActualizada);
-    guardarCategorias(listaActualizada);
 
     if (onActualizacionCategorias) {
       onActualizacionCategorias(listaActualizada);

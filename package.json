@@ -16,6 +16,7 @@
     "@mantine/hooks": "^9.5.2",
     "@mantine/notifications": "^9.5.2",
     "@tabler/icons-react": "^3.46.0",
+    "@tauri-apps/plugin-sql": "^2.4.1",
     "clsx": "^2.1.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",

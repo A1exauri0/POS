@@ -1,42 +1,131 @@
-// Servicio para gestion y persistencia del catalogo de clientes
+// Servicio para gestion y persistencia del catalogo de clientes conectado a SQLite
 import clientesIniciales from '../data/clientes.json';
+import {
+  inicializarBaseDatos,
+  ejecutarConsulta,
+  ejecutarComando,
+  esEntornoTauri,
+} from './baseDatosServicio';
 
-// Obtener la lista completa de clientes con sincronizacion automatica desde clientes.json
+let cacheClientes = null;
+
+// Obtener la lista de clientes de forma sincrona (desde cache o localStorage)
 export const obtenerClientes = () => {
+  if (cacheClientes && cacheClientes.length > 0) {
+    return cacheClientes;
+  }
+
   const guardados = localStorage.getItem('pos_clientes');
-  const huellaGuardada = localStorage.getItem('pos_clientes_huella');
-  const huellaActual = JSON.stringify(clientesIniciales);
-
-  if (!guardados || huellaGuardada !== huellaActual) {
-    let listaFinal = [...clientesIniciales];
-
-    if (guardados) {
-      try {
-        const previos = JSON.parse(guardados);
-        const idsIniciales = new Set(clientesIniciales.map((c) => c.id));
-        const clientesPersonalizados = previos.filter((c) => !idsIniciales.has(c.id));
-        listaFinal = [...clientesIniciales, ...clientesPersonalizados];
-      } catch (error) {
-        console.error('Error al sincronizar clientes previos:', error);
-      }
+  if (guardados) {
+    try {
+      cacheClientes = JSON.parse(guardados);
+      return cacheClientes;
+    } catch {
+      cacheClientes = clientesIniciales;
+      return clientesIniciales;
     }
-
-    localStorage.setItem('pos_clientes', JSON.stringify(listaFinal));
-    localStorage.setItem('pos_clientes_huella', huellaActual);
-    return listaFinal;
   }
 
-  try {
-    return JSON.parse(guardados);
-  } catch (error) {
-    console.error('Error al parsear clientes:', error);
-    return clientesIniciales;
-  }
+  cacheClientes = clientesIniciales;
+  return clientesIniciales;
 };
 
-// Guardar lista actualizada de clientes
+// Cargar clientes desde SQLite
+export const cargarClientesBD = async () => {
+  try {
+    await inicializarBaseDatos();
+    if (esEntornoTauri()) {
+      const filas = await ejecutarConsulta(
+        'SELECT id, nombre, telefono, es_predeterminado as esPredeterminado FROM clientes ORDER BY es_predeterminado DESC, nombre ASC;'
+      );
+      if (filas && filas.length > 0) {
+        const formateados = filas.map((c) => ({
+          ...c,
+          esPredeterminado: Boolean(c.esPredeterminado),
+        }));
+        cacheClientes = formateados;
+        localStorage.setItem('pos_clientes', JSON.stringify(formateados));
+        return formateados;
+      }
+    }
+  } catch (error) {
+    console.warn('Error al cargar clientes desde SQLite:', error);
+  }
+  return obtenerClientes();
+};
+
+// Guardar o actualizar un cliente en SQLite
+export const guardarClienteBD = async (cliente) => {
+  const listaActual = obtenerClientes();
+  const existe = listaActual.some((c) => c.id === cliente.id);
+
+  let nuevaLista;
+  if (existe) {
+    nuevaLista = listaActual.map((c) => (c.id === cliente.id ? cliente : c));
+  } else {
+    nuevaLista = [...listaActual, cliente];
+  }
+
+  cacheClientes = nuevaLista;
+  localStorage.setItem('pos_clientes', JSON.stringify(nuevaLista));
+
+  if (esEntornoTauri()) {
+    try {
+      if (existe) {
+        await ejecutarComando(
+          'UPDATE clientes SET nombre = $1, telefono = $2 WHERE id = $3;',
+          [cliente.nombre, cliente.telefono || 'Sin teléfono', cliente.id]
+        );
+      } else {
+        await ejecutarComando(
+          'INSERT INTO clientes (id, nombre, telefono, es_predeterminado) VALUES ($1, $2, $3, $4);',
+          [cliente.id, cliente.nombre, cliente.telefono || 'Sin teléfono', cliente.esPredeterminado ? 1 : 0]
+        );
+      }
+    } catch (error) {
+      console.error('Error al guardar cliente en SQLite:', error);
+    }
+  }
+
+  return nuevaLista;
+};
+
+// Eliminar un cliente de SQLite
+export const eliminarClienteBD = async (clienteId) => {
+  const listaActual = obtenerClientes();
+  const nuevaLista = listaActual.filter((c) => c.id !== clienteId);
+
+  cacheClientes = nuevaLista;
+  localStorage.setItem('pos_clientes', JSON.stringify(nuevaLista));
+
+  if (esEntornoTauri()) {
+    try {
+      await ejecutarComando('DELETE FROM clientes WHERE id = $1;', [clienteId]);
+    } catch (error) {
+      console.error('Error al eliminar cliente de SQLite:', error);
+    }
+  }
+
+  return nuevaLista;
+};
+
+// Guardar lista completa de clientes
 export const guardarClientes = (clientes) => {
+  cacheClientes = clientes;
   localStorage.setItem('pos_clientes', JSON.stringify(clientes));
+
+  if (esEntornoTauri()) {
+    (async () => {
+      for (const cli of clientes) {
+        await ejecutarComando(
+          `INSERT INTO clientes (id, nombre, telefono, es_predeterminado)
+           VALUES ($1, $2, $3, $4)
+           ON CONFLICT(id) DO UPDATE SET nombre = $2, telefono = $3;`,
+          [cli.id, cli.nombre, cli.telefono || 'Sin teléfono', cli.esPredeterminado ? 1 : 0]
+        );
+      }
+    })();
+  }
 };
 
 // Obtener el cliente predeterminado (Publico General)

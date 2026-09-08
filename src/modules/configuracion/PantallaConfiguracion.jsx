@@ -2,30 +2,38 @@ import { useState, useEffect } from 'react';
 import { TextInput, NumberInput, Button, Switch, Textarea } from '@mantine/core';
 import { IconSettings, IconDeviceFloppy, IconCheck } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
-import configuracionInicial from '../../data/configuracion.json';
+import {
+  obtenerConfiguracion,
+  cargarConfiguracionBD,
+  guardarConfiguracionBD,
+} from '../../services/configuracionServicio';
 
 export const PantallaConfiguracion = () => {
-  const [config, setConfig] = useState(() => {
-    const guardada = localStorage.getItem('pos_configuracion');
-    if (!guardada) {
-      localStorage.setItem('pos_configuracion', JSON.stringify(configuracionInicial));
-      return configuracionInicial;
-    }
-    try {
-      return JSON.parse(guardada);
-    } catch {
-      return configuracionInicial;
-    }
-  });
+  const [config, setConfig] = useState(() => obtenerConfiguracion());
 
-  const [nombreNegocio, setNombreNegocio] = useState(config.nombreNegocio);
-  const [rfc, setRfc] = useState(config.rfc);
-  const [direccion, setDireccion] = useState(config.direccion);
-  const [telefono, setTelefono] = useState(config.telefono);
-  const [ivaPorcentaje, setIvaPorcentaje] = useState(config.ivaPorcentaje);
-  const [mensajePieTicket, setMensajePieTicket] = useState(config.mensajePieTicket);
+  const [nombreNegocio, setNombreNegocio] = useState(config.nombreNegocio || '');
+  const [rfc, setRfc] = useState(config.rfc || '');
+  const [direccion, setDireccion] = useState(config.direccion || '');
+  const [telefono, setTelefono] = useState(config.telefono || '');
+  const [ivaPorcentaje, setIvaPorcentaje] = useState(config.ivaPorcentaje || 16);
+  const [mensajePieTicket, setMensajePieTicket] = useState(config.mensajePieTicket || '');
 
-  const guardarConfig = () => {
+  // Cargar configuracion fresca desde SQLite al montar
+  useEffect(() => {
+    cargarConfiguracionBD().then((cfg) => {
+      if (cfg) {
+        setConfig(cfg);
+        setNombreNegocio(cfg.nombreNegocio || '');
+        setRfc(cfg.rfc || '');
+        setDireccion(cfg.direccion || '');
+        setTelefono(cfg.telefono || '');
+        setIvaPorcentaje(cfg.ivaPorcentaje || 16);
+        setMensajePieTicket(cfg.mensajePieTicket || '');
+      }
+    });
+  }, []);
+
+  const guardarConfig = async () => {
     const nuevosDatos = {
       nombreNegocio,
       rfc,
@@ -34,8 +42,8 @@ export const PantallaConfiguracion = () => {
       ivaPorcentaje,
       mensajePieTicket,
     };
-    setConfig(nuevosDatos);
-    localStorage.setItem('pos_configuracion', JSON.stringify(nuevosDatos));
+    const configActualizada = await guardarConfiguracionBD(nuevosDatos);
+    setConfig(configActualizada);
     notifications.show({
       title: 'Configuración Guardada',
       message: 'Los parámetros del sistema se han actualizado correctamente.',

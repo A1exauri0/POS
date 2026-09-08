@@ -6,7 +6,7 @@ import { ModalCobro } from './components/ModalCobro';
 import { ModalVentaExitosa } from './components/ModalVentaExitosa';
 import { ModalConfirmacion } from '../../components/ModalConfirmacion';
 import { IconTrash } from '@tabler/icons-react';
-import { obtenerProductos } from '../../services/productoServicio';
+import { obtenerProductos, cargarProductosBD } from '../../services/productoServicio';
 import { useVenta } from '../../contexts/VentaContext';
 
 export const PantallaVentas = () => {
@@ -25,9 +25,9 @@ export const PantallaVentas = () => {
   // Lista de productos actualizada
   const [catalogo, setCatalogo] = useState(() => obtenerProductos());
 
-  // Refrescar catalogo al cambiar estado de ventas
+  // Refrescar catalogo al montar y al cambiar estado de ventas
   useEffect(() => {
-    setCatalogo(obtenerProductos());
+    cargarProductosBD().then(setCatalogo);
   }, [articulos]);
 
   // Filtrado reactivo de productos en base a categoria y texto
