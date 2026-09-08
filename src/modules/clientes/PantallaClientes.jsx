@@ -8,7 +8,6 @@ import {
   Group,
   ActionIcon,
   Tooltip,
-  Text,
   Pagination,
 } from '@mantine/core';
 import {
@@ -19,8 +18,7 @@ import {
   IconUsers,
   IconPhone,
   IconLock,
-  IconReceipt,
-  IconCash,
+  IconCheck,
 } from '@tabler/icons-react';
 import {
   obtenerClientes,
@@ -96,8 +94,9 @@ export const PantallaClientes = () => {
 
     notifications.show({
       title: clienteEnEdicion ? 'Cliente Actualizado' : 'Cliente Registrado',
-      message: `"${nombreLimpio}" se guardó correctamente`,
+      message: `El cliente "${nombreLimpio}" se ha guardado correctamente.`,
       color: 'teal',
+      icon: <IconCheck size={18} />,
     });
   };
 
@@ -199,18 +198,16 @@ export const PantallaClientes = () => {
           <Table highlightOnHover verticalSpacing="md" stickyHeader className="w-full">
             <Table.Thead className="bg-slate-50/80 text-slate-600 font-bold text-xs uppercase tracking-wider border-b border-slate-200/80">
               <Table.Tr>
-                <Table.Th className="w-1/3">Cliente / Razón Social</Table.Th>
-                <Table.Th className="w-1/5">Teléfono de Contacto</Table.Th>
-                <Table.Th className="w-36">Compras</Table.Th>
-                <Table.Th className="w-40">Monto Acumulado</Table.Th>
-                <Table.Th className="w-40">Tipo de Cliente</Table.Th>
-                <Table.Th className="w-24 text-right">Acciones</Table.Th>
+                <Table.Th className="w-1/2">Cliente / Razón Social</Table.Th>
+                <Table.Th className="w-1/4">Teléfono de Contacto</Table.Th>
+                <Table.Th className="w-48">Tipo de Cliente</Table.Th>
+                <Table.Th className="w-28 text-right">Acciones</Table.Th>
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
               {filtrados.length === 0 ? (
                 <Table.Tr>
-                  <Table.Td colSpan={6} className="text-center py-16 text-slate-400 text-sm">
+                  <Table.Td colSpan={4} className="text-center py-16 text-slate-400 text-sm">
                     No se encontraron clientes registrados.
                   </Table.Td>
                 </Table.Tr>
@@ -225,10 +222,6 @@ export const PantallaClientes = () => {
                       (esDefault && (!v.cliente?.id || v.cliente?.id === 'cli-1'))
                   );
                   const totalTickets = compras.length;
-                  const totalGastado = compras.reduce(
-                    (sum, v) => sum + (v.totales?.total || 0),
-                    0
-                  );
 
                   return (
                     <Table.Tr key={cli.id} className="text-sm text-slate-800 hover:bg-slate-50/80 transition-colors">
@@ -262,21 +255,6 @@ export const PantallaClientes = () => {
                       </Table.Td>
 
                       <Table.Td>
-                        <Badge
-                          variant="light"
-                          color={totalTickets > 0 ? 'indigo' : 'gray'}
-                          size="sm"
-                          leftSection={<IconReceipt size={12} />}
-                        >
-                          {totalTickets} {totalTickets === 1 ? 'ticket' : 'tickets'}
-                        </Badge>
-                      </Table.Td>
-
-                      <Table.Td className="font-mono font-bold text-emerald-700 text-sm">
-                        {formatearMoneda(totalGastado)}
-                      </Table.Td>
-
-                      <Table.Td>
                         {esDefault ? (
                           <Badge color="gray" size="sm" variant="filled" radius="sm">
                             Público General
@@ -287,7 +265,7 @@ export const PantallaClientes = () => {
                           </Badge>
                         ) : (
                           <Badge color="indigo" size="sm" variant="light" radius="sm">
-                            Registrado
+                            Nuevo
                           </Badge>
                         )}
                       </Table.Td>

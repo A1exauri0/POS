@@ -23,7 +23,9 @@ import {
   IconCategory,
   IconPhoto,
   IconUpload,
+  IconCheck,
 } from '@tabler/icons-react';
+import { notifications } from '@mantine/notifications';
 import {
   obtenerProductos,
   cargarProductosBD,
@@ -116,13 +118,27 @@ export const PantallaInventario = () => {
     const listaActualizada = await guardarProductoBD(productoAGuardar);
     setProductos(listaActualizada);
     setModalAbierto(false);
+
+    notifications.show({
+      title: productoEnEdicion ? 'Producto Actualizado' : 'Producto Guardado',
+      message: `El producto "${formNombre.trim()}" se ha guardado correctamente.`,
+      color: 'teal',
+      icon: <IconCheck size={18} />,
+    });
   };
 
   const confirmarEliminarProducto = async () => {
     if (!productoAEliminar) return;
+    const nombreProd = productoAEliminar.nombre;
     const listaActualizada = await eliminarProductoBD(productoAEliminar.id);
     setProductos(listaActualizada);
     setProductoAEliminar(null);
+
+    notifications.show({
+      title: 'Producto Eliminado',
+      message: `El producto "${nombreProd}" fue retirado del inventario.`,
+      color: 'red',
+    });
   };
 
   const manejarActualizacionCategorias = (nuevasCategorias) => {

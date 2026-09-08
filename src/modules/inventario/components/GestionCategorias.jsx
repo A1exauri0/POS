@@ -20,6 +20,7 @@ import {
   IconSearch,
   IconPackage,
   IconPalette,
+  IconCheck,
 } from '@tabler/icons-react';
 import {
   obtenerCategorias,
@@ -96,9 +97,9 @@ export const GestionCategorias = ({ onActualizacionCategorias }) => {
 
     notifications.show({
       title: 'Color Actualizado',
-      message: `El color de "${catActualizada.nombre}" cambió correctamente`,
-      color: nuevoColor,
-      autoClose: 2000,
+      message: `El color de "${catActualizada.nombre}" se actualizó correctamente.`,
+      color: 'teal',
+      icon: <IconCheck size={18} />,
     });
   };
 
@@ -161,9 +162,10 @@ export const GestionCategorias = ({ onActualizacionCategorias }) => {
     }
 
     notifications.show({
-      title: categoriaEnEdicion ? 'Categoría actualizada' : 'Categoría creada',
-      message: `La categoría "${nombreLimpio}" se guardó correctamente`,
+      title: categoriaEnEdicion ? 'Categoría Actualizada' : 'Categoría Guardada',
+      message: `La categoría "${nombreLimpio}" se ha guardado correctamente.`,
       color: 'teal',
+      icon: <IconCheck size={18} />,
     });
   };
 
