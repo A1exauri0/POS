@@ -15,44 +15,38 @@ export const BarraNavegacion = ({ vistaActiva, setVistaActiva }) => {
       id: 'dashboard',
       etiqueta: 'Panel de Control (Dashboard)',
       icono: IconLayoutDashboard,
-      color: 'bg-violet-600 text-white',
     },
     {
       id: 'ventas',
       etiqueta: 'Punto de Venta',
       icono: IconShoppingCart,
-      color: 'bg-blue-600 text-white',
     },
     {
       id: 'inventario',
       etiqueta: 'Inventario y Productos',
       icono: IconPackage,
-      color: 'bg-emerald-600 text-white',
     },
     {
       id: 'clientes',
       etiqueta: 'Catálogo de Clientes',
       icono: IconUsers,
-      color: 'bg-blue-600 text-white',
     },
     {
       id: 'caja',
       etiqueta: 'Caja y Turnos',
       icono: IconCashRegister,
-      color: 'bg-orange-500 text-white',
     },
     {
       id: 'reportes',
       etiqueta: 'Historial y Reportes',
       icono: IconChartBar,
-      color: 'bg-purple-600 text-white',
     },
   ];
 
   return (
-    <aside className="w-18 bg-slate-900 border-r border-slate-800 flex flex-col items-center justify-between py-3.5 select-none shrink-0">
-      {/* Botones de modulos principales */}
-      <div className="flex flex-col items-center gap-3.5 w-full">
+    <aside className="w-18 bg-slate-950 border-r border-slate-800/80 flex flex-col items-center justify-between py-4 select-none shrink-0 relative z-10 shadow-lg">
+      {/* Botones de módulos principales */}
+      <div className="flex flex-col items-center gap-2.5 w-full px-2">
         {modulos.map((modulo) => {
           const Icono = modulo.icono;
           const estaActivo = vistaActiva === modulo.id;
@@ -68,33 +62,43 @@ export const BarraNavegacion = ({ vistaActiva, setVistaActiva }) => {
               <button
                 type="button"
                 onClick={() => setVistaActiva(modulo.id)}
-                className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-150 cursor-pointer ${
+                className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-200 cursor-pointer relative group ${
                   estaActivo
-                    ? `${modulo.color} shadow-lg shadow-indigo-500/20 scale-105`
-                    : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800'
+                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/35 scale-105 ring-2 ring-indigo-400/30'
+                    : 'text-slate-400 hover:text-slate-100 hover:bg-slate-900/90'
                 }`}
               >
-                <Icono size={24} stroke={1.8} />
+                <Icono size={22} stroke={estaActivo ? 2.2 : 1.8} />
+
+                {/* Pequeña barra indicadora activa lateral */}
+                {estaActivo && (
+                  <span className="absolute -left-2 w-1.5 h-6 bg-indigo-500 rounded-r-full" />
+                )}
               </button>
             </Tooltip>
           );
         })}
       </div>
 
-      {/* Boton de configuracion al final */}
-      <Tooltip label="Configuración" position="right" withArrow>
-        <button
-          type="button"
-          onClick={() => setVistaActiva('configuracion')}
-          className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-150 cursor-pointer ${
-            vistaActiva === 'configuracion'
-              ? 'bg-slate-700 text-white shadow-md'
-              : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800'
-          }`}
-        >
-          <IconSettings size={22} stroke={1.8} />
-        </button>
-      </Tooltip>
+      {/* Botón de configuración al final */}
+      <div className="w-full px-2">
+        <Tooltip label="Configuración" position="right" withArrow>
+          <button
+            type="button"
+            onClick={() => setVistaActiva('configuracion')}
+            className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-200 cursor-pointer relative mx-auto ${
+              vistaActiva === 'configuracion'
+                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/35 ring-2 ring-indigo-400/30'
+                : 'text-slate-400 hover:text-slate-100 hover:bg-slate-900/90'
+            }`}
+          >
+            <IconSettings size={22} stroke={vistaActiva === 'configuracion' ? 2.2 : 1.8} />
+            {vistaActiva === 'configuracion' && (
+              <span className="absolute -left-2 w-1.5 h-6 bg-indigo-500 rounded-r-full" />
+            )}
+          </button>
+        </Tooltip>
+      </div>
     </aside>
   );
 };

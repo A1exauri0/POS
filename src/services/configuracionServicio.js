@@ -81,5 +81,11 @@ export const guardarConfiguracionBD = async (nuevosDatos) => {
     }
   }
 
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(
+      new CustomEvent('pos_configuracion_actualizada', { detail: configFinal })
+    );
+  }
+
   return configFinal;
 };

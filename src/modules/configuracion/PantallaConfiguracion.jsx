@@ -127,19 +127,12 @@ export const PantallaConfiguracion = () => {
 
           <Textarea
             label="Mensaje al Pie del Ticket"
-            rows={3}
+            rows={8}
             value={mensajePieTicket}
             onChange={(e) => setMensajePieTicket(e.target.value)}
             radius="lg"
           />
 
-          <div className="pt-2">
-            <Switch
-              label="Sonido al escanear código de barras"
-              defaultChecked
-              color="indigo"
-            />
-          </div>
         </div>
       </div>
     </div>
