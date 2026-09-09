@@ -12,7 +12,7 @@ let cacheVentas = null;
 
 // Obtener ventas sincronas (desde cache o localStorage)
 export const obtenerVentas = () => {
-  if (cacheVentas && cacheVentas.length > 0) {
+  if (cacheVentas !== null) {
     return cacheVentas;
   }
 
@@ -22,13 +22,13 @@ export const obtenerVentas = () => {
       cacheVentas = JSON.parse(guardadas);
       return cacheVentas;
     } catch {
-      cacheVentas = ventasIniciales;
-      return ventasIniciales;
+      cacheVentas = [];
+      return [];
     }
   }
 
-  cacheVentas = ventasIniciales;
-  return ventasIniciales;
+  cacheVentas = [];
+  return [];
 };
 
 // Cargar ventas completas desde SQLite con sus articulos asociados
@@ -44,7 +44,13 @@ export const cargarVentasBD = async () => {
          ORDER BY fecha DESC;`
       );
 
-      if (ventasSql && ventasSql.length > 0) {
+      if (Array.isArray(ventasSql)) {
+        if (ventasSql.length === 0) {
+          cacheVentas = [];
+          localStorage.setItem('pos_historial_ventas', JSON.stringify([]));
+          return [];
+        }
+
         const articulosSql = await ejecutarConsulta(
           `SELECT id, venta_id, producto_id, codigo, nombre, precio, cantidad, descuento, unidad, subtotal
            FROM venta_articulos;`

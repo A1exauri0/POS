@@ -7,11 +7,15 @@ import {
   esEntornoTauri,
 } from './baseDatosServicio';
 
+const CLIENTE_POR_DEFECTO = [
+  { id: 'cli-1', nombre: 'Público General', telefono: 'Sin teléfono', esPredeterminado: true },
+];
+
 let cacheClientes = null;
 
 // Obtener la lista de clientes de forma sincrona (desde cache o localStorage)
 export const obtenerClientes = () => {
-  if (cacheClientes && cacheClientes.length > 0) {
+  if (cacheClientes !== null) {
     return cacheClientes;
   }
 
@@ -21,13 +25,13 @@ export const obtenerClientes = () => {
       cacheClientes = JSON.parse(guardados);
       return cacheClientes;
     } catch {
-      cacheClientes = clientesIniciales;
-      return clientesIniciales;
+      cacheClientes = CLIENTE_POR_DEFECTO;
+      return CLIENTE_POR_DEFECTO;
     }
   }
 
-  cacheClientes = clientesIniciales;
-  return clientesIniciales;
+  cacheClientes = CLIENTE_POR_DEFECTO;
+  return CLIENTE_POR_DEFECTO;
 };
 
 // Cargar clientes desde SQLite
@@ -38,8 +42,8 @@ export const cargarClientesBD = async () => {
       const filas = await ejecutarConsulta(
         'SELECT id, nombre, telefono, es_predeterminado as esPredeterminado FROM clientes ORDER BY es_predeterminado DESC, nombre ASC;'
       );
-      if (filas && filas.length > 0) {
-        const formateados = filas.map((c) => ({
+      if (Array.isArray(filas)) {
+        const formateados = (filas.length > 0 ? filas : CLIENTE_POR_DEFECTO).map((c) => ({
           ...c,
           esPredeterminado: Boolean(c.esPredeterminado),
         }));
@@ -131,7 +135,7 @@ export const guardarClientes = (clientes) => {
 // Obtener el cliente predeterminado (Publico General)
 export const obtenerClientePredeterminado = () => {
   const lista = obtenerClientes();
-  return lista.find((c) => c.esPredeterminado) || lista[0] || clientesIniciales[0];
+  return lista.find((c) => c.esPredeterminado) || lista[0] || CLIENTE_POR_DEFECTO[0];
 };
 
 // Buscar cliente por nombre o telefono

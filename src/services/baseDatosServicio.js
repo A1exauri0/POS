@@ -169,8 +169,11 @@ const crearTablas = async (db) => {
   `);
 };
 
-// Sembrar datos iniciales esenciales si las tablas están vacías
+// Sembrar datos iniciales si las tablas están vacías
 const sembrarDatosIniciales = async (db) => {
+  // Verificar si es la primera vez que se abre el sistema en el equipo
+  const esPrimeraVez = typeof window !== 'undefined' && !localStorage.getItem('pos_demo_inicial_cargada');
+
   // 1. Sembrar Configuración si está vacía
   const conteoConfig = await db.select('SELECT COUNT(*) as total FROM configuracion;');
   if (conteoConfig[0]?.total === 0) {
@@ -182,7 +185,14 @@ const sembrarDatosIniciales = async (db) => {
     }
   }
 
-  // 2. Sembrar únicamente Categoría por defecto (General) si está vacía
+  // 2. Si es la primera vez que se instala en el equipo, cargar datos de demostración
+  if (esPrimeraVez) {
+    await insertarDatosDemostracion(db);
+    localStorage.setItem('pos_demo_inicial_cargada', 'true');
+    return;
+  }
+
+  // 3. Si ya se había abierto antes y la base de datos fue borrada/recreada, mantenerla limpia:
   const conteoCategorias = await db.select('SELECT COUNT(*) as total FROM categorias;');
   if (conteoCategorias[0]?.total === 0) {
     await db.execute(
@@ -191,7 +201,6 @@ const sembrarDatosIniciales = async (db) => {
     );
   }
 
-  // 3. Sembrar únicamente Cliente por defecto (Público General) si está vacío
   const conteoClientes = await db.select('SELECT COUNT(*) as total FROM clientes;');
   if (conteoClientes[0]?.total === 0) {
     await db.execute(
@@ -201,34 +210,231 @@ const sembrarDatosIniciales = async (db) => {
   }
 };
 
+// Inserción de datos demo en SQLite
+const insertarDatosDemostracion = async (db) => {
+  // Sembrar Categorias
+  const conteoCategorias = await db.select('SELECT COUNT(*) as total FROM categorias;');
+  if (conteoCategorias[0]?.total === 0) {
+    for (const cat of categoriasIniciales) {
+      await db.execute(
+        'INSERT INTO categorias (id, nombre, color, descripcion) VALUES ($1, $2, $3, $4);',
+        [cat.id, cat.nombre, cat.color || 'blue', cat.descripcion || '']
+      );
+    }
+  }
+
+  // Sembrar Productos
+  const conteoProductos = await db.select('SELECT COUNT(*) as total FROM productos;');
+  if (conteoProductos[0]?.total === 0) {
+    for (const prod of productosIniciales) {
+      await db.execute(
+        'INSERT INTO productos (id, codigo, nombre, categoria, precio, costo, stock, unidad, imagen, fecha_creacion) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);',
+        [
+          prod.id,
+          prod.codigo,
+          prod.nombre,
+          prod.categoria,
+          prod.precio,
+          prod.costo || 0,
+          prod.stock || 0,
+          prod.unidad || 'Pza',
+          prod.imagen || '',
+          new Date().toISOString(),
+        ]
+      );
+    }
+  }
+
+  // Sembrar Clientes
+  const conteoClientes = await db.select('SELECT COUNT(*) as total FROM clientes;');
+  if (conteoClientes[0]?.total === 0) {
+    for (const cli of clientesIniciales) {
+      await db.execute(
+        'INSERT INTO clientes (id, nombre, telefono, es_predeterminado) VALUES ($1, $2, $3, $4);',
+        [cli.id, cli.nombre, cli.telefono || 'Sin teléfono', cli.esPredeterminado ? 1 : 0]
+      );
+    }
+  }
+
+  // Sembrar Turno y Movimientos de Caja
+  const conteoTurnos = await db.select('SELECT COUNT(*) as total FROM turnos_caja;');
+  if (conteoTurnos[0]?.total === 0 && datosCajaInicial.turnoActual) {
+    const turno = datosCajaInicial.turnoActual;
+    await db.execute(
+      'INSERT INTO turnos_caja (id, cajero, fecha_apertura, fondo_inicial, estado) VALUES ($1, $2, $3, $4, $5);',
+      [
+        turno.id,
+        turno.cajero,
+        turno.fechaApertura || new Date().toISOString(),
+        turno.fondoInicial || 500,
+        datosCajaInicial.cajaAbierta ? 'abierto' : 'cerrado',
+      ]
+    );
+
+    if (turno.movimientos && turno.movimientos.length > 0) {
+      for (const mov of turno.movimientos) {
+        await db.execute(
+          'INSERT INTO movimientos_caja (id, turno_id, tipo, monto, concepto, fecha) VALUES ($1, $2, $3, $4, $5, $6);',
+          [mov.id, turno.id, mov.tipo, mov.monto, mov.concepto, mov.fecha]
+        );
+      }
+    }
+  }
+
+  // Sembrar Ventas
+  const conteoVentas = await db.select('SELECT COUNT(*) as total FROM ventas;');
+  if (conteoVentas[0]?.total === 0 && ventasIniciales && ventasIniciales.length > 0) {
+    for (const v of ventasIniciales) {
+      await db.execute(
+        `INSERT INTO ventas (
+          id, fecha, cliente_id, cliente_nombre, cliente_telefono,
+          subtotal, descuento, subtotal_neto, impuestos, total, total_articulos,
+          metodo_pago, monto_recibido, cambio, referencia, comprobante
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16);`,
+        [
+          v.id,
+          v.fecha,
+          v.cliente?.id || null,
+          v.cliente?.nombre || 'Público General',
+          v.cliente?.telefono || '',
+          v.totales?.subtotal || 0,
+          v.totales?.descuento || 0,
+          v.totales?.subtotalNeto || 0,
+          v.totales?.impuestos || 0,
+          v.totales?.total || 0,
+          v.totales?.totalArticulos || 0,
+          v.pago?.metodo || 'efectivo',
+          v.pago?.montoRecibido || 0,
+          v.pago?.cambio || 0,
+          v.pago?.referencia || '',
+          v.pago?.comprobante || null,
+        ]
+      );
+
+      if (v.articulos && v.articulos.length > 0) {
+        for (const art of v.articulos) {
+          await db.execute(
+            `INSERT INTO venta_articulos (
+              venta_id, producto_id, codigo, nombre, precio, cantidad, descuento, unidad, subtotal
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);`,
+            [
+              v.id,
+              art.id,
+              art.codigo || '',
+              art.nombre,
+              art.precio,
+              art.cantidad,
+              art.descuento || 0,
+              art.unidad || 'Pza',
+              art.subtotal,
+            ]
+          );
+        }
+      }
+    }
+  }
+};
+
+// Cargar datos de demostración manualmente
+export const cargarDatosDemostracionBD = async () => {
+  const db = await inicializarBaseDatos();
+  if (esEntornoTauri() && db) {
+    await db.execute('DELETE FROM venta_articulos;');
+    await db.execute('DELETE FROM ventas;');
+    await db.execute('DELETE FROM movimientos_caja;');
+    await db.execute('DELETE FROM turnos_caja;');
+    await db.execute('DELETE FROM productos;');
+    await db.execute('DELETE FROM categorias;');
+    await db.execute('DELETE FROM clientes;');
+    await insertarDatosDemostracion(db);
+  }
+
+  localStorage.setItem('pos_categorias', JSON.stringify(categoriasIniciales));
+  localStorage.setItem('pos_productos', JSON.stringify(productosIniciales));
+  localStorage.setItem('pos_clientes', JSON.stringify(clientesIniciales));
+  localStorage.setItem('pos_caja_abierta', JSON.stringify(datosCajaInicial.cajaAbierta));
+  localStorage.setItem('pos_turno_actual', JSON.stringify(datosCajaInicial.turnoActual));
+  localStorage.setItem('pos_historial_ventas', JSON.stringify(ventasIniciales));
+  localStorage.setItem('pos_demo_inicial_cargada', 'true');
+};
+
+// Limpiar base de datos completa para cliente
+export const limpiarBaseDatosBD = async () => {
+  const db = await inicializarBaseDatos();
+  if (esEntornoTauri() && db) {
+    await db.execute('DELETE FROM venta_articulos;');
+    await db.execute('DELETE FROM ventas;');
+    await db.execute('DELETE FROM movimientos_caja;');
+    await db.execute('DELETE FROM turnos_caja;');
+    await db.execute('DELETE FROM productos;');
+    await db.execute('DELETE FROM categorias;');
+    await db.execute('DELETE FROM clientes;');
+    await db.execute(
+      'INSERT INTO categorias (id, nombre, color, descripcion) VALUES ($1, $2, $3, $4);',
+      ['cat-1', 'General', 'blue', 'Categoría general por defecto']
+    );
+    await db.execute(
+      'INSERT INTO clientes (id, nombre, telefono, es_predeterminado) VALUES ($1, $2, $3, $4);',
+      ['cli-1', 'Público General', 'Sin teléfono', 1]
+    );
+  }
+
+  localStorage.setItem(
+    'pos_categorias',
+    JSON.stringify([{ id: 'cat-1', nombre: 'General', color: 'blue', descripcion: 'Categoría general por defecto' }])
+  );
+  localStorage.setItem(
+    'pos_clientes',
+    JSON.stringify([{ id: 'cli-1', nombre: 'Público General', telefono: 'Sin teléfono', esPredeterminado: true }])
+  );
+  localStorage.setItem('pos_productos', JSON.stringify([]));
+  localStorage.setItem('pos_caja_abierta', JSON.stringify(false));
+  localStorage.setItem('pos_turno_actual', JSON.stringify(null));
+  localStorage.setItem('pos_historial_ventas', JSON.stringify([]));
+  localStorage.setItem('pos_demo_inicial_cargada', 'true');
+};
+
 // Respaldo para entorno Web / Vercel
 const inicializarRespaldoWeb = () => {
+  const esPrimeraVez = !localStorage.getItem('pos_demo_inicial_cargada');
+
   if (!localStorage.getItem('pos_configuracion')) {
     localStorage.setItem('pos_configuracion', JSON.stringify(configuracionInicial));
   }
-  if (!localStorage.getItem('pos_categorias')) {
-    localStorage.setItem(
-      'pos_categorias',
-      JSON.stringify([{ id: 'cat-1', nombre: 'General', color: 'blue', descripcion: 'Categoría general por defecto' }])
-    );
-  }
-  if (!localStorage.getItem('pos_clientes')) {
-    localStorage.setItem(
-      'pos_clientes',
-      JSON.stringify([{ id: 'cli-1', nombre: 'Público General', telefono: 'Sin teléfono', esPredeterminado: true }])
-    );
-  }
-  if (!localStorage.getItem('pos_productos')) {
-    localStorage.setItem('pos_productos', JSON.stringify([]));
-  }
-  if (!localStorage.getItem('pos_caja_abierta')) {
-    localStorage.setItem('pos_caja_abierta', JSON.stringify(false));
-  }
-  if (!localStorage.getItem('pos_turno_actual')) {
-    localStorage.setItem('pos_turno_actual', JSON.stringify(null));
-  }
-  if (!localStorage.getItem('pos_historial_ventas')) {
-    localStorage.setItem('pos_historial_ventas', JSON.stringify([]));
+
+  if (esPrimeraVez) {
+    localStorage.setItem('pos_categorias', JSON.stringify(categoriasIniciales));
+    localStorage.setItem('pos_productos', JSON.stringify(productosIniciales));
+    localStorage.setItem('pos_clientes', JSON.stringify(clientesIniciales));
+    localStorage.setItem('pos_caja_abierta', JSON.stringify(datosCajaInicial.cajaAbierta));
+    localStorage.setItem('pos_turno_actual', JSON.stringify(datosCajaInicial.turnoActual));
+    localStorage.setItem('pos_historial_ventas', JSON.stringify(ventasIniciales));
+    localStorage.setItem('pos_demo_inicial_cargada', 'true');
+  } else {
+    if (!localStorage.getItem('pos_categorias')) {
+      localStorage.setItem(
+        'pos_categorias',
+        JSON.stringify([{ id: 'cat-1', nombre: 'General', color: 'blue', descripcion: 'Categoría general por defecto' }])
+      );
+    }
+    if (!localStorage.getItem('pos_clientes')) {
+      localStorage.setItem(
+        'pos_clientes',
+        JSON.stringify([{ id: 'cli-1', nombre: 'Público General', telefono: 'Sin teléfono', esPredeterminado: true }])
+      );
+    }
+    if (!localStorage.getItem('pos_productos')) {
+      localStorage.setItem('pos_productos', JSON.stringify([]));
+    }
+    if (!localStorage.getItem('pos_caja_abierta')) {
+      localStorage.setItem('pos_caja_abierta', JSON.stringify(false));
+    }
+    if (!localStorage.getItem('pos_turno_actual')) {
+      localStorage.setItem('pos_turno_actual', JSON.stringify(null));
+    }
+    if (!localStorage.getItem('pos_historial_ventas')) {
+      localStorage.setItem('pos_historial_ventas', JSON.stringify([]));
+    }
   }
 };
 

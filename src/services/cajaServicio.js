@@ -56,8 +56,8 @@ export const obtenerEstadoCajaBD = async () => {
   const turnoGuardado = localStorage.getItem('pos_turno_actual');
 
   return {
-    cajaAbierta: estadoGuardado !== null ? JSON.parse(estadoGuardado) : datosCajaInicial.cajaAbierta,
-    turnoActual: turnoGuardado ? JSON.parse(turnoGuardado) : datosCajaInicial.turnoActual,
+    cajaAbierta: estadoGuardado !== null ? JSON.parse(estadoGuardado) : false,
+    turnoActual: turnoGuardado ? JSON.parse(turnoGuardado) : null,
   };
 };
 

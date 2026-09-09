@@ -1,12 +1,24 @@
 import { useState, useEffect } from 'react';
-import { TextInput, NumberInput, Button, Switch, Textarea } from '@mantine/core';
-import { IconSettings, IconDeviceFloppy, IconCheck } from '@tabler/icons-react';
+import { TextInput, NumberInput, Button, Textarea } from '@mantine/core';
+import {
+  IconSettings,
+  IconDeviceFloppy,
+  IconCheck,
+  IconDatabase,
+  IconTrash,
+  IconDatabaseImport,
+} from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import {
   obtenerConfiguracion,
   cargarConfiguracionBD,
   guardarConfiguracionBD,
 } from '../../services/configuracionServicio';
+import {
+  cargarDatosDemostracionBD,
+  limpiarBaseDatosBD,
+} from '../../services/baseDatosServicio';
+import { ModalConfirmacion } from '../../components/ModalConfirmacion';
 
 export const PantallaConfiguracion = () => {
   const [config, setConfig] = useState(() => obtenerConfiguracion());
@@ -17,6 +29,10 @@ export const PantallaConfiguracion = () => {
   const [telefono, setTelefono] = useState(config.telefono || '');
   const [ivaPorcentaje, setIvaPorcentaje] = useState(config.ivaPorcentaje || 16);
   const [mensajePieTicket, setMensajePieTicket] = useState(config.mensajePieTicket || '');
+
+  // Modales de confirmación para mantenimiento
+  const [modalDemoAbierto, setModalDemoAbierto] = useState(false);
+  const [modalLimpiarAbierto, setModalLimpiarAbierto] = useState(false);
 
   // Cargar configuracion fresca desde SQLite al montar
   useEffect(() => {
@@ -50,6 +66,30 @@ export const PantallaConfiguracion = () => {
       color: 'teal',
       icon: <IconCheck size={18} />,
     });
+  };
+
+  const ejecutarCargarDemo = async () => {
+    await cargarDatosDemostracionBD();
+    setModalDemoAbierto(false);
+    notifications.show({
+      title: 'Datos Demo Cargados',
+      message: 'Se cargaron los productos, clientes y ventas de demostración.',
+      color: 'teal',
+      icon: <IconCheck size={18} />,
+    });
+    setTimeout(() => window.location.reload(), 800);
+  };
+
+  const ejecutarLimpiarBD = async () => {
+    await limpiarBaseDatosBD();
+    setModalLimpiarAbierto(false);
+    notifications.show({
+      title: 'Base de Datos Limpia',
+      message: 'Se han eliminado los datos de prueba. El sistema está listo para el cliente.',
+      color: 'teal',
+      icon: <IconCheck size={18} />,
+    });
+    setTimeout(() => window.location.reload(), 800);
   };
 
   return (
@@ -132,9 +172,77 @@ export const PantallaConfiguracion = () => {
             onChange={(e) => setMensajePieTicket(e.target.value)}
             radius="lg"
           />
+        </div>
 
+        {/* Mantenimiento de Base de Datos y Modo Demo */}
+        <div className="md:col-span-2 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
+          <div className="flex items-center gap-2.5 pb-2 border-b border-slate-100">
+            <IconDatabase size={18} className="text-slate-600" />
+            <h3 className="text-sm font-bold text-slate-800">Mantenimiento de Base de Datos</h3>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="p-4 rounded-xl border border-slate-100 bg-slate-50/70 flex flex-col justify-between gap-3">
+              <div>
+                <p className="text-xs font-bold text-slate-800">Cargar Datos de Demostración</p>
+                <p className="text-xs text-slate-500 mt-1">
+                  Inserta catálogo completo con productos, clientes y ventas de prueba para demostrar el sistema a un cliente.
+                </p>
+              </div>
+              <Button
+                variant="light"
+                color="indigo"
+                radius="lg"
+                size="xs"
+                leftSection={<IconDatabaseImport size={15} />}
+                onClick={() => setModalDemoAbierto(true)}
+              >
+                Cargar Catálogo Demo
+              </Button>
+            </div>
+
+            <div className="p-4 rounded-xl border border-red-100 bg-red-50/40 flex flex-col justify-between gap-3">
+              <div>
+                <p className="text-xs font-bold text-red-900">Limpiar Base de Datos (Modo Cliente)</p>
+                <p className="text-xs text-slate-500 mt-1">
+                  Elimina todos los productos de prueba y ventas ficticias para dejar el sistema 100% limpio y listo para operar.
+                </p>
+              </div>
+              <Button
+                variant="light"
+                color="red"
+                radius="lg"
+                size="xs"
+                leftSection={<IconTrash size={15} />}
+                onClick={() => setModalLimpiarAbierto(true)}
+              >
+                Vaciar Datos de Prueba
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
+
+      {/* Modales de Confirmación */}
+      <ModalConfirmacion
+        abierto={modalDemoAbierto}
+        alCerrar={() => setModalDemoAbierto(false)}
+        alConfirmar={ejecutarCargarDemo}
+        titulo="¿Cargar datos de demostración?"
+        mensaje="Esto agregará los productos, clientes y ventas de prueba para demostración."
+        textoConfirmar="Sí, Cargar Demo"
+        colorConfirmar="indigo"
+      />
+
+      <ModalConfirmacion
+        abierto={modalLimpiarAbierto}
+        alCerrar={() => setModalLimpiarAbierto(false)}
+        alConfirmar={ejecutarLimpiarBD}
+        titulo="¿Limpiar base de datos para entrega?"
+        mensaje="Se eliminarán todos los productos de prueba, ventas e historial. Solo se conservará la configuración del negocio."
+        textoConfirmar="Sí, Limpiar Todo"
+        colorConfirmar="red"
+      />
     </div>
   );
 };
