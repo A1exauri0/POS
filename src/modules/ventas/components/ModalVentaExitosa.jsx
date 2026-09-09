@@ -3,7 +3,7 @@ import { Modal, Button, Group, Badge, Collapse } from '@mantine/core';
 import {
   IconCheck,
   IconPrinter,
-} from '@tab  ler/icons-react';
+} from '@tabler/icons-react';
 import { formatearMoneda } from '../../../utils/formateadores';
 import { useVenta } from '../../../contexts/VentaContext';
 import { TicketImpresion } from './TicketImpresion';

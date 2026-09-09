@@ -12,13 +12,17 @@ import {
 let cacheCategorias = null;
 let cacheProductos = null;
 
-// Categorias base predefinidas importadas desde src/data/categorias.json
-export const CATEGORIAS_BASE = categoriasIniciales;
-export const PRODUCTOS_INICIALES = productosIniciales;
+const CATEGORIA_POR_DEFECTO = [
+  { id: 'cat-1', nombre: 'General', color: 'blue', descripcion: 'Categoría general por defecto' },
+];
+
+// Categorias base predefinidas
+export const CATEGORIAS_BASE = CATEGORIA_POR_DEFECTO;
+export const PRODUCTOS_INICIALES = [];
 
 // Obtener lista de categorias sincrona (desde cache o localStorage)
 export const obtenerCategorias = () => {
-  if (cacheCategorias && cacheCategorias.length > 0) {
+  if (cacheCategorias !== null) {
     return cacheCategorias;
   }
 
@@ -28,13 +32,13 @@ export const obtenerCategorias = () => {
       cacheCategorias = JSON.parse(guardadas);
       return cacheCategorias;
     } catch {
-      cacheCategorias = categoriasIniciales;
-      return categoriasIniciales;
+      cacheCategorias = CATEGORIA_POR_DEFECTO;
+      return CATEGORIA_POR_DEFECTO;
     }
   }
 
-  cacheCategorias = categoriasIniciales;
-  return categoriasIniciales;
+  cacheCategorias = CATEGORIA_POR_DEFECTO;
+  return CATEGORIA_POR_DEFECTO;
 };
 
 // Cargar categorias desde la base de datos SQLite
@@ -43,10 +47,10 @@ export const cargarCategoriasBD = async () => {
     await inicializarBaseDatos();
     if (esEntornoTauri()) {
       const filas = await ejecutarConsulta('SELECT id, nombre, color, descripcion FROM categorias ORDER BY nombre ASC;');
-      if (filas && filas.length > 0) {
-        cacheCategorias = filas;
-        localStorage.setItem('pos_categorias', JSON.stringify(filas));
-        return filas;
+      if (Array.isArray(filas)) {
+        cacheCategorias = filas.length > 0 ? filas : CATEGORIA_POR_DEFECTO;
+        localStorage.setItem('pos_categorias', JSON.stringify(cacheCategorias));
+        return cacheCategorias;
       }
     }
   } catch (error) {
@@ -136,7 +140,7 @@ export const CATEGORIAS_PRODUCTOS = [
 
 // Obtener todos los productos de forma sincrona (desde cache o localStorage)
 export const obtenerProductos = () => {
-  if (cacheProductos && cacheProductos.length > 0) {
+  if (cacheProductos !== null) {
     return cacheProductos;
   }
 
@@ -146,13 +150,13 @@ export const obtenerProductos = () => {
       cacheProductos = JSON.parse(guardados);
       return cacheProductos;
     } catch {
-      cacheProductos = productosIniciales;
-      return productosIniciales;
+      cacheProductos = [];
+      return [];
     }
   }
 
-  cacheProductos = productosIniciales;
-  return productosIniciales;
+  cacheProductos = [];
+  return [];
 };
 
 // Cargar productos desde SQLite
@@ -163,7 +167,7 @@ export const cargarProductosBD = async () => {
       const filas = await ejecutarConsulta(
         'SELECT id, codigo, nombre, categoria, precio, costo, stock, unidad, imagen, fecha_creacion FROM productos ORDER BY rowid ASC;'
       );
-      if (filas && filas.length > 0) {
+      if (Array.isArray(filas)) {
         cacheProductos = filas;
         localStorage.setItem('pos_productos', JSON.stringify(filas));
         return filas;

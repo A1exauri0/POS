@@ -1,6 +1,6 @@
-import { useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Button, Badge } from '@mantine/core';
-import { LineChart, DonutChart } from '@mantine/charts';
+import { AreaChart, DonutChart } from '@mantine/charts';
 import {
   IconLayoutDashboard,
   IconShoppingCart,
@@ -8,10 +8,10 @@ import {
   IconTrendingUp,
   IconPackage,
   IconChartPie,
+  IconCalendar,
 } from '@tabler/icons-react';
 import { useVenta } from '../../contexts/VentaContext';
 import { formatearMoneda, formatearFechaHora } from '../../utils/formateadores';
-import { obtenerProductos } from '../../services/productoServicio';
 
 // Paleta con los colores solicitados: azul, amarillo, rojo, verde, morado, naranja
 const COLORES_MANTINE = ['blue.6', 'yellow.5', 'red.6', 'teal.6', 'grape.6', 'orange.6'];
@@ -26,7 +26,7 @@ const MAPA_COLORES_HEX = {
 
 export const PantallaDashboard = ({ alNavegar }) => {
   const { historialVentas } = useVenta();
-  const catalogoProductos = useMemo(() => obtenerProductos(), []);
+  const [periodoGrafica, setPeriodoGrafica] = useState('30dias'); // '30dias' | 'mes' | '7dias'
 
   // 1. Calculo de metricas y datos formateados para las graficas
   const metricas = useMemo(() => {
@@ -59,29 +59,84 @@ export const PantallaDashboard = ({ alNavegar }) => {
         color: COLORES_MANTINE[index % COLORES_MANTINE.length],
       }));
 
-    // Datos para LineChart de ventas de todo el mes (desde el dia 1 hasta hoy)
+    // Datos para la grafica de ventas por fecha
     const hoy = new Date();
-    const añoActual = hoy.getFullYear();
-    const mesActual = hoy.getMonth();
-    const diaActual = hoy.getDate();
     const datosLinea = [];
 
-    for (let dia = 1; dia <= diaActual; dia++) {
-      const strDia = dia < 10 ? `0${dia}` : `${dia}`;
-      const strMes = mesActual + 1 < 10 ? `0${mesActual + 1}` : `${mesActual + 1}`;
-      const prefijoFecha = `${añoActual}-${strMes}-${strDia}`;
+    if (periodoGrafica === 'mes') {
+      // Determinar el mes a mostrar: mes actual o mes de las ultimas ventas
+      let añoRef = hoy.getFullYear();
+      let mesRef = hoy.getMonth();
 
-      const totalDia = historialVentas.reduce((sum, v) => {
-        if (v.fecha && v.fecha.startsWith(prefijoFecha)) {
-          return sum + (v.totales?.total || 0);
-        }
-        return sum;
-      }, 0);
-
-      datosLinea.push({
-        date: `${dia} Ago`,
-        Ventas: Math.round(totalDia),
+      // Si en el mes actual no hay ventas pero si hay historial, usar el mes con mas ventas recientes
+      const tieneVentasMesActual = historialVentas.some((v) => {
+        if (!v.fecha) return false;
+        const f = new Date(v.fecha);
+        return f.getFullYear() === añoRef && f.getMonth() === mesRef;
       });
+
+      if (!tieneVentasMesActual && historialVentas.length > 0) {
+        const fechasOrdenadas = [...historialVentas]
+          .filter((v) => v.fecha)
+          .map((v) => new Date(v.fecha))
+          .sort((a, b) => b - a);
+
+        if (fechasOrdenadas.length > 0) {
+          añoRef = fechasOrdenadas[0].getFullYear();
+          mesRef = fechasOrdenadas[0].getMonth();
+        }
+      }
+
+      const totalDiasMes = new Date(añoRef, mesRef + 1, 0).getDate();
+      const nombreMesCorto = new Date(añoRef, mesRef, 1).toLocaleDateString('es-MX', { month: 'short' });
+
+      for (let dia = 1; dia <= totalDiasMes; dia++) {
+        const strDia = dia < 10 ? `0${dia}` : `${dia}`;
+        const strMes = mesRef + 1 < 10 ? `0${mesRef + 1}` : `${mesRef + 1}`;
+        const prefijoFecha = `${añoRef}-${strMes}-${strDia}`;
+
+        const totalDia = historialVentas.reduce((sum, v) => {
+          if (v.fecha && v.fecha.startsWith(prefijoFecha)) {
+            return sum + (v.totales?.total || 0);
+          }
+          return sum;
+        }, 0);
+
+        datosLinea.push({
+          date: `${dia} ${nombreMesCorto}`,
+          Ventas: Math.round(totalDia),
+        });
+      }
+    } else {
+      // Periodo de dias correlativos (30 dias o 7 dias)
+      const cantidadDias = periodoGrafica === '7dias' ? 7 : 30;
+
+      for (let i = cantidadDias - 1; i >= 0; i--) {
+        const fechaDia = new Date(hoy);
+        fechaDia.setDate(hoy.getDate() - i);
+
+        const yyyy = fechaDia.getFullYear();
+        const mm = String(fechaDia.getMonth() + 1).padStart(2, '0');
+        const dd = String(fechaDia.getDate()).padStart(2, '0');
+        const prefijoFecha = `${yyyy}-${mm}-${dd}`;
+
+        const etiquetaFecha = fechaDia.toLocaleDateString('es-MX', {
+          day: 'numeric',
+          month: 'short',
+        });
+
+        const totalDia = historialVentas.reduce((sum, v) => {
+          if (v.fecha && v.fecha.startsWith(prefijoFecha)) {
+            return sum + (v.totales?.total || 0);
+          }
+          return sum;
+        }, 0);
+
+        datosLinea.push({
+          date: etiquetaFecha,
+          Ventas: Math.round(totalDia),
+        });
+      }
     }
 
     return {
@@ -91,7 +146,7 @@ export const PantallaDashboard = ({ alNavegar }) => {
       datosDonut,
       datosLinea,
     };
-  }, [historialVentas, catalogoProductos]);
+  }, [historialVentas, periodoGrafica]);
 
   // Ultimas 5 ventas
   const ventasRecientes = useMemo(() => {
@@ -187,40 +242,73 @@ export const PantallaDashboard = ({ alNavegar }) => {
         </div>
       </div>
 
-      {/* GRAFICA 1: LINECHART DE MANTINE A TODO EL ANCHO */}
+      {/* GRAFICA 1: AREACHART CON GRADIENTE Y SELECTOR DE PERIODO */}
       <div className="w-full bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
-        <div className="flex items-center justify-between pb-3 mb-2 border-b border-slate-100">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 mb-2 border-b border-slate-100 gap-2">
           <div>
             <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
-              <IconTrendingUp size={18} className="text-indigo-600" /> Evolución de Ventas del Mes
+              <IconTrendingUp size={18} className="text-indigo-600" />
+              Tendencia de Ingresos
             </h3>
-            <p className="text-xs text-slate-400 font-medium">Ingresos diarios a lo largo de todo el mes</p>
+            <p className="text-xs text-slate-400 font-medium">Ingresos diarios registrados en el periodo seleccionado</p>
           </div>
-          <Badge color="indigo" variant="light" size="sm" radius="sm">
-            Mes Completo ({metricas.datosLinea.length} Días)
-          </Badge>
+
+          {/* Selector de periodo */}
+          <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl">
+            <button
+              type="button"
+              onClick={() => setPeriodoGrafica('30dias')}
+              className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                periodoGrafica === '30dias'
+                  ? 'bg-white text-indigo-700 shadow-2xs'
+                  : 'text-slate-500 hover:text-slate-800'
+              }`}
+            >
+              Últimos 30 días
+            </button>
+            <button
+              type="button"
+              onClick={() => setPeriodoGrafica('mes')}
+              className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                periodoGrafica === 'mes'
+                  ? 'bg-white text-indigo-700 shadow-2xs'
+                  : 'text-slate-500 hover:text-slate-800'
+              }`}
+            >
+              Mes Completo
+            </button>
+            <button
+              type="button"
+              onClick={() => setPeriodoGrafica('7dias')}
+              className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                periodoGrafica === '7dias'
+                  ? 'bg-white text-indigo-700 shadow-2xs'
+                  : 'text-slate-500 hover:text-slate-800'
+              }`}
+            >
+              7 Días
+            </button>
+          </div>
         </div>
 
         <div className="pt-2">
-          <LineChart
+          <AreaChart
             h={320}
             data={metricas.datosLinea}
             dataKey="date"
-            series={[{ name: 'Ventas', label: 'Ventas del Día' }]}
-            type="gradient"
-            gradientStops={[
-              { offset: 0, color: 'red.6' },
-              { offset: 20, color: 'orange.6' },
-              { offset: 40, color: 'yellow.5' },
-              { offset: 60, color: 'teal.5' },
-              { offset: 80, color: 'blue.6' },
-              { offset: 100, color: 'grape.6' },
-            ]}
-            strokeWidth={6}
-            curveType="natural"
+            series={[{ name: 'Ventas', color: 'indigo.6', label: 'Ventas ($)' }]}
+            curveType="monotone"
+            type="default"
+            withGradient
+            withDots
+            strokeWidth={2.5}
+            fillOpacity={0.15}
+            dotProps={{ r: 3, strokeWidth: 1 }}
+            activeDotProps={{ r: 5, strokeWidth: 2 }}
             valueFormatter={(valor) => formatearMoneda(valor)}
             tickLine="y"
             gridAxis="xy"
+            yAxisProps={{ domain: [0, 'auto'], allowDecimals: false }}
           />
         </div>
       </div>
